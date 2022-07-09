@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+
+"""Launch the module."""
+
+import mccole
+
+mccole.main()

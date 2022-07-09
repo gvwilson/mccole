@@ -1,110 +1,46 @@
-.DEFAULT: commands
+SRC=mccole
 
-# Local configuration.
-ABBREV := $(shell python config.py --abbrev)
+# Show help by default.
+.DEFAULT_GOAL := help
 
-# Direct variables.
-HTML := info/head.html info/foot.html
-INFO := info/bibliography.bib info/credits.yml info/glossary.yml info/links.yml
-FIG_SVG := $(wildcard src/*/*.svg)
-IVY := $(wildcard lib/mccole/*/*.*)
-TEX := info/head.tex info/foot.tex
-SRC := $(wildcard *.md) $(wildcard src/*.md) $(wildcard src/*/index.md)
-
-# Calculated variables.
-FIG_PDF := $(patsubst src/%.svg,docs/%.pdf,${FIG_SVG})
-
-PORT := 4000
-
-## commands: show available commands
-commands:
+## help: show available commands
+.PHONY: help
+help:
 	@grep -h -E '^##' ${MAKEFILE_LIST} | sed -e 's/## //g' | column -t -s ':'
 
-## build: rebuild site without running server
-build: docs/index.html
-docs/index.html: ${SRC} ${INFO} ${IVY} config.py
-	ivy build && touch $@
+## build: build and check package
+.PHONY: build
+build:
+	python setup.py sdist bdist_wheel
+	twine check dist/*
 
-## serve: build site and run server
-.PHONY: serve
-serve:
-	ivy watch --port ${PORT}
+## upload: push package to PyPi Test
+upload:
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
-## single: create single-page HTML
-single: docs/all.html
-docs/all.html: docs/index.html ${HTML} bin/single.py
-	python bin/single.py --head info/head.html --foot info/foot.html --root docs > docs/all.html
+## install: build package and install locally
+.PHONY: install
+install:
+	pip install -e .
 
-## latex: create LaTeX document
-latex: docs/${ABBREV}.tex
-docs/${ABBREV}.tex: docs/all.html ${TEX} bin/html2tex.py ./config.py
-	python bin/html2tex.py --head info/head.tex --foot info/foot.tex < docs/all.html > docs/${ABBREV}.tex
-	python ./config.py --latex > docs/config.tex
-
-## pdf: create PDF document
-pdf: docs/${ABBREV}.tex ${FIG_PDF}
-	cp info/bibliography.bib docs
-	cd docs && pdflatex ${ABBREV}
-	cd docs && biber ${ABBREV}
-	cd docs && makeindex ${ABBREV}
-	cd docs && pdflatex ${ABBREV}
-	cd docs && pdflatex ${ABBREV}
-
-docs/%.pdf: src/%.svg
-	@convert $< $@
-
-## clean: clean up stray files
-clean:
-	@find . -name '*~' -exec rm {} \;
-	@find . -type d -name __pycache__ | xargs rm -r
-
-## lint: check code and structure
+## lint: run software quality checks
 .PHONY: lint
 lint:
-	-flake8
-	-isort --check .
-	-black --check .
-	python bin/lint.py --src src
+	@-flake8
+	@-isort --check .
+	@-black --check .
+	@-pydocstyle --convention=google --count ${SRC}
 
-## valid: run html5validator on generated files
-.PHONY: valid
-valid: docs/all.html
-	@html5validator --root docs \
-	--ignore \
-	'Attribute "g" not allowed on element "span"' \
-	'Attribute "i" not allowed on element "span"'
+## reformat: reformat code in place
+.PHONY: reformat
+reformat:
+	@isort .
+	@black .
 
-## release: create archive of standard files
-.PHONY: release
-release:
-	zip -r mccole.zip \
-	CODE_OF_CONDUCT.md \
-	CONTRIBUTING.md \
-	LICENSE.md \
-	Makefile \
-	bin \
-	info/*.html \
-	info/*.tex \
-	lib \
-	src/bibliography \
-	src/conduct \
-	src/contents \
-	src/credits \
-	src/glossary \
-	src/license \
-	src/links \
-	src/syllabus \
-	-x "*__pycache__*" \
-	-x "*~"
-
-## vars: show variables
-.PHONY: vars
-vars:
-	@echo ABBREV ${ABBREV}
-	@echo FIG_SVG ${FIG_SVG}
-	@echo FIG_PDF ${FIG_PDF}
-	@echo HTML ${HTML}
-	@echo INFO ${INFO}
-	@echo IVY ${IVY}
-	@echo SRC ${SRC}
-	@echo TEX ${TEX}
+## clean: remove junk files
+.PHONY: clean
+clean:
+	@find . -name '*~' -exec rm {} \;
+	@find . -name __pycache__ -delete
+	@find . -name .DS_Store -exec rm {} \;
+	@rm -rf build dist htmlcov mccole.egg-info sample/_site
