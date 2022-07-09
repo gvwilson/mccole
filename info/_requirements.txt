@@ -1,0 +1,9 @@
+black
+coverage
+flake8
+html5validator
+isort
+ivy
+pybtex
+pymdown-extensions
+pytest
