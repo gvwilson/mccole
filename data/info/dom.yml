@@ -1,0 +1,94 @@
+'[document]': []
+a:
+  class:
+  - bib-ref
+  - fig-ref
+  - gl-ref
+  - ix-ref
+  - link-ref
+  - x-ref
+  href: null
+  index-ref: null
+  markdown: null
+blockquote: []
+body: []
+code: []
+dd: []
+div:
+  class:
+  - bordered
+  - callout
+  - column
+  - glossary
+  - highlight
+  - row
+dl:
+  class:
+  - bib-list
+dt:
+  id: null
+em: []
+figcaption:
+  markdown: null
+figure:
+  id: null
+h1: []
+h2:
+  id: null
+h3: []
+head: []
+html:
+  lang:
+  - en
+img:
+  alt: null
+  src: null
+li:
+  markdown: null
+link:
+  href: null
+  rel:
+  - icon
+  - stylesheet
+  type:
+  - image/x-icon
+main: []
+meta:
+  content: null
+  http-equiv: null
+  name: null
+ol:
+  class:
+  - ix-list
+  - syllabus
+  - toc-appendix
+  - toc-chapter
+p: []
+pre: []
+script:
+  async: null
+  id: null
+  src: null
+  type:
+  - text/javascript
+span:
+  class:
+  - bib-ref
+  - bibtex-protected
+  - gl-key
+  - ix-entry
+  id: null
+  ix-key: null
+  markdown: null
+strong: []
+table: []
+tbody: []
+td: []
+th: []
+thead: []
+title: []
+tr: []
+ul:
+  class:
+  - ix-list
+  - syllabus
