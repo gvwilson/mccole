@@ -32,8 +32,9 @@ def check_dom(dom_spec, html_files):
     seen = {}
     for filename in html_files:
         with open(filename, "r") as reader:
-            _collect_dom(seen, BeautifulSoup(reader.read(), "html.parser"))
-    _diff_dom("extra", seen, allowed)
+            dom = BeautifulSoup(reader.read(), "html.parser")
+            _collect_dom(seen, dom)
+    _diff_dom(seen, allowed)
 
 
 def check_excerpts(source_files):
@@ -105,6 +106,8 @@ def _collect_dom(seen, node):
     """Collect DOM element attributes from given node and its descendents."""
     if not isinstance(node, Tag):
         return
+    if _skip_dom(node):
+        return
     if node.name not in seen:
         seen[node.name] = {}
     for (key, value) in node.attrs.items():
@@ -119,21 +122,26 @@ def _collect_dom(seen, node):
         _collect_dom(seen, child)
 
 
-def _diff_dom(title, left, right):
+def _diff_dom(actual, expected):
     """Show difference between two DOM structures."""
-    for name in sorted(left):
-        if name not in right:
-            print(f"{title}: {name} seen but not expected")
+    for name in sorted(actual):
+        if name not in expected:
+            print(f"{name} seen but not expected")
             continue
-        for attr in sorted(left[name]):
-            if attr not in right[name]:
-                print(f"{title}: {name}.{attr} seen but not expected")
+        for attr in sorted(actual[name]):
+            if attr not in expected[name]:
+                print(f"{name}.{attr} seen but not expected")
                 continue
-            if right[name][attr] is None:
+            if expected[name][attr] == "any":
                 continue
-            for value in sorted(left[name][attr]):
-                if value not in right[name][attr]:
-                    print(f"{title}: {name}.{attr} == '{value}' seen but not expected")
+            for value in sorted(actual[name][attr]):
+                if value not in expected[name][attr]:
+                    print(f"{name}.{attr} == '{value}' seen but not expected")
+
+
+def _skip_dom(node):
+    """Ignore this node and its children?"""
+    return (node.name == "div") and node.has_attr("class") and ("highlight" in node["class"])
 
 
 if __name__ == "__main__":

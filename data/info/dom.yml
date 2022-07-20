@@ -6,15 +6,17 @@ a:
   - gl-ref
   - ix-ref
   - link-ref
+  - tbl-ref
   - x-ref
-  href: null
-  index-ref: null
-  markdown: null
+  href: "any"
+  index-ref: "any"
+  markdown: "any"
 blockquote: []
 body: []
 code: []
 dd: []
 div:
+  caption: "any"
   class:
   - bordered
   - callout
@@ -22,31 +24,35 @@ div:
   - glossary
   - highlight
   - row
+  - table
+  id: "any"
 dl:
   class:
   - bib-list
 dt:
-  id: null
+  id: "any"
 em: []
 figcaption:
-  markdown: null
+  markdown: "any"
 figure:
-  id: null
+  id: "any"
 h1: []
 h2:
-  id: null
-h3: []
+  id: "any"
+h3:
+  class:
+  - exercise
 head: []
 html:
   lang:
   - en
 img:
-  alt: null
-  src: null
+  alt: "any"
+  src: "any"
 li:
-  markdown: null
+  markdown: "any"
 link:
-  href: null
+  href: "any"
   rel:
   - icon
   - stylesheet
@@ -54,32 +60,37 @@ link:
   - image/x-icon
 main: []
 meta:
-  content: null
-  http-equiv: null
-  name: null
+  content: "any"
+  http-equiv: "any"
+  name: "any"
 ol:
   class:
   - ix-list
   - syllabus
   - toc-appendix
   - toc-chapter
-p: []
+p:
+  class:
+  - continue
 pre: []
 script:
-  async: null
-  id: null
-  src: null
+  async: "any"
+  id: "any"
+  src: "any"
   type:
   - text/javascript
+section:
+  id: "any"
 span:
   class:
+  - FIXME
   - bib-ref
   - bibtex-protected
   - gl-key
   - ix-entry
-  id: null
-  ix-key: null
-  markdown: null
+  id: "any"
+  ix-key: "any"
+  markdown: "any"
 strong: []
 table: []
 tbody: []
