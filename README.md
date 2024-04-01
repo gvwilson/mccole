@@ -49,5 +49,7 @@ A template for [Ark][ark]-based tutorials.
     1.  Add `lib/mccole/resources/logo.svg` for use as favicon.
     1.  Add `.nojekyll` file to prevent GitHub from re-rendering pages.
 
+1.  Add front matter to `index.md` pages with titles.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/
