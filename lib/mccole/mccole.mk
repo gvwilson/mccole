@@ -5,24 +5,25 @@
 # By default, show available commands (by finding '##' comments)
 .DEFAULT: commands
 
-# Absolute path to this file
-# See https://stackoverflow.com/questions/18136918/how-to-get-current-relative-directory-of-your-makefile
-MCCOLE := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
-
 # Project root directory
 ROOT := .
 
-# All Markdown source pages
-SRC_PAGES := $(wildcard ${ROOT}/src/*.md) $(wildcard ${ROOT}/src/*/index.md)
+# Where to find tools
+THEME_BIN := ${ROOT}/lib/mccole/bin
 
 # Standard GitHub pages (in root directory rather than website source directory)
 GITHUB_PAGES := ${ROOT}/CODE_OF_CONDUCT.md ${ROOT}/LICENSE.md
 
-# Information files
-INFO_GLOSSARY := ${ROOT}/info/glossary.yml
+# All Markdown source pages
+SRC_PAGES := $(wildcard ${ROOT}/src/*.md) $(wildcard ${ROOT}/src/*/index.md)
 
 # Generated HTML pages
 DOCS_PAGES := $(patsubst ${ROOT}/src/%.md,${ROOT}/docs/%.html,$(SRC_PAGES))
+
+# Information files
+INFO_GLOSSARY := ${ROOT}/info/glossary.yml
+INFO_BIB := info/bibliography.bib
+TMP_BIB := tmp/bibliography.html
 
 ## commands: show available commands
 .PHONY: commands
@@ -33,7 +34,7 @@ commands:
 
 ## build: rebuild site without running server
 .PHONY: build
-build:
+build: ${TMP_BIB}
 	ark build
 	@touch ${ROOT}/docs/.nojekyll
 
@@ -41,6 +42,12 @@ build:
 .PHONY: serve
 serve:
 	ark watch
+
+## bib: rebuild HTML version of bibliography
+bib: ${TMP_BIB} ${THEME_BIN}/make_bibliography.py
+${TMP_BIB}: ${INFO_BIB}
+	@mkdir -p ${ROOT}/tmp
+	python ${THEME_BIN}/make_bibliography.py --infile $< --outfile $@
 
 ## style: check Python code style
 .PHONY: style

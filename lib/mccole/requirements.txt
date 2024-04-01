@@ -1,3 +1,4 @@
 ark
+pybtex
 pymdown-extensions
 ruff

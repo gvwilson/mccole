@@ -59,5 +59,16 @@ A template for [Ark][ark]-based tutorials.
     1.  Add `toc` shortcode to create table of contents.
     1.  Add `src/intro/index.md` and `src/finale/index.md` as test cases.
 
+1.  Add bibliography.
+    1.  Modify `lib/mccole/requirements.txt` to install `pybtex` package.
+    1.  Add `info/bibliography.bib` (BibTeX-formatted bibliography).
+    1.  Add `lib/mccole/bin/make_bibliography.py` to translate BibTeX into HTML in `tmp/bibliography.html`.
+    1.  Modify `lib/mccole/mccole.mk` to build HTML version of bibliography.
+    1.  Modify `lib/mccole/resources/mccole.mk` to display bibliography.
+    1.  Add `bibliography` shortcode to include bibliography in page.
+    1.  Add `b` shortcode to reference bibliography entries.
+    1.  Add `src/bib/index.md` to show bibliography.
+    1.  Modify `config.py` to include `bib` as appendix.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

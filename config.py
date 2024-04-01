@@ -16,6 +16,7 @@ chapters = [
 appendices = [
     "license",
     "conduct",
+    "bib",
     "glossary",
 ]
 

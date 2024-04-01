@@ -39,6 +39,11 @@ code {
     background-color: var(--gray-faint);
 }
 
+/* Bibliography key definitions */
+dl.bibliography dt {
+    font-weight: bold;
+}
+
 /* Glossary term definitions */
 dl.glossary dt {
     font-weight: bold;
