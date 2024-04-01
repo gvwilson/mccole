@@ -2,9 +2,20 @@
 
 import ark
 import markdown
+from pathlib import Path
 import re
 import sys
 
+
+# Names of parts.
+KIND = {
+    "en": {
+        "appendix": "Appendix",
+        "chapter": "Chapter",
+        "figure": "Figure",
+        "table": "Table",
+    },
+}
 
 # Markdown extensions.
 MD_EXTENSIONS = [
@@ -27,6 +38,16 @@ def fail(msg):
     raise AssertionError(msg)
 
 
+def kind(part_name):
+    """Localize name of part."""
+    lang = ark.site.config["lang"]
+    require(
+        part_name in KIND[lang],
+        f"Unknown part name {part_name} for language {lang}",
+    )
+    return KIND[lang][part_name]
+
+
 def markdownify(text, strip_p=True, with_links=False):
     """Convert Markdown to HTML."""
     links = ark.site.config.get("_links_block_", "")
@@ -42,3 +63,7 @@ def require(cond, msg):
         fail(msg)
 
 
+def require_file(node, filename, kind):
+    """Require that a file exists."""
+    filepath = Path(Path(node.filepath).parent, filename)
+    require(filepath.exists(), f"Missing {kind} file {filename} from {node.path}")

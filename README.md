@@ -70,5 +70,15 @@ A template for [Ark][ark]-based tutorials.
     1.  Add `src/bib/index.md` to show bibliography.
     1.  Modify `config.py` to include `bib` as appendix.
 
+1.  Add figures and tables.
+    1.  Add `lib/mccole/extensions/figure.py` with shortcode `f` and figure inclusion `figure`.
+    1.  Add `lib/mccole/extensions/table.py` with shortcode `t` and figure inclusion `table`.
+    1.  Rename `lib/mccole/extensions/init.py` to `lib/mccole/extensions/batch.py` to reflect purpose.
+    1.  Add startup task in `lib/mccole/extensions/batch.py` to find and number all figures and tables.
+    1.  Add `copy` field to `config.py` with globs of files to copy directly (just `*.svg` for now).
+    1.  Add finalization code to `lib/mccole/extensions/batch.py` to copy files.
+    1.  Add examples of figures and tables (and references) to `src/intro/index.md` and `src/finale/index.md`.
+    1.  Move localization into `lib/mccole/extensions/util.py`.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

@@ -20,6 +20,11 @@ appendices = [
     "glossary",
 ]
 
+# What to copy.
+copy = [
+    "*.svg",
+]
+
 # Theme information.
 theme = "mccole"
 src_dir = "src"

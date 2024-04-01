@@ -49,6 +49,13 @@ dl.glossary dt {
     font-weight: bold;
 }
 
+/* Figures */
+figure {
+    text-align: center;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
 /* Page footer */
 footer {
     border-top: solid var(--gray-light) var(--border-medium);
@@ -69,4 +76,26 @@ ol.toc-appendices {
 /* Chapter list */
 ol.toc-chapters {
     list-style-type: decimal;
+}
+
+/* Caption on table */
+p.table-caption {
+    text-align: center;
+}
+
+/* Tables */
+table {
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Table cells */
+th, td {
+    padding-top: var(--border-medium);
+    padding-bottom: var(--border-medium);
+    padding-left: var(--spacing-medium);
+    padding-right: var(--spacing-medium);
+    vertical-align: top;
+    border: solid var(--border-thin) var(--gray-light);
 }
