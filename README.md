@@ -51,5 +51,13 @@ A template for [Ark][ark]-based tutorials.
 
 1.  Add front matter to `index.md` pages with titles.
 
+1.  Add cross-referencing and table of contents.
+    1.  Add `chapters` and `appendices` to `config.py` to define order.
+    1.  Add `_number_contents` and `_collect_titles` to `lib/mccole/extensions/init.py` to gather information.
+    1.  Create `lib/mccole/extensions/toc.py` for cross-references and table of contents.
+    1.  Add `x` shortcode to cross-reference chapters and appendices.
+    1.  Add `toc` shortcode to create table of contents.
+    1.  Add `src/intro/index.md` and `src/finale/index.md` as test cases.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

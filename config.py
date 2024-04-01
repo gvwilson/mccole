@@ -8,6 +8,17 @@ author = {
 }
 lang = "en"
 
+chapters = [
+    "intro",
+    "finale",
+]
+
+appendices = [
+    "license",
+    "conduct",
+    "glossary",
+]
+
 # Theme information.
 theme = "mccole"
 src_dir = "src"

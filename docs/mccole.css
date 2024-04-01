@@ -57,11 +57,11 @@ html {
 }
 
 /* Appendix list */
-ol.appendices {
+ol.toc-appendices {
     list-style-type: upper-latin;
 }
 
 /* Chapter list */
-ol.chapters {
+ol.toc-chapters {
     list-style-type: decimal;
 }
