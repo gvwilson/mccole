@@ -1,5 +1,6 @@
 ---
 title: "Conclusion"
+tagline: "What we've covered and where you might go next."
 ---
 
 -   Reference to introduction [%x intro %]

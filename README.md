@@ -80,5 +80,13 @@ A template for [Ark][ark]-based tutorials.
     1.  Add examples of figures and tables (and references) to `src/intro/index.md` and `src/finale/index.md`.
     1.  Move localization into `lib/mccole/extensions/util.py`.
 
+1.  Add navigation links and a proper title.
+    1.  Collect all metadata in `lib/mccole/extensions/batch.py`.
+    1.  Add `lib/mccole/templates/title.html` to format title and prev/next navigation links.
+    1.  Include `title.html` in `lib/mccole/templates/node.ibis`.
+    1.  Add `lib/mccole/extensions/filters.py` with various filters required by template additions.
+    1.  Add flex grid to `lib/mccole/resources/mccole.css`.
+    1.  Modify `src/license/index.md` and `src/conduct/index.md` to strip inherited title of root pages.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

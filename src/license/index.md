@@ -2,4 +2,4 @@
 title: "License"
 ---
 
-[% rootfile "LICENSE.md" strip=False %]
+[% rootfile "LICENSE.md" %]

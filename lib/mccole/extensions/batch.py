@@ -14,6 +14,7 @@ def init_build():
     """Launch startup tasks in order."""
     _init_date()
     _number_contents()
+    _collect_metadata()
     _collect_titles()
     _collect_targets()
 
@@ -30,6 +31,19 @@ def filter_files(value, filepath):
     """Only process HTML and Markdown files."""
     result = filepath.suffix in {".html", ".md"}
     return result
+
+
+def _collect_metadata():
+    """Collect all metadata from nodes."""
+
+    metadata = {}
+
+    def _visitor(node):
+        slug = node.slug if node.slug else "@root"
+        metadata[slug] = node.meta
+
+    ark.nodes.root().walk(_visitor)
+    ark.site.config["_meta_"] = metadata
 
 
 def _collect_targets():

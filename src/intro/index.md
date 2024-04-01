@@ -1,5 +1,6 @@
 ---
 title: "Introduction"
+tagline: "Where we're going and why."
 ---
 
 -   Reference to conclusion [%x finale %]
