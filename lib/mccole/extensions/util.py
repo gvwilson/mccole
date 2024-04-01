@@ -5,6 +5,7 @@ import markdown
 from pathlib import Path
 import re
 import sys
+import yaml
 
 
 # Names of parts.
@@ -30,6 +31,18 @@ INSIDE_PARAGRAPH = re.compile(r"<p>(.+?)</p>")
 def allowed(kwargs, allowed):
     """Check that dictionary keys are a subset of those allowed."""
     return set(kwargs.keys()).issubset(allowed)
+
+
+def ensure_links():
+    """Load links and create appendable text."""
+    if "_links_" in ark.site.config:
+        return
+    filepath = Path(ark.site.home(), "info", "links.yml")
+    links = yaml.safe_load(filepath.read_text()) or []
+    ark.site.config["_links_"] = {lnk["key"]: lnk for lnk in links}
+    ark.site.config["_links_block_"] = "\n".join(
+        f"[{key}]: {value['url']}" for key, value in ark.site.config["_links_"].items()
+    )
 
 
 def fail(msg):

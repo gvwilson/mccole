@@ -88,5 +88,11 @@ A template for [Ark][ark]-based tutorials.
     1.  Add flex grid to `lib/mccole/resources/mccole.css`.
     1.  Modify `src/license/index.md` and `src/conduct/index.md` to strip inherited title of root pages.
 
+1.  Add links to pages.
+    1.  Add `info/links.yml` with link definitions.
+    1.  Add `ensure_links` function to `lib/mccole/extensions/util.py` to load and format links.
+    1.  Add `_append_links` function to `lib/mccole/extensions/batch.py` to append link text to files.
+    1.  Add `src/colophon/index.md` to display credits.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

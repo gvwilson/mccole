@@ -1,0 +1,39 @@
+# A
+
+- key: "ark"
+  url: "https://www.dmulholl.com/docs/ark/main/"
+  title: "Ark static site generator"
+
+- key: "atkinson"
+  url: "https://brailleinstitute.org/freefont"
+  title: "Atkinson Hyperlegible font"
+
+# D
+
+- key: "draw_io"
+  url: "https://www.drawio.com/"
+  title: "draw.io"
+
+# G
+
+- key: "ghp"
+  url: "https://pages.github.com/"
+  title: "GitHub Pages"
+
+# H
+
+- key: "highlight_css"
+  url: "https://numist.github.io/highlight-css/"
+  title: "highlight-css"
+
+# P
+
+- key: "plausible"
+  url: "https://plausible.io/"
+  title: "Plausible"
+
+# W
+
+- key: "wave"
+  url: "https://wave.webaim.org/"
+  title: "WebAIM WAVE"

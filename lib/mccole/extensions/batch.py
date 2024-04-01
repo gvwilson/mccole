@@ -16,6 +16,7 @@ def init_build():
     _collect_metadata()
     _decorate_metadata()
     _collect_targets()
+    _append_links()
 
 
 @ark.events.register(ark.events.Event.EXIT_BUILD)
@@ -29,6 +30,18 @@ def filter_files(value, filepath):
     """Only process HTML and Markdown files."""
     result = filepath.suffix in {".html", ".md"}
     return result
+
+
+def _append_links():
+    """Add links to node text."""
+    util.ensure_links()
+    links_block = ark.site.config["_links_block_"]
+
+    def _visitor(node):
+        if (node.ext == "md"):
+            node.text += "\n\n" + links_block
+
+    ark.nodes.root().walk(_visitor)
 
 
 def _collect_metadata():

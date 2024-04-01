@@ -18,6 +18,7 @@ appendices = [
     "conduct",
     "bib",
     "glossary",
+    "colophon",
 ]
 
 # What to copy.
