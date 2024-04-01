@@ -13,11 +13,9 @@ import util
 def init_build():
     """Launch startup tasks in order."""
     _init_date()
-    _number_contents()
     _collect_metadata()
-    _collect_titles()
+    _decorate_metadata()
     _collect_targets()
-
 
 
 @ark.events.register(ark.events.Event.EXIT_BUILD)
@@ -35,7 +33,6 @@ def filter_files(value, filepath):
 
 def _collect_metadata():
     """Collect all metadata from nodes."""
-
     metadata = {}
 
     def _visitor(node):
@@ -49,6 +46,7 @@ def _collect_metadata():
 def _collect_targets():
     """Collect targets of numbered cross-references."""
 
+    # Collect data from a figure.
     def _collect_figures(pargs, kwargs, extra):
         util.require(
             "slug" in kwargs,
@@ -56,6 +54,7 @@ def _collect_targets():
         )
         extra["figures"].append(kwargs["slug"])
 
+    # Collect data from a table.
     def _collect_tables(pargs, kwargs, extra):
         util.require(
             "slug" in kwargs,
@@ -63,18 +62,16 @@ def _collect_targets():
         )
         extra["tables"].append(kwargs["slug"])
 
-    def _collect_this(node):
-        return node.slug and (node.ext == "md")
-
+    # Visit each node, collecting data.
     def _visitor(node):
-        if not _collect_this(node):
+        if (not node.slug) or (node.ext != "md"):
             return
 
         collected = {"filename": node.filepath, "figures": [], "tables": []}
         parser.parse(node.text, collected)
         if node.slug not in collector:
             collector[node.slug] = {"figures": {}, "tables": {}}
-        number = ark.site.config["_number_"][node.slug]["number"]
+        number = ark.site.config["_meta_"][node.slug]["number"]
         collector[node.slug]["figures"].update(
             {
                 fig_slug: {"slug": f"{number}.{i + 1}", "node": node.slug}
@@ -102,21 +99,6 @@ def _collect_targets():
             ark.site.config["_tables_"][key] = number
 
 
-def _collect_titles():
-    """Gather titles of pages."""
-    assert "_number_" in ark.site.config
-
-    def _visitor(node):
-        if node.ext != "md":
-            return
-        if not node.slug:
-            return
-        assert node.slug in ark.site.config["_number_"]
-        ark.site.config["_number_"][node.slug]["title"] = node.meta["title"]
-
-    ark.nodes.root().walk(_visitor)
-
-
 def _copy_files():
     """Copy files from source directories (not recursive)."""
     for pat in ark.site.config["copy"]:
@@ -133,14 +115,14 @@ def _init_date():
     ark.site.config["_timestamp_"] = datetime.utcnow()
 
 
-def _number_contents():
+def _decorate_metadata():
     """Number chapters and appendices."""
-    chapters = {
-        slug: {"kind": util.kind("chapter"), "number": str(i + 1)}
-        for i, slug in enumerate(ark.site.config["chapters"])
-    }
-    appendices = {
-        slug: {"kind": util.kind("appendix"), "number": chr(ord("A") + i)}
-        for i, slug in enumerate(ark.site.config["appendices"])
-    }
-    ark.site.config["_number_"] = chapters | appendices
+    metadata = ark.site.config["_meta_"]
+
+    for i, slug in enumerate(ark.site.config["chapters"]):
+        metadata[slug]["kind"] = util.kind("chapter")
+        metadata[slug]["number"] = str(i + 1)
+
+    for i, slug in enumerate(ark.site.config["appendices"]):
+        metadata[slug]["kind"] = util.kind("appendix")
+        metadata[slug]["number"] = chr(ord("A") + i)

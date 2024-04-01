@@ -35,13 +35,13 @@ def cross_ref(pargs, kwargs, node):
     )
     slug = pargs[0]
     util.require(
-        slug in ark.site.config["_number_"],
+        slug in ark.site.config["_meta_"],
         f"Unknown cross-reference key '{slug}' in {node.path}",
     )
     if kwargs.get("kind", None) == "title":
-        fill = ark.site.config["_number_"][slug]["title"]
+        fill = ark.site.config["_meta_"][slug]["title"]
     else:
-        kind = ark.site.config["_number_"][slug]["kind"]
-        number = ark.site.config["_number_"][slug]["number"]
+        kind = ark.site.config["_meta_"][slug]["kind"]
+        number = ark.site.config["_meta_"][slug]["number"]
         fill = f"{kind}&nbsp;{number}"
     return f'<a href="@root/{slug}/">{fill}</a>'
