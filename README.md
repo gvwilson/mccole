@@ -28,4 +28,14 @@ A template for [Ark][ark]-based tutorials.
     1.  Create `./lib/mccole/extensions/util.py` to hold utilities.
     1.  Add `__pycache__` to `.gitignore` to stop `util.pyc` from being included in Git.
 
+1.  Create glossary.
+    1.  Add `./src/glossary/index.md` with `[% glossary %]` shortcode.
+    1.  Add `[%g ssg "text" %]` to `./src/index.md` as test case.
+    1.  Create `./info/glossary.yml` with [Glosario][glosario]-format glossary.
+    1.  Add `lang="en"` to `./config.py` to specify language.
+    1.  Create `./lib/mccole/extensions/glossary.py` with implementation of `glossary` and `g` shortcodes.
+    1.  Add test case for `g` shortcode to `./src/index.md`.
+    1.  Add `markdownify` function to `./lib/mccole/extensions/util.py` for Markdown conversion.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
+[glosario]: https://glosario.carpentries.org/

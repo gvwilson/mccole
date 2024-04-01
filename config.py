@@ -6,6 +6,7 @@ author = {
     "email": "gvwilson@third-bit.com",
     "site": "https://third-bit.com/",
 }
+lang = "en"
 
 # Theme information.
 theme = "mccole"
