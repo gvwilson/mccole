@@ -3,10 +3,10 @@
 A template for [Ark][ark]-based tutorials.
 
 1.  Set up Python environment:
-    1.  Create `./lib/mccole/`.
-    1.  Create `./lib/mccole/requirements.txt`.
-    1.  Add `ark` and `pymdown-extensions` to `./lib/mccole/requirements.txt`.
-    1.  Create `./requirements.txt` with `-r lib/mccole/requirements.txt`.
+    1.  Create `lib/mccole/`.
+    1.  Create `lib/mccole/requirements.txt`.
+    1.  Add `ark` and `pymdown-extensions` to `lib/mccole/requirements.txt`.
+    1.  Create `requirements.txt` with `-r lib/mccole/requirements.txt`.
     1.  Create conda environment `mccole`.
     1.  Install packages with `pip install -r requirements.txt`.
 
@@ -22,25 +22,32 @@ A template for [Ark][ark]-based tutorials.
     1.  Create `lib/mccole/templates/node.ibis` template with nothing but `{{node.html}}`.
 
 1.  Create license and code of conduct pages:
-    1.  Create `./LICENSE.md` and `./CODE_OF_CONDUCT.md` for GitHub to display.
-    1.  Create `./src/license/index.md` and `./src/conduct/index.md` to generate pages in `./docs`.
-    1.  Define `rootfile` shortcode in `./lib/mccole/extensions/rootfile.py` to include files from the root.
-    1.  Create `./lib/mccole/extensions/util.py` to hold utilities.
+    1.  Create `LICENSE.md` and `CODE_OF_CONDUCT.md` for GitHub to display.
+    1.  Create `src/license/index.md` and `src/conduct/index.md` to generate pages in `docs`.
+    1.  Define `rootfile` shortcode in `lib/mccole/extensions/rootfile.py` to include files from the root.
+    1.  Create `lib/mccole/extensions/util.py` to hold utilities.
     1.  Add `__pycache__` to `.gitignore` to stop `util.pyc` from being included in Git.
 
 1.  Create glossary.
-    1.  Add `./src/glossary/index.md` with `[% glossary %]` shortcode.
-    1.  Add `[%g ssg "text" %]` to `./src/index.md` as test case.
-    1.  Create `./info/glossary.yml` with [Glosario][glosario]-format glossary.
-    1.  Add `lang="en"` to `./config.py` to specify language.
-    1.  Create `./lib/mccole/extensions/glossary.py` with implementation of `glossary` and `g` shortcodes.
-    1.  Add test case for `g` shortcode to `./src/index.md`.
-    1.  Add `markdownify` function to `./lib/mccole/extensions/util.py` for Markdown conversion.
+    1.  Add `src/glossary/index.md` with `[% glossary %]` shortcode.
+    1.  Add `[%g ssg "text" %]` to `src/index.md` as test case.
+    1.  Create `info/glossary.yml` with [Glosario][glosario]-format glossary.
+    1.  Add `lang="en"` to `config.py` to specify language.
+    1.  Create `lib/mccole/extensions/glossary.py` with implementation of `glossary` and `g` shortcodes.
+    1.  Add test case for `g` shortcode to `src/index.md`.
+    1.  Add `markdownify` function to `lib/mccole/extensions/util.py` for Markdown conversion.
 
 1.  Automation.
-    1.  Create `./Makefile` that includes `./lib/mccole/mccole.mk`.
-    1.  Create `./lib/mccole/mccole.mk` with targets to rebuild and check.
-    1.  Add `ruff` to `./lib/mccole/requirements.txt` and install it.
+    1.  Create `Makefile` that includes `lib/mccole/mccole.mk`.
+    1.  Create `lib/mccole/mccole.mk` with targets to rebuild and check.
+    1.  Add `ruff` to `lib/mccole/requirements.txt` and install it.
+
+1.  Styling pages.
+    1.  Create `lib/mccole/resources/mccole.css` with beginnings of (unresponsive) styling.
+    1.  Add HTML layout to `lib/mccole/templates/node.ibis`.
+    1.  Add `head.html` and `foot.html` to `lib/mccole/templates` directory.
+    1.  Add `lib/mccole/resources/logo.svg` for use as favicon.
+    1.  Add `.nojekyll` file to prevent GitHub from re-rendering pages.
 
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

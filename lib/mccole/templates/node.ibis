@@ -1,1 +1,12 @@
-{{node.html}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include "head.html" %}
+  </head>
+  <body>
+    <main>
+      {{ node.html }}
+    </main>
+    {% include "foot.html" %}
+  </body>
+</html>

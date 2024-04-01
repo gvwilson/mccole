@@ -1,0 +1,67 @@
+/* Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap");
+
+/* Definitions */
+:root {
+    /* Colors */
+    --gray-faint: #F0F0F0;
+    --gray-light: #E8E8E8;
+    --gray-dark: #D8D8D8;
+
+    /* Page size */
+    --width-page: 60rem;
+
+    /* Borders */
+    --border-thin: 1px;
+    --border-medium: 2px;
+    --border-heavy: 5px;
+
+    /* Font sizings */
+    --size-code: 90%;
+
+    /* Spacings */
+    --spacing-none: 0px;
+    --spacing-small: 0.25rem;
+    --spacing-medium: 0.5rem;
+    --spacing-large: 1rem;
+}
+
+/* Overall document body */
+body {
+    max-width: var(--width-page);
+}
+
+/* Code fragments */
+code {
+    font-family: "Source Code Pro", monospace;
+    font-size: var(--size-code);
+    background-color: var(--gray-faint);
+}
+
+/* Glossary term definitions */
+dl.glossary dt {
+    font-weight: bold;
+}
+
+/* Page footer */
+footer {
+    border-top: solid var(--gray-light) var(--border-medium);
+    padding-top: var(--spacing-small);
+    text-align: center;
+}
+
+/* Entire page */
+html {
+    font-family: "Atkinson Hyperlegible", sans-serif;
+}
+
+/* Appendix list */
+ol.appendices {
+    list-style-type: upper-latin;
+}
+
+/* Chapter list */
+ol.chapters {
+    list-style-type: decimal;
+}

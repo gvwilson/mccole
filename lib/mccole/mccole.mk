@@ -35,6 +35,7 @@ commands:
 .PHONY: build
 build:
 	ark build
+	@touch ${ROOT}/docs/.nojekyll
 
 ## serve: build site and run server
 .PHONY: serve
