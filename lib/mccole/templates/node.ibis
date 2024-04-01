@@ -6,6 +6,8 @@
   <body>
     <main>
       {% include "title.html" %}
+      {% include "prevnext.html" %}
+      {{ node | keypoints }}
       {{ node.html }}
     </main>
     {% include "foot.html" %}

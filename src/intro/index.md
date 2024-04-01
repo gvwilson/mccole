@@ -1,6 +1,9 @@
 ---
 title: "Introduction"
 tagline: "Where we're going and why."
+syllabus:
+-   "Best way to learn design is through examples."
+-   "All material is available under open licenses, and all royalties go to charity."
 ---
 
 -   Reference to conclusion [%x finale %]

@@ -1,6 +1,10 @@
 ---
 title: "Conclusion"
 tagline: "What we've covered and where you might go next."
+syllabus:
+-   "Well-designed software is easy to build and maintain as well as easy to use."
+-   "We hope this is the start of your journey, not its end."
+-   "Start where you are, use what you have, help who you can."
 ---
 
 -   Reference to introduction [%x intro %]

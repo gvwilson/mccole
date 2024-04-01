@@ -132,3 +132,9 @@ th, td {
     vertical-align: top;
     border: solid var(--border-thin) var(--gray-light);
 }
+
+/* Key points listing at chapter start. */
+ul.keypoints {
+    background-color: var(--gray-light);
+    border: var(--border-medium) var(--gray-dark) solid;
+}
