@@ -37,5 +37,10 @@ A template for [Ark][ark]-based tutorials.
     1.  Add test case for `g` shortcode to `./src/index.md`.
     1.  Add `markdownify` function to `./lib/mccole/extensions/util.py` for Markdown conversion.
 
+1.  Automation.
+    1.  Create `./Makefile` that includes `./lib/mccole/mccole.mk`.
+    1.  Create `./lib/mccole/mccole.mk` with targets to rebuild and check.
+    1.  Add `ruff` to `./lib/mccole/requirements.txt` and install it.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

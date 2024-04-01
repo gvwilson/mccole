@@ -1,2 +1,3 @@
 ark
 pymdown-extensions
+ruff
