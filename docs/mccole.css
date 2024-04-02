@@ -8,6 +8,7 @@
     --gray-faint: #F0F0F0;
     --gray-light: #E8E8E8;
     --gray-dark: #D8D8D8;
+    --color-warning: #800000;
 
     /* Page size */
     --width-page: 60rem;
@@ -109,6 +110,12 @@ ol.toc-appendices {
 /* Chapter list */
 ol.toc-chapters {
     list-style-type: decimal;
+}
+
+/* Note to self */
+p.fixme {
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-warning);
 }
 
 /* Caption on table */

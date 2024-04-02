@@ -59,6 +59,35 @@ style:
 reformat:
 	@ruff format .
 
+## pack: create a release
+.PHONY: pack
+pack:
+	@rm -f mccole.zip
+	zip -r mccole.zip \
+	CODE_OF_CONDUCT.md \
+	LICENSE.md \
+	lib \
+	src/bib \
+	src/colophon \
+	src/conduct \
+	src/glossary \
+	src/license \
+	-x __pycache__
+
+## unpack: make required files after unzipping mccole.zip
+.PHONY: unpack
+unpack:
+	mkdir -p info
+	touch \
+	config.py \
+	Makefile \
+	README.md \
+	requirements.txt \
+	info/bibliography.bib
+	info/glossary.yml \
+	info/links.yml \
+	src/index.md
+
 ## clean: clean up stray files
 .PHONY: clean
 clean:

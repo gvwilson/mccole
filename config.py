@@ -7,6 +7,7 @@ author = {
     "site": "https://third-bit.com/",
 }
 lang = "en"
+slug = "mccole"
 
 chapters = [
     "intro",
@@ -24,6 +25,10 @@ appendices = [
 # What to copy.
 copy = [
     "*.svg",
+]
+
+# Directories to skip
+exclude = [
 ]
 
 # Theme information.

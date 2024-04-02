@@ -102,5 +102,12 @@ A template for [Ark][ark]-based tutorials.
     1.  Move glossary reference test into `src/intro/index.md`.
     1.  Modify `lib/mccole/templates/node.ibis` to show defined terms.
 
+1.  Refactoring.
+    1.  Move larger filters like `termdefs` into files of their own.
+    1.  Add hooks to exclude directories and files.
+    1.  Add `copy` and `exclude` keys to `config.py`.
+    1.  Add `fixme` shortcode for notes.
+    1.  Add target to `lib/mccole/mccole.mk` to build zip file and to check things after unpacking it.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/
