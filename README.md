@@ -94,5 +94,13 @@ A template for [Ark][ark]-based tutorials.
     1.  Add `_append_links` function to `lib/mccole/extensions/batch.py` to append link text to files.
     1.  Add `src/colophon/index.md` to display credits.
 
+1.  Add list of defined terms to pages.
+    1.  Move glossary loading to `lib/mccole/extensions/util.py` and cache.
+    1.  Refactor shortcode collection in `lib/mccole/extensions/batch.py`.
+    1.  Add collection of glossary keys in `lib/mccole/extensions/batch.py`.
+    1.  Add filter `termdefs` in `lib/mccole/extensions/filters.py` to display defined terms.
+    1.  Move glossary reference test into `src/intro/index.md`.
+    1.  Modify `lib/mccole/templates/node.ibis` to show defined terms.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

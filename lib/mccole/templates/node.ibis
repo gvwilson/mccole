@@ -8,6 +8,7 @@
       {% include "title.html" %}
       {% include "prevnext.html" %}
       {{ node | keypoints }}
+      {{ node | termdefs }}
       {{ node.html }}
     </main>
     {% include "foot.html" %}

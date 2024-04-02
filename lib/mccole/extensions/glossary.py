@@ -3,7 +3,6 @@
 import ark
 from pathlib import Path
 import shortcodes
-import yaml
 
 import util
 
@@ -33,7 +32,7 @@ def glossary(pargs, kwargs, node):
         f"Bad 'glossary' in {node.path}: '{pargs}' and '{kwargs}'",
     )
     lang = ark.site.config["lang"]
-    glossary = _load_glossary()
+    glossary = util.load_glossary()
 
     try:
         glossary.sort(key=lambda x: x[lang]["term"].lower())
@@ -51,15 +50,3 @@ def _as_markdown(entry, lang):
     acronym = f" ({entry[lang]['acronym']})" if "acronym" in entry[lang] else ""
     defn = util.markdownify(entry[lang]["def"])
     return f'<dt id="g:{key}">{term}{acronym}</dt><dd>{defn}</dd>'
-
-
-def _load_glossary():
-    """Load the glossary file."""
-    filepath = Path(ark.site.home(), "info", "glossary.yml")
-    glossary = yaml.safe_load(filepath.read_text())
-    if not glossary:
-        return []
-    if isinstance(glossary, dict):
-        return [glossary]
-    assert isinstance(glossary, list)
-    return glossary

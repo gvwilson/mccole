@@ -6,6 +6,8 @@ syllabus:
 -   "All material is available under open licenses, and all royalties go to charity."
 ---
 
+-   Glossary reference: [%g ssg "static site generator text" %]
+-   Bibliography reference [%b Wilson2019 %]
 -   Reference to conclusion [%x finale %]
 -   Reference to license [%x license %]
 -   Reference to figure in same file [%f intro_concept_map %]

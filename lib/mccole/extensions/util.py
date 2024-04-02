@@ -13,6 +13,7 @@ KIND = {
     "en": {
         "appendix": "Appendix",
         "chapter": "Chapter",
+        "defined": "Terms Defined",
         "figure": "Figure",
         "table": "Table",
     },
@@ -59,6 +60,21 @@ def kind(part_name):
         f"Unknown part name {part_name} for language {lang}",
     )
     return KIND[lang][part_name]
+
+
+def load_glossary():
+    """Load the glossary file."""
+    if "_glossary_" not in ark.site.config:
+        filepath = Path(ark.site.home(), "info", "glossary.yml")
+        glossary = yaml.safe_load(filepath.read_text())
+        if not glossary:
+            glossary = []
+        elif isinstance(glossary, dict):
+            glossary = [glossary]
+        else:
+            assert isinstance(glossary, list)
+        ark.site.config["_glossary_"] = glossary
+    return ark.site.config["_glossary_"]
 
 
 def markdownify(text, strip_p=True, with_links=False):

@@ -15,7 +15,7 @@ def init_build():
     _init_date()
     _collect_metadata()
     _decorate_metadata()
-    _collect_targets()
+    _collect_shortcodes()
     _append_links()
 
 
@@ -56,60 +56,81 @@ def _collect_metadata():
     ark.site.config["_meta_"] = metadata
 
 
-def _collect_targets():
-    """Collect targets of numbered cross-references."""
-
-    # Collect data from a figure.
-    def _collect_figures(pargs, kwargs, extra):
-        util.require(
-            "slug" in kwargs,
-            f"Bad 'figure' in {extra['filename']}: '{pargs}' and '{kwargs}'",
-        )
-        extra["figures"].append(kwargs["slug"])
-
-    # Collect data from a table.
-    def _collect_tables(pargs, kwargs, extra):
-        util.require(
-            "slug" in kwargs,
-            f"Bad 'table' in {extra['filename']}: '{pargs}' and '{kwargs}'",
-        )
-        extra["tables"].append(kwargs["slug"])
-
-    # Visit each node, collecting data.
-    def _visitor(node):
-        if (not node.slug) or (node.ext != "md"):
-            return
-
-        collected = {"filename": node.filepath, "figures": [], "tables": []}
-        parser.parse(node.text, collected)
-        if node.slug not in collector:
-            collector[node.slug] = {"figures": {}, "tables": {}}
-        number = ark.site.config["_meta_"][node.slug]["number"]
-        collector[node.slug]["figures"].update(
-            {
-                fig_slug: {"slug": f"{number}.{i + 1}", "node": node.slug}
-                for i, fig_slug in enumerate(collected["figures"])
-            }
-        )
-        collector[node.slug]["tables"].update(
-            {
-                tbl_slug: {"slug": f"{number}.{i + 1}", "node": node.slug}
-                for i, tbl_slug in enumerate(collected["tables"])
-            }
-        )
+def _collect_shortcodes():
+    """Collect information from shortcodes."""
 
     parser = shortcodes.Parser(inherit_globals=False, ignore_unknown=True)
-    parser.register(_collect_figures, "figure")
-    parser.register(_collect_tables, "table")
+    parser.register(_collect_shortcodes_figures, "figure")
+    parser.register(_collect_shortcodes_tables, "table")
+    parser.register(_collect_shortcodes_terms, "g")
+
     collector = {}
-    ark.nodes.root().walk(_visitor)
+    ark.nodes.root().walk(
+        lambda node: _collect_shortcodes_visitor(node, parser, collector)
+    )
+
     ark.site.config["_figures_"] = {}
     ark.site.config["_tables_"] = {}
+    ark.site.config["_terms_"] = {}
     for slug, seen in collector.items():
+        ark.site.config["_terms_"][slug] = set(seen["terms"])
         for key, number in seen["figures"].items():
             ark.site.config["_figures_"][key] = number
         for key, number in seen["tables"].items():
             ark.site.config["_tables_"][key] = number
+
+
+def _collect_shortcodes_figures(pargs, kwargs, extra):
+    """Collect data from a figure shortcode."""
+    util.require(
+        "slug" in kwargs,
+        f"Bad 'figure' in {extra['filename']}: '{pargs}' and '{kwargs}'",
+    )
+    extra["figures"].append(kwargs["slug"])
+
+
+def _collect_shortcodes_terms(pargs, kwargs, extra):
+    """Collect data from a glossary reference shortcode."""
+    util.require(
+        len(pargs) == 2,
+        f"Bad 'g' in {extra['filename']}: '{pargs}' and '{kwargs}'",
+    )
+    extra["terms"].append(pargs[0])
+
+
+# Visit each node, collecting data.
+def _collect_shortcodes_visitor(node, parser, collector):
+    if (not node.slug) or (node.ext != "md"):
+        return
+
+    found = {
+        "filename": node.filepath,
+        "terms": [],
+        "figures": [],
+        "tables": [],
+    }
+    parser.parse(node.text, found)
+    number = ark.site.config["_meta_"][node.slug]["number"]
+    collector[node.slug] = {
+        "figures": {
+            fig_slug: {"slug": f"{number}.{i + 1}", "node": node.slug}
+            for i, fig_slug in enumerate(found["figures"])
+        },
+        "tables": {
+            tbl_slug: {"slug": f"{number}.{i + 1}", "node": node.slug}
+            for i, tbl_slug in enumerate(found["tables"])
+        },
+        "terms": found["terms"],
+    }
+
+
+def _collect_shortcodes_tables(pargs, kwargs, extra):
+    """Collect data from a table shortcode."""
+    util.require(
+        "slug" in kwargs,
+        f"Bad 'table' in {extra['filename']}: '{pargs}' and '{kwargs}'",
+    )
+    extra["tables"].append(kwargs["slug"])
 
 
 def _copy_files():
