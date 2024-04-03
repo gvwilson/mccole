@@ -13,7 +13,7 @@ KIND = {
     "en": {
         "appendix": "Appendix",
         "chapter": "Chapter",
-        "defined": "Terms Defined",
+        "defined": "Terms defined",
         "figure": "Figure",
         "table": "Table",
     },

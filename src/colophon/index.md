@@ -13,5 +13,10 @@ title: Colophon
 
 -   The site is built using [Ark][ark] and hosted on [GitHub Pages][ghp].
 
--   Traffic statistics are collected using [plausible.io][plausible],
+-   Traffic statistics are collected using [Plausible][plausible],
     which provides a lightweight ethical alternative to surveillance capitalism.
+
+-   The colors in this theme
+    are lightened versions of those used in [classic Canadian postage stamps][stamps].
+    The art in the title is by [Danielle Navarro][navarro_danielle]
+    and used with her gracious permission.

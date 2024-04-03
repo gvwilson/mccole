@@ -70,22 +70,27 @@ pack:
 	src/bib \
 	src/colophon \
 	src/conduct \
+	src/contrib \
 	src/glossary \
 	src/license \
-	-x __pycache__
+	-x '**/__pycache__/*' -x '*~'
 
 ## unpack: make required files after unzipping mccole.zip
 .PHONY: unpack
 unpack:
-	mkdir -p info
+	mkdir -p info src
 	touch \
 	config.py \
 	Makefile \
+	CODE_OF_CONDUCT.md \
+	CONTRIBUTING.md \
+	LICENSE.md \
 	README.md \
 	requirements.txt \
-	info/bibliography.bib
+	info/bibliography.bib \
 	info/glossary.yml \
 	info/links.yml \
+	info/thanks.yml \
 	src/index.md
 
 ## clean: clean up stray files

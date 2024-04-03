@@ -109,5 +109,11 @@ A template for [Ark][ark]-based tutorials.
     1.  Add `fixme` shortcode for notes.
     1.  Add target to `lib/mccole/mccole.mk` to build zip file and to check things after unpacking it.
 
+1.  Adding features after trying it out.
+    1.  Add contributors' guide in `CONTRIBUTING.md` and page in `src/contrib/index.md`.
+    1.  Add MathJax to `lib/mccole/templates/head.html`.
+    1.  Add link to home page to `lib/mccole/templates/foot.html`.
+    1.  Add colored sidebars to `lib/mccole/resources/mccole.css`.
+    1.  Add stamp colors and Danielle Navarro to colophon.
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

@@ -17,6 +17,7 @@ chapters = [
 appendices = [
     "license",
     "conduct",
+    "contrib",
     "bib",
     "glossary",
     "colophon",

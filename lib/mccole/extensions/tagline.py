@@ -17,4 +17,5 @@ def tagline(node):
         node.slug in metadata,
         f"no metadata for {node.path}",
     )
-    return util.markdownify(metadata[node.slug].get("tagline"))
+    tagline = metadata[node.slug].get("tagline")
+    return util.markdownify(tagline) if tagline else ""
