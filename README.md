@@ -115,5 +115,10 @@ A template for [Ark][ark]-based tutorials.
     1.  Add link to home page to `lib/mccole/templates/foot.html`.
     1.  Add colored sidebars to `lib/mccole/resources/mccole.css`.
     1.  Add stamp colors and Danielle Navarro to colophon.
+
+1.  Adding thanks.
+    1.  Add `lib/mccole/extensions/thanks.py` to read and format `info/thanks.yml`.
+    1.  Add usage to `src/intro/index.md` to test.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

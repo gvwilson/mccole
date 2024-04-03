@@ -14,3 +14,7 @@ syllabus:
 -   Reference to table in another file [%t finale_table %]
 
 [% figure slug="intro_concept_map" img="concept_map.svg" alt="alt text" caption="caption text" %]
+
+Thanks to:
+
+[% thanks %]
