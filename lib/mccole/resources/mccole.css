@@ -97,7 +97,6 @@ div.code-sample code {
 
 /* Output fragments */
 div.language-out {
-    font-style: italic;
     border-left: solid var(--border-heavy) var(--stamp-red-light);
     border-top: solid var(--border-thin) var(--stamp-red-light);
     border-bottom: solid var(--border-thin) var(--stamp-red-light);
@@ -130,7 +129,6 @@ div.language-sql {
 
 /* Transcript fragments */
 div.language-text {
-    font-style: italic;
     border-left: solid var(--border-heavy) var(--stamp-purple-light);
     border-top: solid var(--border-thin) var(--stamp-purple-light);
     border-bottom: solid var(--border-thin) var(--stamp-purple-light);
