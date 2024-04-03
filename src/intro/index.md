@@ -12,6 +12,7 @@ syllabus:
 -   Reference to license [%x license %]
 -   Reference to figure in same file [%f intro_concept_map %]
 -   Reference to table in another file [%t finale_table %]
+-   Index entry [%i index_key_1 "first index reference" %] and [%i index_key_2 "second index reference" url=draw_io %]
 
 [% figure slug="intro_concept_map" img="concept_map.svg" alt="alt text" caption="caption text" %]
 

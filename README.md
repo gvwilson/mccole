@@ -120,5 +120,11 @@ A template for [Ark][ark]-based tutorials.
     1.  Add `lib/mccole/extensions/thanks.py` to read and format `info/thanks.yml`.
     1.  Add usage to `src/intro/index.md` to test.
 
+1.  Adding index.
+    1.  Add `lib/mccole/extensions/index.py` to format index and index references.
+    1.  Modify `lib/mccole/extensions/batch.py` to collect index references.
+    1.  Add `src/contents/index.md` to display index (using `contents` instead of `index` to avoid confusion).
+    1.  Modify `lib/mccole/mccole.mk` to include `src/contents/index.md` in zip file.
+
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/

@@ -194,6 +194,10 @@ p.table-caption {
     text-align: center;
 }
 
+/* Index entry */
+span.ix-entry {
+}
+
 /* Tables */
 table {
     border-collapse: collapse;

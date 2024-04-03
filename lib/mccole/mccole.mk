@@ -71,6 +71,7 @@ pack:
 	src/bib \
 	src/colophon \
 	src/conduct \
+	src/contents \
 	src/contrib \
 	src/glossary \
 	src/license \
