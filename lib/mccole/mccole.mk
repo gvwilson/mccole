@@ -66,6 +66,7 @@ pack:
 	zip -r mccole.zip \
 	CODE_OF_CONDUCT.md \
 	LICENSE.md \
+	docs/.nojekyll \
 	lib \
 	src/bib \
 	src/colophon \
