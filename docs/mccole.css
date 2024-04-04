@@ -77,6 +77,11 @@
     text-align: center;
 }
 
+/* Undecorated navigation link */
+a.undecorated {
+    text-decoration: none;
+}
+
 /* Overall document body */
 body {
     font-size: var(--size-body);
@@ -176,6 +181,8 @@ footer {
 /* Level-1 heading */
 h1 {
     text-align: center;
+    margin-top: var(--border-heavy);
+    margin-bottom: var(--border-heavy);
 }
 
 /* Entire page */
@@ -204,6 +211,8 @@ p.subtitle {
     text-align: center;
     font-size: var(--size-subtitle);
     font-style: italic;
+    margin-top: var(--border-heavy);
+    margin-bottom: var(--border-heavy);
 }
 
 /* Caption on table */
