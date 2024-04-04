@@ -7,6 +7,7 @@ author = {
     "site": "https://third-bit.com/",
 }
 lang = "en"
+highlight = "tango.css"
 slug = "mccole"
 
 chapters = [

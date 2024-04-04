@@ -14,6 +14,8 @@ syllabus:
 -   Reference to table in another file [%t finale_table %]
 -   Index entry [%i index_key_1 "first index reference" %] and [%i index_key_2 "second index reference" url=draw_io %]
 
+[%inc first.py %]
+
 [% figure slug="intro_concept_map" img="concept_map.svg" alt="alt text" caption="caption text" %]
 
 Thanks to:
