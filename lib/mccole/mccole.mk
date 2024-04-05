@@ -54,8 +54,14 @@ ${TMP_BIB}: ${INFO_BIB}
 lint:
 	@python ${THEME_BIN}/lint.py \
 	--dom ${ROOT}/lib/mccole/dom.yml \
-	--pages ${SRC_PAGES} \
+	--html ${DOCS_PAGES} \
 	--root ${ROOT}
+	@html5validator --root ${ROOT}/docs ${DOCS_PAGES} \
+	--ignore \
+	'Attribute "ix-key" not allowed on element "span"' \
+	'Attribute "ix-ref" not allowed on element "a"' \
+	'Attribute "markdown" not allowed on element "a"' \
+	'Attribute "markdown" not allowed on element "span"'
 
 ## style: check Python code style
 .PHONY: style

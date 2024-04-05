@@ -2,6 +2,7 @@
 
 import argparse
 import ark
+from bs4 import BeautifulSoup, Tag
 import importlib.util
 from pathlib import Path
 import re
@@ -18,7 +19,7 @@ UNIQUE_KEYS = {
 def main():
     options = parse_args()
     options.config = load_config(options)
-    found = collect_actual(options)
+    found = collect_all()
     for func in [
         check_bib,
         check_fig,
@@ -57,8 +58,8 @@ def check_xref(options, found):
     compare_keys("cross-ref", expected, found["xref"], unused=False)
 
 
-def collect_actual(options):
-    """Collect values from files."""
+def collect_all():
+    """Collect values from Markdown files."""
     parser = shortcodes.Parser(inherit_globals=False, ignore_unknown=True)
     parser.register(collect_bib, "b")
     parser.register(collect_fig_def, "figure")
@@ -185,7 +186,7 @@ def parse_args():
     """Parse arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--dom", required=True, help="DOM specification file")
-    parser.add_argument("--pages", nargs="+", default=[], help="pages")
+    parser.add_argument("--html", nargs="+", default=[], help="HTML pages")
     parser.add_argument("--root", required=True, help="Root directory")
     return parser.parse_args()
 
