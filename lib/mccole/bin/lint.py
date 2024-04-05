@@ -15,6 +15,7 @@ def main():
         check_bib,
         check_fig,
         check_gloss,
+        check_tbl,
     ]:
         func(options, found)
 
@@ -47,6 +48,11 @@ def check_keys(kind, expected, actual):
         print(f"unused {kind} keys {listify(expected)}")
 
 
+def check_tbl(options, found):
+    """Check table definitions and citations."""
+    check_keys("table", set(found["tbl_def"].keys()), found["tbl_ref"])
+
+
 def collect_actual(options):
     """Collect values from files."""
     parser = shortcodes.Parser(inherit_globals=False, ignore_unknown=True)
@@ -54,11 +60,15 @@ def collect_actual(options):
     parser.register(collect_fig_def, "figure")
     parser.register(collect_fig_ref, "f")
     parser.register(collect_gloss, "g")
+    parser.register(collect_tbl_def, "table")
+    parser.register(collect_tbl_ref, "t")
     collected = {
         "bib": {},
         "fig_def": {},
         "fig_ref": {},
         "gloss": {},
+        "tbl_def": {},
+        "tbl_ref": {},
     }
     ark.nodes.root().walk(
         lambda node: collect_visitor(node, parser, collected)
@@ -90,6 +100,20 @@ def collect_gloss(pargs, kwargs, found):
     found["gloss"].add(pargs[0])
 
 
+def collect_tbl_def(pargs, kwargs, found):
+    """Collect data from a table definition shortcode."""
+    slug = kwargs["slug"]
+    if slug in found["tbl_def"]:
+        print("Duplicate definition of table slug {slug}")
+    else:
+        found["tbl_def"].add(slug)
+
+
+def collect_tbl_ref(pargs, kwargs, found):
+    """Collect data from a table reference shortcode."""
+    found["tbl_ref"].add(pargs[0])
+
+
 def collect_visitor(node, parser, collected):
     """Visit each node, collecting data."""
     found = {
@@ -97,6 +121,8 @@ def collect_visitor(node, parser, collected):
         "fig_def": set(),
         "fig_ref": set(),
         "gloss": set(),
+        "tbl_def": set(),
+        "tbl_ref": set(),
     }
     parser.parse(node.text, found)
     for kind in found:
