@@ -2,6 +2,7 @@
 
 import argparse
 import ark
+import importlib.util
 from pathlib import Path
 import re
 import shortcodes
@@ -10,12 +11,14 @@ import yaml
 
 def main():
     options = parse_args()
+    options.config = load_config(options)
     found = collect_actual(options)
     for func in [
         check_bib,
         check_fig,
         check_gloss,
         check_tbl,
+        check_xref,
     ]:
         func(options, found)
 
@@ -23,34 +26,29 @@ def main():
 def check_bib(options, found):
     """Check bibliography citations."""
     expected = get_bib_keys(options)
-    check_keys("bibliography", expected, found["bib"])
+    compare_keys("bibliography", expected, found["bib"])
 
 
 def check_fig(options, found):
     """Check figure definitions and citations."""
-    check_keys("figure", set(found["fig_def"].keys()), found["fig_ref"])
+    compare_keys("figure", set(found["fig_def"].keys()), found["fig_ref"])
 
 
 def check_gloss(options, found):
     """Check glossary citations."""
     expected = get_gloss_keys(options)
-    check_keys("gloss", expected, found["gloss"])
-
-
-def check_keys(kind, expected, actual):
-    """Check two sets of keys."""
-    for key, slugs in actual.items():
-        if key not in expected:
-            print(f"unknown {kind} key {key} used in {listify(slugs)}")
-        else:
-            expected.remove(key)
-    if expected:
-        print(f"unused {kind} keys {listify(expected)}")
+    compare_keys("gloss", expected, found["gloss"])
 
 
 def check_tbl(options, found):
     """Check table definitions and citations."""
-    check_keys("table", set(found["tbl_def"].keys()), found["tbl_ref"])
+    compare_keys("table", set(found["tbl_def"].keys()), found["tbl_ref"])
+
+
+def check_xref(options, found):
+    """Check chapter/appendix cross-references."""
+    expected = options.config.chapters + options.config.appendices
+    compare_keys("cross-ref", expected, found["xref"], unused=False)
 
 
 def collect_actual(options):
@@ -62,6 +60,7 @@ def collect_actual(options):
     parser.register(collect_gloss, "g")
     parser.register(collect_tbl_def, "table")
     parser.register(collect_tbl_ref, "t")
+    parser.register(collect_xref, "x")
     collected = {
         "bib": {},
         "fig_def": {},
@@ -69,6 +68,7 @@ def collect_actual(options):
         "gloss": {},
         "tbl_def": {},
         "tbl_ref": {},
+        "xref": {},
     }
     ark.nodes.root().walk(
         lambda node: collect_visitor(node, parser, collected)
@@ -114,6 +114,11 @@ def collect_tbl_ref(pargs, kwargs, found):
     found["tbl_ref"].add(pargs[0])
 
 
+def collect_xref(pargs, kwargs, found):
+    """Collect data from a cross-reference shortcode."""
+    found["xref"].add(pargs[0])
+
+
 def collect_visitor(node, parser, collected):
     """Visit each node, collecting data."""
     found = {
@@ -123,10 +128,22 @@ def collect_visitor(node, parser, collected):
         "gloss": set(),
         "tbl_def": set(),
         "tbl_ref": set(),
+        "xref": set(),
     }
     parser.parse(node.text, found)
     for kind in found:
         reorganize_found(node, kind, collected, found)
+
+
+def compare_keys(kind, expected, actual, unused=True):
+    """Check two sets of keys."""
+    for key, slugs in actual.items():
+        if key not in expected:
+            print(f"unknown {kind} key {key} used in {listify(slugs)}")
+        else:
+            expected.remove(key)
+    if unused and expected:
+        print(f"unused {kind} keys {listify(expected)}")
 
 
 def get_bib_keys(options):
@@ -149,6 +166,15 @@ def listify(values):
     return ", ".join(sorted(list(values)))
 
 
+def load_config(options):
+    """Load configuration file as module."""
+    filename = Path(options.root, "config.py")
+    spec = importlib.util.spec_from_file_location("config", filename)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def parse_args():
     """Parse arguments."""
     parser = argparse.ArgumentParser()
@@ -163,7 +189,7 @@ def reorganize_found(node, kind, collected, found):
     for key in found[kind]:
         if key not in collected[kind]:
             collected[kind][key] = set()
-        collected[kind][key].add(node.slug)
+        collected[kind][key].add(node.slug if node.slug else "@root")
 
 
 if __name__ == "__main__":
