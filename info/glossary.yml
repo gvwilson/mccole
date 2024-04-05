@@ -1,8 +1,12 @@
-# S
-
 - key: ssg
   en:
     term: "static site generator"
     acronym: "SSG"
     def: >
-      An application that generates HTML pages from templates.
+      An application that generates HTML pages from [templates](#template).
+
+- key: template
+  en:
+    term: "template"
+    def: >
+      Some explanation.

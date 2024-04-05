@@ -3,6 +3,7 @@
 import argparse
 import ark
 from bs4 import BeautifulSoup, Tag
+from collections import Counter
 import importlib.util
 from pathlib import Path
 import re
@@ -20,17 +21,18 @@ def main():
     options = parse_args()
     options.config = load_config(options)
 
+    check_colophon(options)
+    gloss_internal_keys = check_gloss_internal(options)
+
     found = collect_all()
+    check_gloss(options, found, gloss_internal_keys)
     for func in [
         check_bib,
         check_fig,
-        check_gloss,
         check_tbl,
         check_xref,
     ]:
         func(options, found)
-
-    check_colophon(options)
 
 
 def check_bib(options, found):
@@ -55,10 +57,28 @@ def check_fig(options, found):
     compare_keys("figure", set(found["fig_def"].keys()), found["fig_ref"])
 
 
-def check_gloss(options, found):
+def check_gloss(options, found, internal):
     """Check glossary citations."""
     expected = get_gloss_keys(options)
-    compare_keys("gloss", expected, found["gloss"])
+    compare_keys("gloss", expected, found["gloss"], extra=internal)
+
+
+def check_gloss_internal(options):
+    """Check internal references in glossary."""
+    text = Path(options.root, "info", "glossary.yml").read_text()
+
+    glossary = yaml.safe_load(text) or []
+    actual = Counter([e["key"] for e in glossary])
+    duplicates = {k for k, v in actual.items() if v > 1}
+    if duplicates:
+        print(f"duplicate glossary key(s) {listify(duplicates)}")
+
+    internal = set(re.findall(r'\[.+?\]\(#(.+?)\)', text))
+    unknown = internal - {e["key"] for e in glossary}
+    if unknown:
+        print(f"unknown internal glossary key(s) {listify(unknown)}")
+
+    return internal
 
 
 def check_tbl(options, found):
@@ -156,13 +176,15 @@ def collect_visitor(node, parser, collected):
         reorganize_found(node, kind, collected, found)
 
 
-def compare_keys(kind, expected, actual, unused=True):
+def compare_keys(kind, expected, actual, extra=None, unused=True):
     """Check two sets of keys."""
     for key, slugs in actual.items():
         if key not in expected:
             print(f"unknown {kind} key {key} used in {listify(slugs)}")
         else:
             expected.remove(key)
+    if extra:
+        expected -= extra
     if unused and expected:
         print(f"unused {kind} keys {listify(expected)}")
 
