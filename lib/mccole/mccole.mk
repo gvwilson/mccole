@@ -49,6 +49,14 @@ ${TMP_BIB}: ${INFO_BIB}
 	@mkdir -p ${ROOT}/tmp
 	python ${THEME_BIN}/make_bibliography.py --infile $< --outfile $@
 
+## lint: check project
+.PHONY: lint
+lint:
+	@python ${THEME_BIN}/lint.py \
+	--dom ${ROOT}/lib/mccole/dom.yml \
+	--pages ${SRC_PAGES} \
+	--root ${ROOT}
+
 ## style: check Python code style
 .PHONY: style
 style:
