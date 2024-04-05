@@ -19,6 +19,7 @@ UNIQUE_KEYS = {
 def main():
     options = parse_args()
     options.config = load_config(options)
+
     found = collect_all()
     for func in [
         check_bib,
@@ -29,11 +30,24 @@ def main():
     ]:
         func(options, found)
 
+    check_colophon(options)
+
 
 def check_bib(options, found):
     """Check bibliography citations."""
     expected = get_bib_keys(options)
     compare_keys("bibliography", expected, found["bib"])
+
+
+def check_colophon(options):
+    """Check all colophon links are present."""
+    actual = yaml.safe_load(Path(options.root, "info", "links.yml").read_text()) or []
+    actual_keys = set([e["key"] for e in actual])
+    expected = yaml.safe_load(Path(options.root, "lib", "mccole", "colophon.yml").read_text())
+    expected_keys = set([e["key"] for e in expected])
+    missing = expected_keys - actual_keys
+    if missing:
+        print(f"Missing colophon link keys: {listify(missing)}")
 
 
 def check_fig(options, found):
