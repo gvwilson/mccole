@@ -8,6 +8,12 @@ import re
 import shortcodes
 import yaml
 
+UNIQUE_KEYS = {
+    "fig_def",
+    "gloss",
+    "tbl_def",
+}
+
 
 def main():
     options = parse_args()
@@ -85,7 +91,7 @@ def collect_fig_def(pargs, kwargs, found):
     """Collect data from a figure definition shortcode."""
     slug = kwargs["slug"]
     if slug in found["fig_def"]:
-        print("Duplicate definition of figure slug {slug}")
+        print(f"Duplicate definition of figure slug {slug}")
     else:
         found["fig_def"].add(slug)
 
@@ -189,7 +195,10 @@ def reorganize_found(node, kind, collected, found):
     for key in found[kind]:
         if key not in collected[kind]:
             collected[kind][key] = set()
-        collected[kind][key].add(node.slug if node.slug else "@root")
+        elif kind in UNIQUE_KEYS:
+            print(f"{kind} key {key} redefined")
+        slug = node.slug if node.slug else "@root"
+        collected[kind][key].add(slug)
 
 
 if __name__ == "__main__":
