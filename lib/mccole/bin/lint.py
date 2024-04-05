@@ -2,7 +2,6 @@
 
 import argparse
 import ark
-from bs4 import BeautifulSoup, Tag
 from pathlib import Path
 import re
 import shortcodes
@@ -13,22 +12,28 @@ def main():
     options = parse_args()
     found = collect_actual(options)
     for func in [
-        bib_check,
-        glossary_check,
+        check_bib,
+        check_fig,
+        check_gloss,
     ]:
         func(options, found)
 
 
-def bib_check(options, found):
+def check_bib(options, found):
     """Check bibliography citations."""
-    expected = bib_get_keys(options)
+    expected = get_bib_keys(options)
     check_keys("bibliography", expected, found["bib"])
 
 
-def bib_get_keys(options):
-    """Get actual bibliography keys."""
-    text = Path(options.root, "info", "bibliography.bib").read_text()
-    return set(re.findall(r"^@.+?\{(.+?),$", text, re.MULTILINE))
+def check_fig(options, found):
+    """Check figure definitions and citations."""
+    check_keys("figure", set(found["fig_def"].keys()), found["fig_ref"])
+
+
+def check_gloss(options, found):
+    """Check glossary citations."""
+    expected = get_gloss_keys(options)
+    check_keys("gloss", expected, found["gloss"])
 
 
 def check_keys(kind, expected, actual):
@@ -46,10 +51,14 @@ def collect_actual(options):
     """Collect values from files."""
     parser = shortcodes.Parser(inherit_globals=False, ignore_unknown=True)
     parser.register(collect_bib, "b")
-    parser.register(collect_glossary, "g")
+    parser.register(collect_fig_def, "figure")
+    parser.register(collect_fig_ref, "f")
+    parser.register(collect_gloss, "g")
     collected = {
         "bib": {},
-        "glossary": {},
+        "fig_def": {},
+        "fig_ref": {},
+        "gloss": {},
     }
     ark.nodes.root().walk(
         lambda node: collect_visitor(node, parser, collected)
@@ -62,43 +71,51 @@ def collect_bib(pargs, kwargs, found):
     found["bib"].update(pargs)
 
 
-def collect_glossary(pargs, kwargs, found):
+def collect_fig_def(pargs, kwargs, found):
+    """Collect data from a figure definition shortcode."""
+    slug = kwargs["slug"]
+    if slug in found["fig_def"]:
+        print("Duplicate definition of figure slug {slug}")
+    else:
+        found["fig_def"].add(slug)
+
+
+def collect_fig_ref(pargs, kwargs, found):
+    """Collect data from a figure reference shortcode."""
+    found["fig_ref"].add(pargs[0])
+
+
+def collect_gloss(pargs, kwargs, found):
     """Collect data from a glossary reference shortcode."""
-    found["glossary"].add(pargs[0])
+    found["gloss"].add(pargs[0])
 
 
 def collect_visitor(node, parser, collected):
     """Visit each node, collecting data."""
     found = {
         "bib": set(),
-        "glossary": set(),
+        "fig_def": set(),
+        "fig_ref": set(),
+        "gloss": set(),
     }
     parser.parse(node.text, found)
-    for kind in ("bib", "glossary"):
+    for kind in found:
         reorganize_found(node, kind, collected, found)
 
 
-def reorganize_found(node, kind, collected, found):
-    """Copy found keys into overall collection."""
-    for key in found[kind]:
-        if key not in collected[kind]:
-            collected[kind][key] = set()
-        collected[kind][key].add(node.slug)
+def get_bib_keys(options):
+    """Get actual bibliography keys."""
+    text = Path(options.root, "info", "bibliography.bib").read_text()
+    return set(re.findall(r"^@.+?\{(.+?),$", text, re.MULTILINE))
 
 
-def glossary_get_keys(options):
+def get_gloss_keys(options):
     """Get actual glossary keys."""
     text = Path(options.root, "info", "glossary.yml").read_text()
     glossary = yaml.safe_load(text) or []
     if isinstance(glossary, dict):
         glossary = [glossary]
     return {entry["key"] for entry in glossary}
-
-
-def glossary_check(options, found):
-    """Check glossary citations."""
-    expected = glossary_get_keys(options)
-    check_keys("glossary", expected, found["glossary"])
 
 
 def listify(values):
@@ -113,6 +130,14 @@ def parse_args():
     parser.add_argument("--pages", nargs="+", default=[], help="pages")
     parser.add_argument("--root", required=True, help="Root directory")
     return parser.parse_args()
+
+
+def reorganize_found(node, kind, collected, found):
+    """Copy found keys into overall collection."""
+    for key in found[kind]:
+        if key not in collected[kind]:
+            collected[kind][key] = set()
+        collected[kind][key].add(node.slug)
 
 
 if __name__ == "__main__":
