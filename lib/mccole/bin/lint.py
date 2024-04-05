@@ -17,6 +17,12 @@ UNIQUE_KEYS = {
 }
 
 
+@ark.filters.register(ark.filters.Filter.LOAD_NODE_FILE)
+def keep_file(value, path):
+    """Only process .md Markdown files."""
+    return path.suffix == ".md"
+
+
 def main():
     options = parse_args()
     options.config = load_config(options)
@@ -162,6 +168,9 @@ def collect_xref(pargs, kwargs, found):
 
 def collect_visitor(node, parser, collected):
     """Visit each node, collecting data."""
+    if node.ext != "md":
+        return
+
     found = {
         "bib": set(),
         "fig_def": set(),
