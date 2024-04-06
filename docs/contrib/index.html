@@ -51,8 +51,64 @@
       
       
       <p>Contributions are very welcome.
-Please file issues or submit pull requests in our GitHub repository.
+Please file issues or submit pull requests in <a href="https://github.com/gvwilson/mccole/">our GitHub repository</a>.
 All contributors will be acknowledged.</p>
+<h2>In Brief</h2>
+<ul>
+<li>
+<p>Use <code>pip install -r requirements.txt</code>
+    to install the packages required by the helper tools and Python examples.
+    You may wish to create a new virtual environment before doing so.
+    All code has been tested with Python 3.12.1.</p>
+</li>
+<li>
+<p>Content lives in the <code>.md</code> files under the <code>src</code> directory
+    and is translated into a static website using <a href="https://www.dmulholl.com/docs/ark/main/">Ark</a>.
+    Each page must be in its own sub-directory except for <code>src/index.md</code>,
+    which becomes the site&rsquo;s home page.</p>
+</li>
+<li>
+<p><code>Makefile</code> references <code>lib/mccole/mccole.mk</code>;
+    typing <code>make</code> by itself on the command line will list available targets.</p>
+</li>
+<li>
+<p>All external links are written using <code>[box][notation]</code> inline
+    and defined in <code>info/tutorial.yml</code>.</p>
+</li>
+<li>
+<p>Use <code>[%x slug %]</code> to create a cross-reference to a chapter or appendix,
+    where the slug is the name of a sub-directory under <code>src</code>.</p>
+</li>
+<li>
+<p>Use <code>[%g key "text" %]</code> to link to glossary entries.
+    The text is inserted and highlighted;
+    the key must identify an entry in <code>info/glossary.yml</code>,
+    which is in <a href="https://glosario.carpentries.org/">Glosario</a> format.</p>
+</li>
+<li>
+<p>Use <code>[%b key1 key2 %]</code> to cite bibliography entries,
+    which are stored in BibTeX format in <code>info/bibliography.bib</code>.</p>
+</li>
+<li>
+<p>Use <code>[%inc filename %]</code> to include a text file containing code or sample output
+    in a Markdown file.</p>
+</li>
+<li>
+<p>Use <code>[%figure slug="some_slug" img="some_file.ext" caption="the caption" alt="alt text" %]</code>
+    to create a figure and <code>[%f some_slug %]</code> to refer to it.</p>
+</li>
+<li>
+<p>Use <code>[%table slug="some_slug" tbl="some_file.tbl" caption="the caption" %]</code>
+    to create a table and <code>[%g some_slug %]</code> to refer to it.</p>
+</li>
+<li>
+<p>SVG diagrams can be edited using <a href="https://www.drawio.com/">draw.io</a>.
+    Please use 14-point Helvetica for text,
+    solid 1-point black lines,
+    and unfilled objects.</p>
+</li>
+</ul>
+<h2>FAQ</h2>
     </main>
     <footer>
   © 2024 <a href="https://third-bit.com/">Greg Wilson</a>
