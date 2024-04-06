@@ -30,9 +30,8 @@ copy = [
     "*.svg",
 ]
 
-# Directories to skip
-exclude = [
-]
+# Files and directories to skip.
+exclude = {}
 
 # Theme information.
 theme = "mccole"
