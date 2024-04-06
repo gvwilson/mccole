@@ -65,7 +65,7 @@
 <li>Index entry <span class="ix-entry" ix-key="index_key_1" markdown="1">first index reference</span> and <span class="ix-entry" ix-key="index_key_2" markdown="1"><a href="https://www.drawio.com/">second index reference</a></span></li>
 </ul>
 <h2>Python and Output</h2>
-<div class="language-py" title="first.py">
+<div class="language-py" title="python.py">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
@@ -77,7 +77,7 @@
     <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 </div>
-<div class="language-out" title="first.out">
+<div class="language-out" title="output.out">
 <div class="highlight"><pre><span></span><code>alpha
 beta
 gamma
@@ -87,7 +87,7 @@ gamma
 <ul>
 <li>SQL</li>
 </ul>
-<div class="language-sql" title="second.sql">
+<div class="language-sql" title="sql.sql">
 <div class="highlight"><pre><span></span><code><span class="k">select</span><span class="w"> </span><span class="k">left</span><span class="p">,</span><span class="w"> </span><span class="k">right</span>
 <span class="k">from</span><span class="w"> </span><span class="n">some_table</span>
 <span class="k">where</span><span class="w"> </span><span class="k">left</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="k">right</span><span class="p">;</span>
@@ -96,18 +96,46 @@ gamma
 <ul>
 <li>Shell</li>
 </ul>
-<div class="language-sh" title="fourth.sh">
+<div class="language-sh" title="shell.sh">
 <div class="highlight"><pre><span></span><code>bash<span class="w"> </span>some_script.sh
 </code></pre></div>
 </div>
 <ul>
 <li>Text</li>
 </ul>
-<div class="language-text" title="third.text">
+<div class="language-text" title="text.text">
 <div class="highlight"><pre><span></span><code>$ cmd a b c
 a 1
 b 2
 c 3
+</code></pre></div>
+</div>
+<h2>Data</h2>
+<div class="language-csv" title="csv.csv">
+<div class="highlight"><pre><span></span><code>left,middle,right
+1,2,3
+&quot;four&quot;,&quot;five&quot;,&quot;six&quot;
+</code></pre></div>
+</div>
+<div class="language-json" title="json.json">
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;first_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;first_value&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;second_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="language-toml" title="toml.toml">
+<div class="highlight"><pre><span></span><code><span class="k">[title]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;name&quot;</span>
+<span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;description&quot;</span>
+</code></pre></div>
+</div>
+<div class="language-yml" title="yaml.yml">
+<div class="highlight"><pre><span></span><code>- first_key: first_value
+- second_key:
+  - 3
+  - 5
+  - 7
 </code></pre></div>
 </div>
 <h2>Image and Thanks</h2>

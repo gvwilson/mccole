@@ -16,22 +16,29 @@ syllabus:
 
 ## Python and Output
 
-[%inc first.py %]
-[%inc first.out %]
+[%inc python.py %]
+[%inc output.out %]
 
 ## Others
 
 - SQL
 
-[%inc second.sql %]
+[%inc sql.sql %]
 
 - Shell
 
-[%inc fourth.sh %]
+[%inc shell.sh %]
 
 - Text
 
-[%inc third.text %]
+[%inc text.text %]
+
+## Data
+
+[%inc csv.csv %]
+[%inc json.json %]
+[%inc toml.toml %]
+[%inc yaml.yml %]
 
 ## Image and Thanks
 
