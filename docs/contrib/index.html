@@ -51,7 +51,7 @@
       <p>Contributions are very welcome.
 Please file issues or submit pull requests in <a href="https://github.com/gvwilson/mccole/">our GitHub repository</a>.
 All contributors will be acknowledged.</p>
-<h2>In Brief</h2>
+<h2>Setup</h2>
 <ul>
 <li>
 <p>Use <code>pip install -r requirements.txt</code>
@@ -60,22 +60,103 @@ All contributors will be acknowledged.</p>
     All code has been tested with Python 3.12.1.</p>
 </li>
 <li>
-<p>Content lives in the <code>.md</code> files under the <code>src</code> directory
-    and is translated into a static website using <a href="https://www.dmulholl.com/docs/ark/main/">Ark</a>.
-    Each page must be in its own sub-directory except for <code>src/index.md</code>,
-    which becomes the site&rsquo;s home page.</p>
+<p>Run <code>make</code> without arguments to see available commands
+    Of these,
+    <code>make build</code> to rebuild everything in <code>./docs</code>
+    and <code>make serve</code> to run a local preview server
+    are the most immediately useful.</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>commands</code></td>
+<td>show available commands</td>
+</tr>
+<tr>
+<td><code>build</code></td>
+<td>rebuild site without running server</td>
+</tr>
+<tr>
+<td><code>serve</code></td>
+<td>build site and run server</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td>profile compilation</td>
+</tr>
+<tr>
+<td><code>bib</code></td>
+<td>rebuild HTML version of bibliography</td>
+</tr>
+<tr>
+<td><code>lint</code></td>
+<td>check project</td>
+</tr>
+<tr>
+<td><code>style</code></td>
+<td>check Python code style</td>
+</tr>
+<tr>
+<td><code>reformat</code></td>
+<td>reformat unstylish Python code</td>
+</tr>
+<tr>
+<td><code>pack</code></td>
+<td>create a release</td>
+</tr>
+<tr>
+<td><code>unpack</code></td>
+<td>make required files after unzipping mccole.zip</td>
+</tr>
+<tr>
+<td><code>clean</code></td>
+<td>clean up stray files</td>
+</tr>
+</tbody>
+</table>
+<h2>Layout</h2>
+<ul>
+<li>
+<p>This template uses <a href="https://www.dmulholl.com/docs/ark/main/">Ark</a> to compile Markdown with embedded shortcode directives
+    into a static HTML site under <code>docs/</code>.</p>
 </li>
 <li>
-<p><code>Makefile</code> references <code>lib/mccole/mccole.mk</code>;
-    typing <code>make</code> by itself on the command line will list available targets.</p>
+<p>The McCole theme lives in <code>lib/mccole</code>:</p>
+<ul>
+<li><code>bin/</code>: utility scripts</li>
+<li><code>colophon.yml</code>: links used in the colophon</li>
+<li><code>extensions/</code>: shortcodes and other extensions to Ark used by the theme</li>
+<li><code>mccole.mk</code>: targets and commands common to all projects that use this theme</li>
+<li><code>requirements.txt</code>: packages common to all projects that use this theme</li>
+<li><code>resources/</code>: CSS files and other resources used by this theme</li>
+<li><code>templates/</code>: HTML templates used by this theme (the main one being <code>node.ibis</code>).</li>
+</ul>
 </li>
 <li>
-<p>All external links are written using <code>[box][notation]</code> inline
-    and defined in <code>info/tutorial.yml</code>.</p>
+<p>The site&rsquo;s configuration lives in <code>config.py</code>.
+    The lists <code>chapters</code> and <code>appendices</code> define slugs for the sections, in order.</p>
+</li>
+<li>
+<p>Content lives in <code>.md</code> files in subdirectories under <code>src</code>
+    Each section must be in its own subdirectory except for <code>src/index.md</code>,
+    which is the site&rsquo;s home page.</p>
+</li>
+<li>
+<p>Please write external links using <code>[box][notation]</code>
+    and define links in <code>info/tutorial.yml</code>
+    rather than putting links inline.
+    Doing this will help ensure consistency across pages.</p>
 </li>
 <li>
 <p>Use <code>[%x slug %]</code> to create a cross-reference to a chapter or appendix,
-    where the slug is the name of a sub-directory under <code>src</code>.</p>
+    where the slug is the name of a subdirectory under <code>src</code>.</p>
 </li>
 <li>
 <p>Use <code>[%g key "text" %]</code> to link to glossary entries.
@@ -84,12 +165,10 @@ All contributors will be acknowledged.</p>
     which is in <a href="https://glosario.carpentries.org/">Glosario</a> format.</p>
 </li>
 <li>
-<p>Use <code>[%b key1 key2 %]</code> to cite bibliography entries,
-    which are stored in BibTeX format in <code>info/bibliography.bib</code>.</p>
-</li>
-<li>
-<p>Use <code>[%inc filename %]</code> to include a text file containing code or sample output
-    in a Markdown file.</p>
+<p>Use <code>[%b key1 key2 %]</code> to cite bibliography entries.
+    The keys must appear in <code>info/bibliography.bib</code>,
+    which is stored in BibTeX format
+    and compiled to create <code>tmp/bibliography.html</code>.</p>
 </li>
 <li>
 <p>Use <code>[%figure slug="some_slug" img="some_file.ext" caption="the caption" alt="alt text" %]</code>
@@ -100,6 +179,12 @@ All contributors will be acknowledged.</p>
     to create a table and <code>[%g some_slug %]</code> to refer to it.</p>
 </li>
 <li>
+<p>Use <code>[%inc filename %]</code> to include a text file containing code or sample output
+    in a Markdown file.
+    If the inclusion contains <code>mark=label</code>
+    then only code between comments marked <code>[label]</code> and <code>[/label]</code> will be included.</p>
+</li>
+<li>
 <p>SVG diagrams can be edited using <a href="https://www.drawio.com/">draw.io</a>.
     Please use 14-point Helvetica for text,
     solid 1-point black lines,
@@ -107,6 +192,47 @@ All contributors will be acknowledged.</p>
 </li>
 </ul>
 <h2>FAQ</h2>
+<dl>
+<dt>What is this for?</dt>
+<dd>I wrote <a href="https://gvwilson.github.io/sql-tutorial/">a short SQL tutorial</a> in 2024,
+and am currently working on one about <a href="https://gvwilson.github.io/sql-tutorial/">systems programming</a>
+and another about <a href="https://gvwilson.github.io/rsdx/">research software design</a>.
+I was initially going to use the template I built for
+the <a href="https://third-bit.com/sdxjs/">JavaScript</a> and <a href="https://third-bit.com/sdxpy/">Python</a> versions of <em>Software Design by Example</em>,
+but realized I could slim it down,
+speed it up,
+and make it prettier.
+Some people knit
+some play video games,
+I like to type…</dd>
+<dt>Why Ark?</dt>
+<dd><a href="https://jekyllrb.com/">Jekyll</a> is the default for <a href="https://pages.github.com/">GitHub Pages</a>,
+but very few data scientists use Ruby
+so previewing changes locally would require them to install and use
+yet another language framework.
+In addition,
+GitHub Pages doesn&rsquo;t allow arbitrary extensions for security reasons,
+so the only way to implement things like bibliography citations and glossary references
+is to use its (rather verbose) inclusions and (rather clumsy) scripting features.</dd>
+<dt>Why Make?</dt>
+<dd>It runs everywhere,
+no other build tool is a clear successor,
+and,
+like Jekyll,
+it&rsquo;s uncomfortable enough to use that people won&rsquo;t be tempted to fiddle with it
+when they could be writing content.</dd>
+<dt>Why hand-drawn figures rather than <a href="https://graphviz.org/">Graphviz</a> or <a href="https://mermaid.js.org/">Mermaid</a>?</dt>
+<dd>Because it&rsquo;s faster to Just Effing Draw than it is
+to try to tweak layout parameters for text-to-diagram systems.
+If you really want to make developers&rsquo; lives better,
+build a diff-and-merge tool for SVG:
+programmers shouldn&rsquo;t have to use punchard-compatible data formats in the 21st Century
+just to get the benefits of version control.</dd>
+<dt>Why McCole?</dt>
+<dd>Because it was my father&rsquo;s middle name.
+He was my high school English teacher for five years (it was a small town),
+and I learned most of what I know about writing from him.</dd>
+</dl>
     </main>
     <footer>
   © 2024 <a href="https://third-bit.com/">Greg Wilson</a>
