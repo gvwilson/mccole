@@ -49,17 +49,24 @@
 
 /* Small screen: display rows with one column. */
 @media screen {
-  .row {
-      width: 100%
-  }
+    .row {
+	width: 100%
+    }
 }
 
 /* Wide screen: display rows as rows. */
 @media screen and (min-width: 60rem) {
-  .row {
-      display: flex;
-      flex-flow: row wrap;
-  }
+    .row {
+	display: flex;
+	flex-flow: row wrap;
+    }
+}
+
+/* Always display as row. */
+.row-always {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
 }
 
 /* Flex grid */
