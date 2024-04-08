@@ -42,7 +42,7 @@ A template for [Ark][ark]-based tutorials.
     1.  Create `lib/mccole/mccole.mk` with targets to rebuild and check.
     1.  Add `ruff` to `lib/mccole/requirements.txt` and install it.
 
-1.  Styling pages.
+1.  Style pages.
     1.  Create `lib/mccole/resources/mccole.css` with beginnings of (unresponsive) styling.
     1.  Add HTML layout to `lib/mccole/templates/node.ibis`.
     1.  Add `head.html` and `foot.html` to `lib/mccole/templates` directory.
@@ -102,29 +102,46 @@ A template for [Ark][ark]-based tutorials.
     1.  Move glossary reference test into `src/intro/index.md`.
     1.  Modify `lib/mccole/templates/node.ibis` to show defined terms.
 
-1.  Refactoring.
+1.  Refactor.
     1.  Move larger filters like `termdefs` into files of their own.
     1.  Add hooks to exclude directories and files.
     1.  Add `copy` and `exclude` keys to `config.py`.
     1.  Add `fixme` shortcode for notes.
     1.  Add target to `lib/mccole/mccole.mk` to build zip file and to check things after unpacking it.
 
-1.  Adding features after trying it out.
+1.  Add features after trying it out.
     1.  Add contributors' guide in `CONTRIBUTING.md` and page in `src/contrib/index.md`.
     1.  Add MathJax to `lib/mccole/templates/head.html`.
     1.  Add link to home page to `lib/mccole/templates/foot.html`.
     1.  Add colored sidebars to `lib/mccole/resources/mccole.css`.
     1.  Add stamp colors and Danielle Navarro to colophon.
 
-1.  Adding thanks.
+1.  Add thanks.
     1.  Add `lib/mccole/extensions/thanks.py` to read and format `info/thanks.yml`.
     1.  Add usage to `src/intro/index.md` to test.
 
-1.  Adding index.
+1.  Add index.
     1.  Add `lib/mccole/extensions/index.py` to format index and index references.
     1.  Modify `lib/mccole/extensions/batch.py` to collect index references.
     1.  Add `src/contents/index.md` to display index (using `contents` instead of `index` to avoid confusion).
     1.  Modify `lib/mccole/mccole.mk` to include `src/contents/index.md` in zip file.
+
+1.  Add linting.
+    1.  Add `lib/mccole/bin/lint.py` and `lib/mccole/bin/lint_svg.py` to check project features.
+    1.  Add targets to `lib/mccole/mccole.mk` to run them.
+
+1.  CSS improvements.
+    1.  Responsive layout.
+    1.  Reduce indentation of bullet lists.
+    1.  Label navigation controls with `<nav>` element.
+    1.  Unify colors and borders of code inclusions.
+    1.  Syntax highlighting.
+
+1.  Add profiling.
+    1.  Add `lib/mccole/bin/run_profile.py` to profile build.
+    1.  Add target to `lib/mccole/mccole.mk` to run it.
+
+1.  Improve contribution guide.
 
 [ark]: https://www.dmulholl.com/docs/ark/main/
 [glosario]: https://glosario.carpentries.org/
