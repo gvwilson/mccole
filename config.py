@@ -47,3 +47,7 @@ markdown_settings = {
         "pymdownx.superfences",
     ]
 }
+
+# Show theme.
+if __name__ == "__main__":
+    print(theme)

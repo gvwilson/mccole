@@ -11,11 +11,11 @@ syllabus:
 -   Reference to glossary [%x glossary %]
 -   Reference to figure in another file [%f intro_concept_map %]
 -   Reference to table in this file [%t finale_table %]
--   Index entry [%i index_key_1 "first index reference" %]
+-   Index entry [%i "first index term" %]
 
 [% table slug="finale_table" tbl="example.tbl" caption="table caption" %]
 
-<div class="row">
+<div class="row notex">
   <div class="col-4">
     <h2>Width 3</h2>
     <p>

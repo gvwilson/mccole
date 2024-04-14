@@ -12,7 +12,11 @@ syllabus:
 -   Reference to license [%x license %]
     -   Reference to figure in same file [%f intro_concept_map %]
     -   Reference to table in another file [%t finale_table %]
--   Index entry [%i index_key_1 "first index reference" %] and [%i index_key_2 "second index reference" url=draw_io %]
+-   Index entries:
+    -   [%i "first index term" %]
+    -   [%i "second index key" "second index term" %]
+    -   [%i "third index term with URL" url=draw_io %]
+    -   [%i "fourth index key" "fourth index term with URL" url=draw_io %]
 
 ## Python and Output
 
