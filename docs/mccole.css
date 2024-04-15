@@ -48,6 +48,21 @@
     --splash-width: 80%;
 }
 
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+	color: white;
+	background-color: black;
+    }
+    code {
+	filter: invert();
+    }
+    img[src$=".svg"] {
+	background: white;
+	filter: invert();
+  }
+}
+
 /* Small screen: display rows with one column */
 @media screen {
     .row {
@@ -134,6 +149,7 @@ div[class*='language'] pre {
 /* Data files */
 div.language-csv,
 div.language-json,
+div.language-md,
 div.language-toml,
 div.language-yml {
     border-color: var(--stamp-orange-light);
