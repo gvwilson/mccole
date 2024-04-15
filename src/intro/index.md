@@ -6,6 +6,8 @@ syllabus:
 -   "All material is available under open licenses, and all royalties go to charity."
 ---
 
+[% figure slug="intro_concept_map" img="concept_map.svg" alt="alt text" caption="figure for testing dark mode" %]
+
 -   Glossary reference: [%g ssg "static site generator text" %]
 -   Bibliography reference [%b Wilson2019 %]
 -   Reference to conclusion [%x finale %]
@@ -42,9 +44,7 @@ syllabus:
 [%inc toml.toml %]
 [%inc yaml.yml %]
 
-## Image and Thanks
-
-[% figure slug="intro_concept_map" img="concept_map.svg" alt="alt text" caption="caption text" %]
+## Thanks
 
 Thanks to:
 

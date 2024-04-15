@@ -48,6 +48,21 @@
     --splash-width: 80%;
 }
 
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+	color: white;
+	background-color: black;
+    }
+    code {
+	filter: invert();
+    }
+    img[src$=".svg"] {
+	background: white;
+	filter: invert();
+  }
+}
+
 /* Small screen: display rows with one column */
 @media screen {
     .row {
