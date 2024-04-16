@@ -67,6 +67,15 @@ def at_a(info, node, accum, begin):
         return True
 
 
+def at_blockquote(info, node, accum, begin):
+    """Handle <blockquote>…</blockquote>."""
+    if begin:
+        accum.append("\\begin{quotation}\n")
+    else:
+        accum.append("\n\\\begin{quotation}\n")
+    return True
+
+
 def at_caption(info, node, accum, begin):
     """Handle <caption>…</caption>."""
     return True
@@ -101,11 +110,22 @@ def at_div(info, node, accum, begin):
     """Handle <div>…</div>."""
     if any(cls.startswith("language-") for cls in node.attrs["class"]):
         do_codeblock(info, node, accum)
+        return False
+
     elif "table" in node.attrs["class"]:
         do_table_div(info, node, accum)
+        return False
+
+    elif "center" in node.attrs.get("class"):
+        if begin:
+            accum.append("\\begin{center}\n")
+        else:
+            accum.append("\\begin{center}\n")
+        return True
+
     else:
         warn(info, node)
-    return False
+        return False
 
 
 def at_dt(info, node, accum, begin):
@@ -199,6 +219,9 @@ def at_span(info, node, accum, begin):
         keys = [child.attrs["href"].split("#")[-1] for child in node.find_all("a")]
         accum.extend([r"\cite{", ",".join(keys), "}"])
         return False
+
+    elif "bibtex-protected" in node.attrs["class"]:
+        return True
 
     elif "ix-entry" in node.attrs["class"]:
         if not begin:
@@ -385,7 +408,9 @@ def load_config(filename):
 def load_pages(htmldir, config):
     """Load and sanitifze pages."""
     ordered = config.chapters + config.appendices
-    ordered.remove("contents") # let LaTeX make the index
+    # Let LaTeX make the index
+    if "contents" in ordered:
+        ordered.remove("contents")
     pages = {
         slug: {
             "doc": read_html(Path(htmldir, slug, "index.html")),

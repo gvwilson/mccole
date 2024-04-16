@@ -16,7 +16,17 @@
 **/docs/*/*.pdf
 **/src/*/*.pdf
 *.bkp
+*.dtmp
+*.egg-info
 *~
 .DS_Store
+.\#*
+.coverage
+.ipynb_checkpoints
+.jekyll-cache
+.metaflow
+.pytest_cache
 .ruff_cache
+\#*
 __pycache__
+tmp
