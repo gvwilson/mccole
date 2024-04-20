@@ -112,6 +112,7 @@ body {
 /* Caption on table */
 caption {
     text-align: center;
+    text-wrap-mode: nowrap;
 }
 
 /* Code fragments */
@@ -264,6 +265,7 @@ span.ix-entry {
 /* Tables */
 table {
     border-collapse: collapse;
+    caption-side: bottom;
     margin-left: auto;
     margin-right: auto;
 }
