@@ -115,6 +115,11 @@ caption {
     text-wrap-mode: nowrap;
 }
 
+/* Citations */
+cite {
+    font-style: italic;
+}
+
 /* Code fragments */
 code {
     font-family: "Source Code Pro", monospace;
