@@ -146,6 +146,11 @@ div.language-yml {
     border-color: var(--stamp-orange-light);
 }
 
+/* JavaScript */
+div.language-js {
+    border-color: var(--stamp-blue-light);
+}
+
 /* Output */
 div.language-out {
     border-color: var(--stamp-brown-light);
