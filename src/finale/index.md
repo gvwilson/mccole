@@ -11,7 +11,7 @@ syllabus:
 -   Reference to glossary [%x glossary %]
 -   Reference to figure in another file [%f intro_concept_map %]
 -   Reference to table in this file [%t finale_table %]
--   Index entry [%i "first index term" %]
+-   [%i "first index term" %]Index entry[%/i%]
 
 [% table slug="finale_table" tbl="example.tbl" caption="table caption" %]
 

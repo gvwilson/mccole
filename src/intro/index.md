@@ -13,10 +13,8 @@ syllabus:
     -   Reference to figure in same file [%f intro_concept_map %]
     -   Reference to table in another file [%t finale_table %]
 -   Index entries:
-    -   [%i "first index term" %]
-    -   [%i "second index key" "second index term" %]
-    -   [%i "third index term with URL" url=draw_io %]
-    -   [%i "fourth index key" "fourth index term with URL" url=draw_io %]
+    -   [%i "first index term" %]first phrase[%/i%]
+    -   [%i "second index key" "second index term" %]second phrase[%/i%]
 
 ## Python and Output
 
