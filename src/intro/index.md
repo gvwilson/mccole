@@ -13,8 +13,8 @@ syllabus:
     -   Reference to figure in same file [%f intro_concept_map %]
     -   Reference to table in another file [%t finale_table %]
 -   Index entries:
-    -   [%i "first index term" %]first phrase[%/i%]
-    -   [%i "second index key" "second index term" %]second phrase[%/i%]
+    -   first phrase[%i "first index term" %]
+    -   second phrase[%i "second index key" "second index term" %]
 
 ## Python and Output
 
