@@ -62,6 +62,9 @@
         filter: invert();
   }
 }
+a {
+    filter:invert() hue-rotate(180deg);
+}
 
 /* Small screen: display rows with one column */
 @media screen {
