@@ -51,15 +51,15 @@
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
     body {
-	color: white;
-	background-color: black;
+        color: white;
+        background-color: black;
     }
     code {
-	filter: invert();
+        color: black;
+        filter: invert();
     }
     img[src$=".svg"] {
-	background: white;
-	filter: invert();
+        filter: invert();
   }
 }
 
