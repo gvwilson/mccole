@@ -50,17 +50,44 @@
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
+    :root {
+        /* These colors are from above, transformed to lch with
+            `.....`.split(/(#[a-zA-Z0-9]{6})/g).map((e,i) => i%2==0 ? e : new Color(e).toString({format:'lch'})).join('')
+            in the console on this page https://colorjs.io/notebook/
+            then added the calc(100% - )
+        */
+        --gray-faint: lch(calc(100% - 94.796%) 0 none);
+        --gray-light: lch(calc(100% - 91.996%) 0 none);
+        --gray-dark: lch(calc(100% - 86.34%) 0 none);
+        --color-warning: lch(calc(100% - 26.165%) 62.49 39.133);
+    
+        --stamp-blue-dark: lch(calc(100% - 21.13%) 57.029 292.17);
+        --stamp-blue-light: lch(calc(100% - 77.022%) 14.275 281.96);
+        --stamp-brown-dark: lch(calc(100% - 32.844%) 14.199 52.05);
+        --stamp-brown-light: lch(calc(100% - 80.73%) 3.5349 55.672);
+        --stamp-green-dark: lch(calc(100% - 60.391%) 23.563 130.35);
+        --stamp-green-light: lch(calc(100% - 84.098%) 36.511 139.2);
+        --stamp-orange-dark: lch(calc(100% - 54.146%) 34.53 52.701);
+        --stamp-orange-light: lch(calc(100% - 86.132%) 8.3421 53.422);
+        --stamp-purple-dark: lch(calc(100% - 48.523%) 15.161 310.34);
+        --stamp-purple-light: lch(calc(100% - 84.696%) 4.2669 305.96);
+        --stamp-red-dark: lch(calc(100% - 28.833%) 63.217 35.253);
+        --stamp-red-light: lch(calc(100% - 76.549%) 15.421 13.315);
+    }
     body {
-	color: white;
-	background-color: black;
+        color: white;
+        background-color: black;
     }
     code {
-	filter: invert();
+        color: black;
+        filter: invert();
     }
     img[src$=".svg"] {
-	background: white;
-	filter: invert();
+        filter: invert();
   }
+}
+a {
+    filter:invert() hue-rotate(180deg);
 }
 
 /* Small screen: display rows with one column */
