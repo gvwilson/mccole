@@ -1,0 +1,3 @@
+include mccole/templates/*.html
+include mccole/static/*.css
+include mccole/static/*.js

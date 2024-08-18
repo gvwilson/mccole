@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["mccole"]
+
+[tool.setuptools.package-data]
+mypkg = ["*.css", "*.js", "*.html"]
+
+[project]
+name = "mccole"
+version = "0.2.0"
+authors = [
+    {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
+]
+maintainers = [
+    {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
+]
+description = "Simple template for static web sites"
+keywords = ["static site generator"]
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "esprima>=4.0.1",
+    "html5validator>=0.4.2",
+    "jinja2>=3.1.4",
+    "markdown>=3.6",
+    "ruff>=0.6.0",
+]
+
+[project.optional-dependencies]
+docs = [
+  "markdown-include",
+  "mkdocs",
+  "mkdocstrings[python]",
+  "mkdocs-material",
+]
+
+[project.scripts]
+mccole = "mccole:clui.main"

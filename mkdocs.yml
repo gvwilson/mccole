@@ -1,0 +1,21 @@
+site_name: "McCole Docs"
+docs_dir: pages
+site_dir: docs
+
+plugins:
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          members_order: source
+          filters: []
+
+theme:
+  name: "material"
+
+markdown_extensions:
+- markdown_include.include:
+    base_path: docs
+
+exclude_docs: >
+  *~
