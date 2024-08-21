@@ -33,8 +33,9 @@ def render(opt):
             render_markdown(env, opt.out, opt.css, filepath, content)
         else:
             copy_file(opt.out, filepath, content)
-    for filepath in find_symlinks(opt, root_skips):
-        copy_symlink(opt.out, filepath)
+    if opt.symlinks:
+        for filepath in find_symlinks(opt, root_skips):
+            copy_symlink(opt.out, filepath)
 
 
 def choose_template(env, source_path):
@@ -113,6 +114,7 @@ def parse_args(parser):
     parser.add_argument("--css", type=str, help="CSS file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
     parser.add_argument("--root", type=str, default=".", help="root directory")
+    parser.add_argument("--symlinks", action="store_true", help="copy symbolic links")
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
