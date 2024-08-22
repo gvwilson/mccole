@@ -28,7 +28,7 @@ def lint(opt):
         lint_link_definitions,
         lint_markdown_links,
     ]
-    if all(f(opt, files) for f in linters):
+    if all(list(f(opt, files) for f in linters)):
         print("All self-checks passed.")
 
 
