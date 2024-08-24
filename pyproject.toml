@@ -10,7 +10,7 @@ mypkg = ["*.css", "*.js", "*.html"]
 
 [project]
 name = "mccole"
-version = "0.2.1"
+version = "0.2.2"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
 ]
