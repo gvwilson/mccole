@@ -4,7 +4,8 @@ from pathlib import Path
 
 
 SUFFIXES_BIN = {".ico", ".jpg", ".png"}
-SUFFIXES_TXT = {".css", ".csv", ".html", ".js", ".json", ".md", ".py", ".sh", ".svg", ".txt"}
+SUFFIXES_SRC = {".css", ".html", ".js", ".md", ".py", ".sh", ".txt"}
+SUFFIXES_TXT = SUFFIXES_SRC | {".csv", ".json", ".svg"}
 SUFFIXES = SUFFIXES_BIN | SUFFIXES_TXT
 
 

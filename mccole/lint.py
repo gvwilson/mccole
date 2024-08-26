@@ -1,10 +1,12 @@
 """Check site consistency."""
 
 import argparse
+from hashlib import sha256
+import json
 from pathlib import Path
 import re
 
-from .util import SUFFIXES, find_files
+from .util import SUFFIXES, SUFFIXES_SRC, find_files
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
@@ -15,11 +17,17 @@ MD_FILE_LINK = re.compile(r"\[(.+?)\]\((.+?)\)", re.MULTILINE)
 MD_LINK_DEF = re.compile(r"^\[(.+?)\]:\s+(.+?)\s*$", re.MULTILINE)
 MD_LINK_REF = re.compile(r"\[(.+?)\]\[(.+?)\]", re.MULTILINE)
 
+DEFAULT_CONFIG = {
+    "duplicates": set()
+}
+
 
 def lint(opt):
     """Main driver."""
+    config = load_config(opt.config)
     root_skips = set(["bin", opt.out])
     files = find_files(opt, root_skips)
+    check_duplicates(files, config["duplicates"])
     linters = [
         lint_bibliography_references,
         lint_codeblock_files,
@@ -30,6 +38,28 @@ def lint(opt):
     ]
     if all(list(f(opt, files) for f in linters)):
         print("All self-checks passed.")
+
+
+def check_duplicates(files, expected):
+    """Confirm that duplicated files are as expected."""
+
+    # Construct groups of duplicated files
+    actual = {}
+    for filepath, content in files.items():
+        if filepath.suffix not in SUFFIXES_SRC:
+            continue
+        hash_code = sha256(bytes(content, "utf-8")).hexdigest()
+        if hash_code not in actual:
+            actual[hash_code] = set()
+        actual[hash_code].add(str(filepath))
+    actual = set(frozenset(grp) for grp in actual.values() if len(grp) > 1)
+
+    # Report groups
+    differences = actual.symmetric_difference(expected)
+    if differences:
+        print("duplicate mismatch")
+        for d in differences:
+            print(f"- {', '.join(sorted(d))}")
 
 
 def check_references(files, term, regexp, available):
@@ -153,8 +183,18 @@ def lint_markdown_links(opt, files):
     return ok
 
 
+def load_config(config_path):
+    """Load configuration file or construct default."""
+    if config_path is None:
+        return DEFAULT_CONFIG
+    config = json.loads(Path(config_path).read_text())
+    config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
+    return config
+
+
 def parse_args(parser):
     """Parse command-line arguments."""
+    parser.add_argument("--config", type=str, help="optional configuration file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
     parser.add_argument("--root", type=str, default=".", help="root directory")
     return parser
