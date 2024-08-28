@@ -2,9 +2,9 @@
 
 import argparse
 from hashlib import sha256
-import json
 from pathlib import Path
 import re
+import tomli
 
 from .util import SUFFIXES, SUFFIXES_SRC, find_files
 
@@ -187,14 +187,19 @@ def load_config(config_path):
     """Load configuration file or construct default."""
     if config_path is None:
         return DEFAULT_CONFIG
-    config = json.loads(Path(config_path).read_text())
-    config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
+    config = tomli.loads(Path(config_path).read_text())
+    if ("tool" not in config) or ("mccole" not in config["tool"]):
+        print(f"configuration file {config_path} does not have 'tool.mccole' section")
+        return DEFAULT_CONFIG
+    config = config["tool"]["mccole"]
+    if "duplicates" in config:
+        config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
     return config
 
 
 def parse_args(parser):
     """Parse command-line arguments."""
-    parser.add_argument("--config", type=str, help="optional configuration file")
+    parser.add_argument("--config", type=str, default="pyproject.toml", help="optional configuration file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
     parser.add_argument("--root", type=str, default=".", help="root directory")
     return parser
