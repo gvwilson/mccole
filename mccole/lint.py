@@ -10,7 +10,7 @@ from .util import MD_LINK_DEF, SUFFIXES, SUFFIXES_SRC, find_files, find_key_defs
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
-GLOSS_REF = re.compile(r"\[.+?\]\(g:(.+?)\)", re.MULTILINE)
+GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
 MD_CODEBLOCK_FILE = re.compile(r"^```\s*\{\s*\.(.+?)\s+\#(.+?)\s*\}\s*$(.+?)^```\s*$", re.DOTALL + re.MULTILINE)
 MD_FILE_LINK = re.compile(r"\[(.+?)\]\((.+?)\)", re.MULTILINE)
 MD_LINK_REF = re.compile(r"\[(.+?)\]\[(.+?)\]", re.MULTILINE)
@@ -30,6 +30,7 @@ def lint(opt):
         lint_bibliography_references,
         lint_codeblock_files,
         lint_file_references,
+        lint_glossary_redefinitions,
         lint_glossary_references,
         lint_link_definitions,
         lint_markdown_links,
@@ -129,6 +130,27 @@ def lint_file_references(opt, files):
                     print(f"Missing file: {filepath} => {target}")
                     ok = False
     return ok
+
+
+def lint_glossary_redefinitions(opt, files):
+    """Check glossary redefinitions."""
+    found = {}
+    for filepath, content in files.items():
+        if filepath.suffix != ".md":
+            continue
+        if "glossary" in str(filepath).lower():
+            continue
+        for m in GLOSS_REF.finditer(content):
+            key = m[1]
+            if key not in found:
+                found[key] = set()
+            found[key].add(str(filepath))
+
+    problems = {k:v for k, v in found.items() if len(v) > 1}
+    for k, v in problems.items():
+        if len(v) > 1:
+            print(f"glossary key {k} redefined: {', '.join(sorted(v))}")
+    return len(problems) == 0
 
 
 def lint_glossary_references(opt, files):
