@@ -6,15 +6,13 @@ from pathlib import Path
 import re
 import tomli
 
-from .util import SUFFIXES, SUFFIXES_SRC, find_files
+from .util import MD_LINK_DEF, SUFFIXES, SUFFIXES_SRC, find_files, find_key_defs
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
 GLOSS_REF = re.compile(r"\[.+?\]\(g:(.+?)\)", re.MULTILINE)
-KEY_DEF = re.compile(r'^<span\s+id="(.+?)">.+?</span>\s*$', re.MULTILINE)
 MD_CODEBLOCK_FILE = re.compile(r"^```\s*\{\s*\.(.+?)\s+\#(.+?)\s*\}\s*$(.+?)^```\s*$", re.DOTALL + re.MULTILINE)
 MD_FILE_LINK = re.compile(r"\[(.+?)\]\((.+?)\)", re.MULTILINE)
-MD_LINK_DEF = re.compile(r"^\[(.+?)\]:\s+(.+?)\s*$", re.MULTILINE)
 MD_LINK_REF = re.compile(r"\[(.+?)\]\[(.+?)\]", re.MULTILINE)
 
 DEFAULT_CONFIG = {
@@ -81,15 +79,6 @@ def check_references(files, term, regexp, available):
         ok = False
 
     return ok
-
-
-def find_key_defs(files, term):
-    """Find key definitions in definition list file."""
-    candidates = [k for k in files if term in str(k).lower()]
-    if len(candidates) != 1:
-        return None
-    file_key = candidates[0]
-    return set(KEY_DEF.findall(files[file_key]))
 
 
 def is_missing(actual, available):

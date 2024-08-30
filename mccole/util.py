@@ -1,8 +1,11 @@
 """Utilities."""
 
 from pathlib import Path
+import re
 
 
+KEY_DEF = re.compile(r'^<span\s+id="(.+?)">.+?</span>\s*$', re.MULTILINE)
+MD_LINK_DEF = re.compile(r"^\[(.+?)\]:\s+(.+?)\s*$", re.MULTILINE)
 SUFFIXES_BIN = {".ico", ".jpg", ".png"}
 SUFFIXES_SRC = {".css", ".html", ".js", ".md", ".py", ".sh", ".txt"}
 SUFFIXES_TXT = SUFFIXES_SRC | {".csv", ".json", ".svg"}
@@ -16,6 +19,15 @@ def find_files(opt, root_skips=[]):
         for filepath in Path(opt.root).glob("**/*.*")
         if _is_interesting_file(filepath, root_skips)
     }
+
+
+def find_key_defs(files, term):
+    """Find key definitions in definition list file."""
+    candidates = [k for k in files if term in str(k).lower()]
+    if len(candidates) != 1:
+        return None
+    file_key = candidates[0]
+    return set(KEY_DEF.findall(files[file_key]))
 
 
 def find_symlinks(opt, root_skips=[]):

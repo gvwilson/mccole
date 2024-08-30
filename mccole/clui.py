@@ -8,6 +8,7 @@ import sys
 
 from .lint import lint, parse_args as lint_parser
 from .render import render, parse_args as render_parser
+from .stats import stats, parse_args as stats_parser
 
 
 INSTALL_FILES = (
@@ -23,10 +24,13 @@ def main():
     '''Main driver.'''
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='store_true', help='show version')
+
     subparsers = parser.add_subparsers(dest='cmd')
     install_parser(subparsers.add_parser('install', help='install files'))
     lint_parser(subparsers.add_parser('lint', help='check site'))
     render_parser(subparsers.add_parser('render', help='build site'))
+    stats_parser(subparsers.add_parser('stats', help='show stats'))
+
     opt = parser.parse_args()
     if opt.version:
         print(importlib.metadata.version('mccole'))
@@ -36,6 +40,8 @@ def main():
         lint(opt)
     elif opt.cmd == 'render':
         render(opt)
+    elif opt.cmd == 'stats':
+        stats(opt)
     else:
         print(f'unknown command {opt.cmd}', file=sys.stderr)
         sys.exit(1)

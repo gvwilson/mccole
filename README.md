@@ -14,3 +14,4 @@ After installation, the following commands will be available:
 
 -   `mccole lint`: internal project check
 -   `mccole render`: Markdown-to-HTML translator
+-   `mccole stats`: site statistics
