@@ -2,8 +2,9 @@
 
 import argparse
 from prettytable import PrettyTable
+import re
 
-from .util import MD_LINK_DEF, find_files, find_key_defs
+from .util import FIGURE_DEF, MD_LINK_DEF, find_figure_defs, find_files, find_key_defs
 
 
 TABLE_FMT = {
@@ -21,6 +22,7 @@ def stats(opt):
     files = find_files(opt, set(["bin", opt.out]))
     table.add_row(("bibliography entries", len(find_key_defs(files, "bibliography"))))
     table.add_row(("glossary entries", len(find_key_defs(files, "glossary"))))
+    table.add_row(("figures", len(find_figure_defs(files))))
     table.add_row(("link definitions", len(find_markdown_link_defs(files))))
 
     print(table)

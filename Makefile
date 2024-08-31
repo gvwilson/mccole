@@ -2,6 +2,12 @@
 
 all: commands
 
+## commands: show available commands (*)
+commands:
+	@grep -h -E '^##' ${MAKEFILE_LIST} \
+	| sed -e 's/## //g' \
+	| column -t -s ':'
+
 ## lint: check code and project
 lint:
 	@ruff check mccole
@@ -10,7 +16,6 @@ lint:
 render:
 	mccole render \
 	--css mccole/static/page.css \
-	--exclude mccole.egg-info \
 	--icon mccole/static/favicon.ico \
 	--templates mccole/templates
 	@touch docs/.nojekyll

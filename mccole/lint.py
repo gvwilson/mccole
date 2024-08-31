@@ -1,12 +1,12 @@
 """Check site consistency."""
 
 import argparse
+from collections import defaultdict
 from hashlib import sha256
 from pathlib import Path
 import re
-import tomli
 
-from .util import MD_LINK_DEF, SUFFIXES, SUFFIXES_SRC, find_files, find_key_defs
+from .util import MD_LINK_DEF, SUFFIXES, SUFFIXES_SRC, find_files, find_key_defs, load_config
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
@@ -15,16 +15,11 @@ MD_CODEBLOCK_FILE = re.compile(r"^```\s*\{\s*\.(.+?)\s+\#(.+?)\s*\}\s*$(.+?)^```
 MD_FILE_LINK = re.compile(r"\[(.+?)\]\((.+?)\)", re.MULTILINE)
 MD_LINK_REF = re.compile(r"\[(.+?)\]\[(.+?)\]", re.MULTILINE)
 
-DEFAULT_CONFIG = {
-    "duplicates": set()
-}
-
 
 def lint(opt):
     """Main driver."""
     config = load_config(opt.config)
-    root_skips = set(["bin", opt.out])
-    files = find_files(opt, root_skips)
+    files = find_files(opt, {opt.out})
     check_duplicates(files, config["duplicates"])
     linters = [
         lint_bibliography_references,
@@ -43,13 +38,11 @@ def check_duplicates(files, expected):
     """Confirm that duplicated files are as expected."""
 
     # Construct groups of duplicated files
-    actual = {}
+    actual = defaultdict(set)
     for filepath, content in files.items():
         if filepath.suffix not in SUFFIXES_SRC:
             continue
         hash_code = sha256(bytes(content, "utf-8")).hexdigest()
-        if hash_code not in actual:
-            actual[hash_code] = set()
         actual[hash_code].add(str(filepath))
     actual = set(frozenset(grp) for grp in actual.values() if len(grp) > 1)
 
@@ -66,13 +59,14 @@ def check_references(files, term, regexp, available):
     ok = True
     seen = set()
     for filepath, content in files.items():
-        if filepath.suffix == ".md":
-            found = {k.group(1) for k in regexp.finditer(content)}
-            seen |= found
-            missing = found - available
-            if missing:
-                print(f"Missing {term} keys in {filepath}: {', '.join(sorted(missing))}")
-                ok = False
+        if filepath.suffix != ".md":
+            continue
+        found = {k.group(1) for k in regexp.finditer(content)}
+        seen |= found
+        missing = found - available
+        if missing:
+            print(f"Missing {term} keys in {filepath}: {', '.join(sorted(missing))}")
+            ok = False
 
     unused = available - seen
     if unused:
@@ -107,13 +101,14 @@ def lint_codeblock_files(opt, files):
     """Check file inclusions."""
     ok = True
     for filepath, content in files.items():
-        if filepath.suffix == ".md":
-            for block in MD_CODEBLOCK_FILE.finditer(content):
-                codepath, expected = block.group(2), block.group(3).strip()
-                actual = Path(filepath.parent, codepath).read_text().strip()
-                if actual != expected:
-                    print(f"Content mismatch: {filepath} => {codepath}")
-                    ok = False
+        if filepath.suffix != ".md":
+            continue
+        for block in MD_CODEBLOCK_FILE.finditer(content):
+            codepath, expected = block.group(2), block.group(3).strip()
+            actual = Path(filepath.parent, codepath).read_text().strip()
+            if actual != expected:
+                print(f"Content mismatch: {filepath} => {codepath}")
+                ok = False
     return ok
 
 
@@ -121,30 +116,28 @@ def lint_file_references(opt, files):
     """Check inter-file references."""
     ok = True
     for filepath, content in files.items():
-        if filepath.suffix == ".md":
-            for link in MD_FILE_LINK.finditer(content):
-                if is_special_link(link.group(2)):
-                    continue
-                target = resolve_path(filepath.parent, link.group(2))
-                if is_missing(target, files):
-                    print(f"Missing file: {filepath} => {target}")
-                    ok = False
+        if filepath.suffix != ".md":
+            continue
+        for link in MD_FILE_LINK.finditer(content):
+            if is_special_link(link.group(2)):
+                continue
+            target = resolve_path(filepath.parent, link.group(2))
+            if is_missing(target, files):
+                print(f"Missing file: {filepath} => {target}")
+                ok = False
     return ok
 
 
 def lint_glossary_redefinitions(opt, files):
     """Check glossary redefinitions."""
-    found = {}
+    found = defaultdict(set)
     for filepath, content in files.items():
         if filepath.suffix != ".md":
             continue
         if "glossary" in str(filepath).lower():
             continue
         for m in GLOSS_REF.finditer(content):
-            key = m[1]
-            if key not in found:
-                found[key] = set()
-            found[key].add(str(filepath))
+            found[m[1]].add(str(filepath))
 
     problems = {k:v for k, v in found.items() if len(v) > 1}
     for k, v in problems.items():
@@ -166,25 +159,23 @@ def lint_link_definitions(opt, files):
     """Check that Markdown files define the links they use."""
     ok = True
     for filepath, content in files.items():
-        if filepath.suffix == ".md":
-            link_refs = {m[1] for m in MD_LINK_REF.findall(content)}
-            link_defs = {m[0] for m in MD_LINK_DEF.findall(content)}
-            ok = ok and report_diff(f"{filepath} links", link_refs, link_defs)
+        if filepath.suffix != ".md":
+            continue
+        link_refs = {m[1] for m in MD_LINK_REF.findall(content)}
+        link_defs = {m[0] for m in MD_LINK_DEF.findall(content)}
+        ok = ok and report_diff(f"{filepath} links", link_refs, link_defs)
     return ok
 
 
 def lint_markdown_links(opt, files):
     """Check consistency of Markdown links."""
-    found = {}
+    found = defaultdict(lambda: defaultdict(set))
     for filepath, content in files.items():
-        if filepath.suffix == ".md":
-            for link in MD_LINK_DEF.finditer(content):
-                label, url = link.group(1), link.group(2)
-                if label not in found:
-                    found[label] = {}
-                if url not in found[label]:
-                    found[label][url] = set()
-                found[label][url].add(filepath)
+        if filepath.suffix != ".md":
+            continue
+        for link in MD_LINK_DEF.finditer(content):
+            label, url = link.group(1), link.group(2)
+            found[label][url].add(filepath)
 
     ok = True
     for label, data in found.items():
@@ -192,20 +183,6 @@ def lint_markdown_links(opt, files):
             print(f"Inconsistent link: {label} => {data}")
             ok = False
     return ok
-
-
-def load_config(config_path):
-    """Load configuration file or construct default."""
-    if config_path is None:
-        return DEFAULT_CONFIG
-    config = tomli.loads(Path(config_path).read_text())
-    if ("tool" not in config) or ("mccole" not in config["tool"]):
-        print(f"configuration file {config_path} does not have 'tool.mccole' section")
-        return DEFAULT_CONFIG
-    config = config["tool"]["mccole"]
-    if "duplicates" in config:
-        config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
-    return config
 
 
 def parse_args(parser):

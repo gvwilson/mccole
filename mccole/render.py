@@ -6,35 +6,25 @@ from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 from pathlib import Path
 
-from .util import find_files, find_symlinks, write_file
+from .util import find_files, find_symlinks, load_config, write_file
 
 
 MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
 
-RENAMES = {
-    "BIBLIOGRAPHY.md": "bibliography.md",
-    "CODE_OF_CONDUCT.md": "code_of_conduct.md",
-    "CONTRIBUTING.md": "contributing.md",
-    "GLOSSARY.md": "glossary.md",
-    "LICENSE.md": "license.md",
-    "README.md": "index.md",
-}
-
-ROOT_SKIPS = {"bin", "templates"}
-
 
 def render(opt):
     """Main driver."""
-    root_skips = ROOT_SKIPS | {opt.out} | set(opt.exclude)
-    files = find_files(opt, root_skips)
+    config = load_config(opt.config)
+    skips = config["skips"] | {opt.out} | set(opt.exclude)
+    files = find_files(opt, skips)
     env = Environment(loader=FileSystemLoader(opt.templates))
     for filepath, content in files.items():
         if filepath.suffix == ".md":
-            render_markdown(env, opt.out, opt.css, filepath, content)
+            render_markdown(env, opt.out, opt.css, config["renames"], filepath, content)
         else:
-            copy_file(opt.out, filepath, content)
+            copy_file(opt.out, config["renames"], filepath, content)
     if opt.symlinks:
-        for filepath in find_symlinks(opt, root_skips):
+        for filepath in find_symlinks(opt, skips):
             copy_symlink(opt.out, filepath)
 
 
@@ -45,16 +35,16 @@ def choose_template(env, source_path):
     return env.get_template("page.html")
 
 
-def copy_file(output_dir, source_path, content):
+def copy_file(output_dir, renames, source_path, content):
     """Copy a file verbatim."""
-    output_path = make_output_path(output_dir, source_path)
+    output_path = make_output_path(output_dir, renames, source_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     write_file(output_path, content)
 
 
-def copy_symlink(output_dir, source_path):
+def copy_symlink(output_dir, renames, source_path):
     """Copy a symbolic link."""
-    output_path = make_output_path(output_dir, source_path)
+    output_path = make_output_path(output_dir, renames, source_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if not output_path.exists():
         output_path.symlink_to(source_path.readlink())
@@ -101,18 +91,19 @@ def do_root_path_prefix(doc, source_path):
                 node[attr] = node[attr].replace("@root/", prefix)
 
 
-def make_output_path(output_dir, source_path):
+def make_output_path(output_dir, renames, source_path):
     """Build output path."""
-    if source_path.name in RENAMES:
-        source_path = Path(source_path.parent, RENAMES[source_path.name])
+    if source_path.name in renames:
+        source_path = Path(source_path.parent, renames[source_path.name])
     source_path = Path(str(source_path).replace(".md", ".html"))
     return Path(output_dir, source_path)
 
 
 def parse_args(parser):
     """Parse command-line arguments."""
+    parser.add_argument("--config", type=str, default="pyproject.toml", help="optional configuration file")
     parser.add_argument("--css", type=str, help="CSS file")
-    parser.add_argument("--exclude", nargs="+", help="root items to exclude")
+    parser.add_argument("--exclude", nargs="+", default=[], help="root items to exclude")
     parser.add_argument("--icon", type=str, help="icon file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
     parser.add_argument("--root", type=str, default=".", help="root directory")
@@ -120,7 +111,7 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, output_dir, css_file, source_path, content):
+def render_markdown(env, output_dir, css_file, renames, source_path, content):
     """Convert Markdown to HTML."""
     template = choose_template(env, source_path)
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
@@ -137,7 +128,7 @@ def render_markdown(env, output_dir, css_file, source_path, content):
     for func in transformers:
         func(doc, source_path)
 
-    output_path = make_output_path(output_dir, source_path)
+    output_path = make_output_path(output_dir, renames, source_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(str(doc))
 

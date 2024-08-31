@@ -10,7 +10,7 @@ mypkg = ["*.css", "*.js", "*.html"]
 
 [project]
 name = "mccole"
-version = "0.2.6"
+version = "0.2.7"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
 ]
@@ -46,3 +46,14 @@ docs = [
 
 [project.scripts]
 mccole = "mccole:clui.main"
+
+[tool.mccole]
+skips = ["dist", "mccole.egg-info"]
+
+[tool.mccole.renames]
+"BIBLIOGRAPHY.md" = "bibliography.md"
+"CODE_OF_CONDUCT.md" = "code_of_conduct.md"
+"CONTRIBUTING.md" = "contributing.md"
+"GLOSSARY.md" = "glossary.md"
+"LICENSE.md" = "license.md"
+"README.md" = "index.md"
