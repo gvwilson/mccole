@@ -17,6 +17,7 @@ SUFFIXES_BIN = {".ico", ".jpg", ".png"}
 SUFFIXES_SRC = {".css", ".html", ".js", ".md", ".py", ".sh", ".sql", ".txt"}
 SUFFIXES_TXT = SUFFIXES_SRC | {".csv", ".json", ".svg"}
 SUFFIXES = SUFFIXES_BIN | SUFFIXES_TXT
+TABLE_DEF = re.compile(r'<table\s+id="(.+?)"\s*>.+?<caption>(.+?)</caption>\s*</table>', re.MULTILINE + re.DOTALL)
 
 
 def find_figure_defs(files):
@@ -58,6 +59,16 @@ def find_symlinks(opt, skips=[]):
         for filepath in Path(opt.root).glob("**/*")
         if _is_interesting_symlink(filepath, skips)
     ]
+
+
+def find_table_defs(files):
+    """Collect all table definitions."""
+    found = defaultdict(list)
+    for filepath, content in files.items():
+        if filepath.suffix == ".md":
+            for table in TABLE_DEF.finditer(content):
+                found[table[1]].append({"caption": table[2],})
+    return found
 
 
 def load_config(config_path):

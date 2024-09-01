@@ -20,7 +20,7 @@ def render(opt):
     env = Environment(loader=FileSystemLoader(opt.templates))
     for filepath, content in files.items():
         if filepath.suffix == ".md":
-            render_markdown(env, opt.out, opt.css, config["renames"], filepath, content)
+            render_markdown(env, opt, config["renames"], filepath, content)
         else:
             copy_file(opt.out, config["renames"], filepath, content)
     if opt.symlinks:
@@ -71,6 +71,16 @@ def do_markdown_links(doc, source_path):
             node["href"] = node["href"].replace(".md", ".html").lower()
 
 
+def do_tables(doc, source_path):
+    """Eliminate duplicate table tags created by Markdown tables inside HTML tables."""
+    for node in doc.select("table"):
+        parent = node.parent
+        if parent.name == "table":
+            caption = parent.caption
+            node.append(caption)
+            parent.replace_with(node)
+
+
 def do_title(doc, source_path):
     """Make sure title element is filled in."""
     doc.title.string = doc.h1.get_text()
@@ -111,16 +121,17 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, output_dir, css_file, renames, source_path, content):
+def render_markdown(env, opt, renames, source_path, content):
     """Convert Markdown to HTML."""
     template = choose_template(env, source_path)
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
-    html = template.render(content=html, css_file=css_file)
+    html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 
     transformers = (
         do_bibliography_links,
         do_glossary_links,
         do_markdown_links,
+        do_tables,
         do_title,
         do_root_path_prefix, # must be last
     )
@@ -128,7 +139,7 @@ def render_markdown(env, output_dir, css_file, renames, source_path, content):
     for func in transformers:
         func(doc, source_path)
 
-    output_path = make_output_path(output_dir, renames, source_path)
+    output_path = make_output_path(opt.out, renames, source_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(str(doc))
 
