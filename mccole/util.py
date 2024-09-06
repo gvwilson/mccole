@@ -52,15 +52,6 @@ def find_key_defs(files, term):
     return set(KEY_DEF.findall(files[file_key]))
 
 
-def find_symlinks(opt, skips=[]):
-    """Collect all interesting files."""
-    return [
-        filepath
-        for filepath in Path(opt.root).glob("**/*")
-        if _is_interesting_symlink(filepath, skips)
-    ]
-
-
 def find_table_defs(files):
     """Collect all table definitions."""
     found = defaultdict(list)
@@ -112,17 +103,6 @@ def _is_interesting_file(filepath, skips):
     if filepath.suffix not in SUFFIXES:
         return False
     if str(filepath.parent.name).startswith("."):
-        return False
-    if any(str(filepath).startswith(s) for s in skips):
-        return False
-    return True
-
-
-def _is_interesting_symlink(filepath, skips):
-    """Is this symlink worth checking?"""
-    if not filepath.is_symlink():
-        return False
-    if str(filepath).startswith("."):
         return False
     if any(str(filepath).startswith(s) for s in skips):
         return False

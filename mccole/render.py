@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 from pathlib import Path
 
-from .util import find_files, find_symlinks, load_config, write_file
+from .util import find_files, load_config, write_file
 
 
 MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
@@ -23,9 +23,6 @@ def render(opt):
             render_markdown(env, opt, config["renames"], filepath, content)
         else:
             copy_file(opt.out, config["renames"], filepath, content)
-    if opt.symlinks:
-        for filepath in find_symlinks(opt, skips):
-            copy_symlink(opt.out, filepath)
 
 
 def choose_template(env, source_path):
@@ -40,14 +37,6 @@ def copy_file(output_dir, renames, source_path, content):
     output_path = make_output_path(output_dir, renames, source_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     write_file(output_path, content)
-
-
-def copy_symlink(output_dir, renames, source_path):
-    """Copy a symbolic link."""
-    output_path = make_output_path(output_dir, renames, source_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    if not output_path.exists():
-        output_path.symlink_to(source_path.readlink())
 
 
 def do_bibliography_links(doc, source_path):
@@ -117,7 +106,6 @@ def parse_args(parser):
     parser.add_argument("--icon", type=str, help="icon file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
     parser.add_argument("--root", type=str, default=".", help="root directory")
-    parser.add_argument("--symlinks", action="store_true", help="copy symbolic links")
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
