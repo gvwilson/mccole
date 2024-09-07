@@ -90,6 +90,15 @@ def do_root_path_prefix(doc, source_path):
                 node[attr] = node[attr].replace("@root/", prefix)
 
 
+def do_toc_lists(doc, source_path):
+    """Fix 'chapters' and 'appendices' lists."""
+    for kind in ("chapters", "appendices"):
+        selector = f"ol.{kind} ol"
+        for node in doc.select(selector):
+            node.parent.replace_with(node)
+            node["class"] = node.get("class", []) + [kind]
+
+
 def make_output_path(output_dir, renames, source_path):
     """Build output path."""
     if source_path.name in renames:
@@ -121,6 +130,7 @@ def render_markdown(env, opt, renames, source_path, content):
         do_markdown_links,
         do_tables,
         do_title,
+        do_toc_lists,
         do_root_path_prefix, # must be last
     )
     doc = BeautifulSoup(html, "html.parser")

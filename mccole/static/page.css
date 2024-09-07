@@ -16,6 +16,11 @@
     --width-page-margin: 1rem;
 }
 
+/* Generic coloring */
+.shaded {
+    background-color: var(--color-background-code);
+}
+
 /* Generic text alignment */
 .left { text-align: left; }
 .center { text-align: center; }
@@ -106,6 +111,18 @@ ol {
 ol li {
     margin-left: var(--width-li-adjust);
 }
+ol.appendices {
+    list-style-type: upper-alpha;
+}
+ol.chapters {
+}
+
+/* Subtitle */
+p.subtitle {
+    font-weight: bold;
+    font-style: italic;
+    text-align: center;
+}
 
 /* Code blocks */
 pre {
@@ -125,7 +142,7 @@ th, td {
     padding: var(--width-padding);
     vertical-align: top;
     border: var(--border-thin);
-    min-width: 14rem;
+    min-width: 8rem;
 }
 
 /* Unordered lists */
