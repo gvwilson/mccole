@@ -34,7 +34,7 @@ def find_figure_defs(files):
     return found
 
 
-def find_files(opt, skips=[]):
+def find_files(opt, skips=None):
     """Collect all interesting files."""
     return {
         filepath: read_file(filepath)
@@ -88,6 +88,7 @@ def read_file(filepath):
 
 def write_file(filepath, content):
     """Write file as bytes or text."""
+    filepath.parent.mkdir(parents=True, exist_ok=True)
     if filepath.suffix in SUFFIXES_TXT:
         return filepath.write_text(content)
     else:
@@ -104,6 +105,6 @@ def _is_interesting_file(filepath, skips):
         return False
     if str(filepath.parent.name).startswith("."):
         return False
-    if any(str(filepath).startswith(s) for s in skips):
+    if skips and any(str(filepath).startswith(s) for s in skips):
         return False
     return True

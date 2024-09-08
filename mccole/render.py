@@ -15,14 +15,19 @@ MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "ta
 def render(opt):
     """Main driver."""
     config = load_config(opt.config)
-    skips = config["skips"] | {opt.out} | set(opt.exclude)
+    skips = config["skips"] | {opt.out}
     files = find_files(opt, skips)
+    files = {key:{"content": val} for key, val in files.items()}
     env = Environment(loader=FileSystemLoader(opt.templates))
-    for filepath, content in files.items():
+
+    for filepath, info in files.items():
         if filepath.suffix == ".md":
-            render_markdown(env, opt, config["renames"], filepath, content)
-        else:
-            copy_file(opt.out, config["renames"], filepath, content)
+            info["doc"] = render_markdown(env, opt, filepath, info["content"])
+
+    for filepath, info in files.items():
+        result = str(info["doc"]) if filepath.suffix == ".md" else info["content"]
+        output_path = make_output_path(opt.out, config["renames"], filepath)
+        write_file(output_path, result)
 
 
 def choose_template(env, source_path):
@@ -30,13 +35,6 @@ def choose_template(env, source_path):
     if source_path.name == "slides.md":
         return env.get_template("slides.html")
     return env.get_template("page.html")
-
-
-def copy_file(output_dir, renames, source_path, content):
-    """Copy a file verbatim."""
-    output_path = make_output_path(output_dir, renames, source_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    write_file(output_path, content)
 
 
 def do_bibliography_links(doc, source_path):
@@ -111,14 +109,13 @@ def parse_args(parser):
     """Parse command-line arguments."""
     parser.add_argument("--config", type=str, default="pyproject.toml", help="optional configuration file")
     parser.add_argument("--css", type=str, help="CSS file")
-    parser.add_argument("--exclude", nargs="+", default=[], help="root items to exclude")
     parser.add_argument("--icon", type=str, help="icon file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
     parser.add_argument("--root", type=str, default=".", help="root directory")
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, renames, source_path, content):
+def render_markdown(env, opt, source_path, content):
     """Convert Markdown to HTML."""
     template = choose_template(env, source_path)
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
@@ -137,9 +134,7 @@ def render_markdown(env, opt, renames, source_path, content):
     for func in transformers:
         func(doc, source_path)
 
-    output_path = make_output_path(opt.out, renames, source_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(str(doc))
+    return doc
 
 
 if __name__ == "__main__":
