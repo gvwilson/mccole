@@ -12,17 +12,13 @@ commands:
 lint:
 	@ruff check mccole
 
-## render: convert to HTML
-render:
-	mccole render \
-	--css mccole/static/page.css \
-	--icon mccole/static/favicon.ico \
-	--templates mccole/templates
-	@touch docs/.nojekyll
+## site: create documentation
+site:
+	mkdocs build
 
-## serve: serve generated HTML
+## serve: serve documentation
 serve:
-	@python -m http.server -d docs $(PORT)
+	mkdocs serve
 
 ## clean: clean up
 clean:

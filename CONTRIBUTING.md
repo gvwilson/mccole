@@ -32,5 +32,5 @@ but must abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
     and received ACM SIGSOFT's Influential Educator Award in 2020.
 
 [pereira-juanan]: https://ikasten.io/
-[repo]: https://github.com/gvwilson/mccole
+[repo]: https://github.com/lessonomicon/mccole
 [wilson-greg]: https://third-bit.com/

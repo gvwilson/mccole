@@ -20,4 +20,4 @@ After installation, the following commands will be available:
 -   `mccole render`: Markdown-to-HTML translator
 -   `mccole stats`: site statistics
 
-[repo]: https://github.com/gvwilson/mccole
+[repo]: https://github.com/lessonomicon/mccole
