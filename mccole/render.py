@@ -16,13 +16,21 @@ def render(opt):
     """Main driver."""
     config = load_config(opt.config)
     skips = config["skips"] | {opt.out}
-    files = find_files(opt, skips)
-    files = {key:{"content": val} for key, val in files.items()}
     env = Environment(loader=FileSystemLoader(opt.templates))
 
-    for filepath, info in files.items():
-        if filepath.suffix == ".md":
-            info["doc"] = render_markdown(env, opt, filepath, info["content"])
+    files = find_files(opt, skips)
+    files = {filepath: {"content": content} for filepath, content in files.items()}
+
+    sections = {
+        filepath: info
+        for filepath, info in files.items()
+        if filepath.suffix == ".md"
+    }
+    for filepath, info in sections.items():
+        info["doc"] = render_markdown(env, opt, filepath, info["content"])
+
+    xref = find_cross_reference_targets(sections)
+    fix_cross_references(sections, xref)
 
     for filepath, info in files.items():
         result = str(info["doc"]) if filepath.suffix == ".md" else info["content"]
@@ -95,6 +103,54 @@ def do_toc_lists(doc, source_path):
         for node in doc.select(selector):
             node.parent.replace_with(node)
             node["class"] = node.get("class", []) + [kind]
+
+
+def find_cross_reference_targets(sections):
+    """Find all cross-reference targets."""
+    ordering = find_ordering(sections)
+    return {
+        "section": ordering,
+        "figure": find_figure_numbers(sections, ordering),
+        "table": find_table_numbers(sections, ordering),
+    }
+
+
+def find_figure_numbers(sections, ordering):
+    """Build figure numbers."""
+    return None
+
+
+def find_ordering(sections):
+    """Create filepath-to-label ordering."""
+    doc = sections[Path("README.md")]["doc"]
+    chapters = {
+        key: str(i+1)
+        for i, key in enumerate(find_ordering_items(doc, "ol.chapters"))
+    }
+    appendices = {
+        key: chr(ord("A")+i)
+        for i, key in enumerate(find_ordering_items(doc, "ol.appendices"))
+    }
+    return {**chapters, **appendices}
+
+
+def find_ordering_items(doc, selector):
+    """Extract ordered items' filepath keys."""
+    nodes = doc.select(selector)
+    assert len(nodes) == 1
+    return [
+        link.select("a")[0]["href"].replace("/index.html", "").split("/")[-1]
+        for link in nodes[0].select("li")
+    ]
+
+
+def find_table_numbers(sections, ordering):
+    """Build table numbers."""
+    return None
+
+
+def fix_cross_references(sections, xref):
+    """Fix all cross-references."""
 
 
 def make_output_path(output_dir, renames, source_path):
