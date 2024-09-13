@@ -29,9 +29,6 @@ def render(opt):
     for filepath, info in sections.items():
         info["doc"] = render_markdown(env, opt, filepath, info["content"])
 
-    xref = find_cross_reference_targets(sections)
-    fix_cross_references(sections, xref)
-
     for filepath, info in files.items():
         result = str(info["doc"]) if filepath.suffix == ".md" else info["content"]
         output_path = make_output_path(opt.out, config["renames"], filepath)
@@ -105,21 +102,6 @@ def do_toc_lists(doc, source_path):
             node["class"] = node.get("class", []) + [kind]
 
 
-def find_cross_reference_targets(sections):
-    """Find all cross-reference targets."""
-    ordering = find_ordering(sections)
-    return {
-        "section": ordering,
-        "figure": find_figure_numbers(sections, ordering),
-        "table": find_table_numbers(sections, ordering),
-    }
-
-
-def find_figure_numbers(sections, ordering):
-    """Build figure numbers."""
-    return None
-
-
 def find_ordering(sections):
     """Create filepath-to-label ordering."""
     doc = sections[Path("README.md")]["doc"]
@@ -142,11 +124,6 @@ def find_ordering_items(doc, selector):
         link.select("a")[0]["href"].replace("/index.html", "").split("/")[-1]
         for link in nodes[0].select("li")
     ]
-
-
-def find_table_numbers(sections, ordering):
-    """Build table numbers."""
-    return None
 
 
 def fix_cross_references(sections, xref):

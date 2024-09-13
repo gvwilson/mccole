@@ -2,7 +2,6 @@
 
 import argparse
 from collections import defaultdict
-from hashlib import sha256
 from pathlib import Path
 import re
 
@@ -24,8 +23,6 @@ def lint(opt):
     """Main driver."""
     config = load_config(opt.config)
     files = find_files(opt, {opt.out})
-
-    check_duplicates(files, config["duplicates"])
     check_file_references(files)
 
     sections = {
@@ -45,26 +42,6 @@ def lint(opt):
     ]
     if all(list(f(opt, sections) for f in linters)):
         print("All self-checks passed.")
-
-
-def check_duplicates(files, expected):
-    """Confirm that duplicated files are as expected."""
-
-    # Construct groups of duplicated files
-    actual = defaultdict(set)
-    for filepath, content in files.items():
-        if filepath.suffix not in SUFFIXES_SRC:
-            continue
-        hash_code = sha256(bytes(content, "utf-8")).hexdigest()
-        actual[hash_code].add(str(filepath))
-    actual = set(frozenset(grp) for grp in actual.values() if len(grp) > 1)
-
-    # Report groups
-    differences = actual.symmetric_difference(expected)
-    if differences:
-        print("duplicate mismatch")
-        for d in differences:
-            print(f"- {', '.join(sorted(d))}")
 
 
 def check_file_references(files):
