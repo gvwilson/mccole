@@ -25,12 +25,17 @@ but must abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 | Name             | Description                  | Color   |
 | ---------------- | ---------------------------- | ------- |
-| add              | something new                | #B60205 |
 | change           | something different          | #FBCA04 |
-| do               | one-off task                 | #1D76DB |
+| feature          | new feature                  | #B60205 |
 | fix              | something broken             | #5319E7 |
 | good first issue | newcomers are always welcome | #D4C5F9 |
 | talk             | question or discussion       | #0E8A16 |
+| task             | one-off task                 | #1D76DB |
+
+Please use [Conventional Commits][conventional] style for pull requests
+by using `change:`, `feature:`, `fix:`, or `task:` as the first word
+in the title of the commit message.
+You may also use `publish:` if the PR just rebuilds the HTML version of the lesson.
 
 ## <a id="contributors">Contributors</a>
 
@@ -42,6 +47,7 @@ but must abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
     He was the co-founder and first Executive Director of Software Carpentry
     and received ACM SIGSOFT's Influential Educator Award in 2020.
 
+[conventional]: https://www.conventionalcommits.org/
 [pereira-juanan]: https://ikasten.io/
 [repo]: https://github.com/lessonomicon/mccole
 [wilson-greg]: https://third-bit.com/
