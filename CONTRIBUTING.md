@@ -21,6 +21,17 @@ but must abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
 -   `python -m build`
 -   `twine upload --verbose -u __token__ -p pypi-your-access-token dist/*`
 
+## Labels
+
+| Name             | Description                  | Color   |
+| ---------------- | ---------------------------- | ------- |
+| add              | something new                | #B60205 |
+| change           | something different          | #FBCA04 |
+| do               | one-off task                 | #1D76DB |
+| fix              | something broken             | #5319E7 |
+| good first issue | newcomers are always welcome | #D4C5F9 |
+| talk             | question or discussion       | #0E8A16 |
+
 ## <a id="contributors">Contributors</a>
 
 -   [*Juanan Pereira*][pereira-juanan] is a lecturer in Computer Science
