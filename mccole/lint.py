@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from .util import MD_LINK_DEF, SUFFIXES, SUFFIXES_SRC, find_files, find_key_defs, load_config
+from .util import MD_LINK_DEF, SUFFIXES, find_files, find_key_defs
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
@@ -21,7 +21,6 @@ TABLE_REF = re.compile(r"\[[^\]]+?\]\(t:(.+?)\)", re.MULTILINE)
 
 def lint(opt):
     """Main driver."""
-    config = load_config(opt.config)
     files = find_files(opt, {opt.out})
     check_file_references(files)
 
@@ -133,7 +132,9 @@ def lint_markdown_links(opt, sections):
     ok = True
     for label, data in found.items():
         if len(data) > 1:
-            print(f"Inconsistent link: {label} => {data}")
+            info = {str(k):", ".join(sorted(str(p) for p in v)) for k, v in data.items()}
+            msg = ", ".join(f"{k} in {v}" for k, v in info.items())
+            print(f"Inconsistent link {label}: {msg}")
             ok = False
     return ok
 

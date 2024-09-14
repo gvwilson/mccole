@@ -2,9 +2,8 @@
 
 import argparse
 from prettytable import PrettyTable
-import re
 
-from .util import FIGURE_DEF, MD_LINK_DEF, find_figure_defs, find_files, find_key_defs, find_table_defs
+from .util import MD_LINK_DEF, find_figure_defs, find_files, find_key_defs, find_table_defs
 
 
 TABLE_FMT = {
