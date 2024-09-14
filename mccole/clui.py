@@ -1,9 +1,11 @@
 '''Interface for command-line script.'''
 
 import argparse
+import cProfile
 import importlib.metadata
 import importlib.resources
 from pathlib import Path
+import pstats
 import sys
 
 from .lint import lint, parse_args as lint_parser
@@ -29,6 +31,7 @@ def main():
     install_parser(subparsers.add_parser('install', help='install files'))
     lint_parser(subparsers.add_parser('lint', help='check site'))
     render_parser(subparsers.add_parser('render', help='build site'))
+    render_parser(subparsers.add_parser('profile', help='profile building site'))
     stats_parser(subparsers.add_parser('stats', help='show stats'))
 
     opt = parser.parse_args()
@@ -38,6 +41,12 @@ def main():
         install(opt)
     elif opt.cmd == 'lint':
         lint(opt)
+    elif opt.cmd == 'profile':
+        with cProfile.Profile() as profiler:
+            render(opt)
+            stats = pstats.Stats(profiler)
+            stats.sort_stats('tottime')
+            stats.print_stats(16)
     elif opt.cmd == 'render':
         render(opt)
     elif opt.cmd == 'stats':
