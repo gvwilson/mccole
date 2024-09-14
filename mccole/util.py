@@ -62,6 +62,26 @@ def find_table_defs(files):
     return found
 
 
+def get_inclusion(source_path, inc_spec):
+    """Load inclusion, returning path, suffix, and text."""
+    if ":" in inc_spec:
+        assert inc_spec.count(":") == 1, f"Bad inclusion spec '{inc_spec}' in {source_path}"
+        inc_file, mark = inc_spec.split(":")
+        assert inc_file and mark, f"Bad inclusion spec '{inc_spec}' in {source_path}"
+    else:
+        inc_file, mark = inc_spec, None
+    inc_path = Path(source_path.parent, inc_file)
+    inc_text = inc_path.read_text().strip()
+    if mark is not None:
+        start, end = f"[{mark}]", f"[/{mark}]"
+        assert (inc_text.count(start) == 1) and (inc_text.count(end) == 1), \
+            f"Bad start '{start}' and/or end '{end}' in {inc_spec} in {source_path}"
+        inc_text = inc_text.split(start)[1].split(end)[0]
+        inc_text = inc_text[:inc_text.rfind("\n")].strip()
+    suffix = inc_path.suffix.lstrip(".")
+    return inc_path, suffix, inc_text
+
+
 def load_config(config_path):
     """Load configuration file or construct default."""
     if config_path is None:

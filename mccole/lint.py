@@ -5,14 +5,14 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from .util import MD_LINK_DEF, SUFFIXES, find_files, find_key_defs
+from .util import MD_LINK_DEF, SUFFIXES, find_files, find_key_defs, get_inclusion
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
 FIGURE_DEF = re.compile(r'<figure\s+id="(.+?)"\s*>', re.MULTILINE)
 FIGURE_REF = re.compile(r"\[[^\]]+?\]\(f:(.+?)\)", re.MULTILINE)
 GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
-MD_CODEBLOCK_FILE = re.compile(r"^```\s*\{\s*\.(.+?)\s+\#(.+?)\s*\}\s*$(.+?)^```\s*$", re.DOTALL + re.MULTILINE)
+MD_CODEBLOCK_FILE = re.compile(r'^```\s*\{\s*file="(.+?)"\s*\}\s*$(.+?)```\s*$', re.DOTALL + re.MULTILINE)
 MD_FILE_LINK = re.compile(r"\[(.+?)\]\((.+?)\)", re.MULTILINE)
 MD_LINK_REF = re.compile(r"\[(.+?)\]\[(.+?)\]", re.MULTILINE)
 TABLE_DEF = re.compile(r'<table\s+id="(.+?)"\s*>', re.MULTILINE)
@@ -73,10 +73,10 @@ def lint_codeblock_inclusions(opt, sections):
     ok = True
     for filepath, content in sections.items():
         for block in MD_CODEBLOCK_FILE.finditer(content):
-            codepath, expected = block.group(2), block.group(3).strip()
-            actual = Path(filepath.parent, codepath).read_text().strip()
-            if actual != expected:
-                print(f"Content mismatch: {filepath} => {codepath}")
+            inc_spec, expected = block.group(1), block.group(2).strip()
+            _, _, inc_text = get_inclusion(filepath, inc_spec)
+            if inc_text != expected:
+                print(f"Content mismatch: {filepath} / {inc_spec}")
                 ok = False
     return ok
 

@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 from pathlib import Path
 
-from .util import find_files, load_config, write_file
+from .util import find_files, get_inclusion, load_config, write_file
 
 
 MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
@@ -59,9 +59,8 @@ def do_glossary_links(doc, source_path):
 def do_inclusions_refresh(doc, source_path):
     """Refresh file inclusions."""
     for node in doc.select("code[file]"):
-        inc_path = Path(source_path.parent, node["file"])
-        node.string = inc_path.read_text().strip()
-        suffix = inc_path.suffix.lstrip(".")
+        _, suffix, inc_text = get_inclusion(source_path, node["file"])
+        node.string = inc_text
         node["class"] = node.get("class", []) + [f"language-{suffix}"]
 
 
