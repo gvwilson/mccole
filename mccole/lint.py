@@ -9,6 +9,7 @@ from .util import MD_LINK_DEF, SUFFIXES, find_files, find_key_defs, get_inclusio
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
+FIGURE_CAPTION = re.compile(r'<figcaption>(.+?)</figcaption>', re.MULTILINE)
 FIGURE_DEF = re.compile(r'<figure\s+id="(.+?)"\s*>', re.MULTILINE)
 FIGURE_REF = re.compile(r"\[[^\]]+?\]\(f:(.+?)\)", re.MULTILINE)
 GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
@@ -32,6 +33,7 @@ def lint(opt):
     linters = [
         lint_bibliography_references,
         lint_codeblock_inclusions,
+        lint_figure_numbers,
         lint_figure_references,
         lint_glossary_redefinitions,
         lint_glossary_references,
@@ -77,6 +79,40 @@ def lint_codeblock_inclusions(opt, sections):
             _, _, inc_text = get_inclusion(filepath, inc_spec)
             if inc_text != expected:
                 print(f"Content mismatch: {filepath} / {inc_spec}")
+                ok = False
+    return ok
+
+
+def lint_figure_numbers(opt, sections):
+    """Check figure numbering."""
+    ok = True
+    for filepath, content in sections.items():
+        current = 1
+        for caption in FIGURE_CAPTION.finditer(content):
+            text = caption.group(1)
+            if ("Figure" not in text) or (":" not in text):
+                print(f"Bad caption: {filepath} / '{text}'")
+                ok = False
+                continue
+            fields = text.split(":")
+            if len(fields) != 2:
+                print(f"Bad caption: {filepath} / '{text}'")
+                ok = False
+                continue
+            fields = fields[0].split(" ")
+            if len(fields) != 2:
+                print(f"Bad caption: {filepath} / '{text}'")
+                ok = False
+                continue
+            try:
+                number = int(fields[1])
+                if number != current:
+                    print(f"Caption number out of sequence: {filepath} / '{text}'")
+                    ok = False
+                else:
+                    current += 1
+            except ValueError:
+                print(f"Bad caption number: {filepath} / '{text}'")
                 ok = False
     return ok
 
