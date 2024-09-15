@@ -44,9 +44,9 @@ def main():
     elif opt.cmd == 'profile':
         with cProfile.Profile() as profiler:
             render(opt)
-            stats = pstats.Stats(profiler)
-            stats.sort_stats('tottime')
-            stats.print_stats(16)
+            result = pstats.Stats(profiler)
+            result.sort_stats('tottime')
+            result.print_stats(16)
     elif opt.cmd == 'render':
         render(opt)
     elif opt.cmd == 'stats':

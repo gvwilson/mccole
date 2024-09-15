@@ -1,6 +1,8 @@
 """Utilities."""
 
 from collections import defaultdict
+from git import Repo
+from github import Github
 from pathlib import Path
 import re
 import tomli
@@ -80,6 +82,17 @@ def get_inclusion(source_path, inc_spec):
         inc_text = inc_text[:inc_text.rfind("\n")].strip()
     suffix = inc_path.suffix.lstrip(".")
     return inc_path, suffix, inc_text
+
+
+def get_repo(root_dir):
+    """Get GitHub repository object for this project."""
+    repo = Repo(root_dir)
+    url = list(repo.remotes["origin"].urls)[0]
+    if "@github.com" in url:
+        user_proj = url.split(":")[1].replace(".git", "")
+    else:
+        user_proj = url.replace("https://github.com/", "").lstrip("/")
+    return Github().get_repo(user_proj)
 
 
 def load_config(config_path):

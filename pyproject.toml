@@ -10,7 +10,7 @@ mypkg = ["*.css", "*.js", "*.html"]
 
 [project]
 name = "mccole"
-version = "0.2.16"
+version = "0.2.17"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
 ]
@@ -28,10 +28,12 @@ classifiers = [
 dependencies = [
     "beautifulsoup4>=4.12.3",
     "esprima>=4.0.1",
+    "gitpython>=3.1",
     "html5validator>=0.4.2",
     "jinja2>=3.1.4",
     "markdown>=3.6",
     "prettytable>=3.11",
+    "pygithub>=2.4",
     "ruff>=0.6.0",
     "tomli>=2.0.1",
 ]
