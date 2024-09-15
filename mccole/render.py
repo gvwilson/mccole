@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 from pathlib import Path
+import sys
 
 from .util import find_files, get_inclusion, load_config, write_file
 
@@ -86,7 +87,11 @@ def do_tables(doc, source_path):
 
 def do_title(doc, source_path):
     """Make sure title element is filled in."""
-    doc.title.string = doc.h1.get_text()
+    try:
+        doc.title.string = doc.h1.get_text()
+    except Exception as exc:
+        print(f"{source_path} lacks H1 heading", file=sys.stderr)
+        sys.exit(1)
 
 
 def do_root_path_prefix(doc, source_path):
