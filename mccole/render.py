@@ -56,11 +56,13 @@ def do_glossary_links(doc, source_path):
             node["href"] = f"@root/glossary.html#{node['href'][2:]}"
 
 
-def do_inclusions_refresh(doc, source_path):
-    """Refresh file inclusions."""
+def do_inclusions_classes(doc, source_path):
+    """Adjust classes of file inclusions."""
     for node in doc.select("code[file]"):
-        _, suffix, inc_text = get_inclusion(source_path, node["file"])
-        node.string = inc_text
+        inc_text = node["file"]
+        if ":" in inc_text:
+            inc_text = inc_text.split(":")[0]
+        suffix = inc_text.split(".")[-1]
         node["class"] = node.get("class", []) + [f"language-{suffix}"]
 
 
@@ -152,7 +154,6 @@ def parse_args(parser):
     parser.add_argument("--css", type=str, help="CSS file")
     parser.add_argument("--icon", type=str, help="icon file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
-    parser.add_argument("--refresh", action="store_true", help="refresh code samples")
     parser.add_argument("--root", type=str, default=".", help="root directory")
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
@@ -166,14 +167,13 @@ def render_markdown(env, opt, source_path, content):
     transformers = (
         do_bibliography_links,
         do_glossary_links,
+        do_inclusions_classes,
         do_markdown_links,
         do_tables,
         do_title,
         do_toc_lists,
         do_root_path_prefix, # must be last
     )
-    if opt.refresh:
-        transformers = (do_inclusions_refresh, *transformers)
     doc = BeautifulSoup(html, "html.parser")
     for func in transformers:
         func(doc, source_path)
