@@ -63,7 +63,8 @@ def do_inclusions_classes(doc, source_path):
         if ":" in inc_text:
             inc_text = inc_text.split(":")[0]
         suffix = inc_text.split(".")[-1]
-        node["class"] = node.get("class", []) + [f"language-{suffix}"]
+        for n in (node, node.parent):
+            n["class"] = n.get("class", []) + [f"language-{suffix}"]
 
 
 def do_markdown_links(doc, source_path):
