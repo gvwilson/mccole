@@ -12,7 +12,6 @@ DEFAULT_CONFIG = {
     "duplicates": set(),
     "skips": set(),
 }
-FIGURE_DEF = re.compile(r'<figure\s+id="(.+?)"\s*>\s+<img\s+src="(.+?)"\s+alt="(.+?)"\s*>\s+<figcaption>(.+?)</figcaption>\s+</figure>', re.MULTILINE)
 GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
 KEY_DEF = re.compile(r'^<span\s+id="(.+?)">(.+?)</span>\s*$', re.MULTILINE)
 MD_LINK_DEF = re.compile(r"^\[(.+?)\]:\s+(.+?)\s*$", re.MULTILINE)
@@ -20,21 +19,7 @@ SUFFIXES_BIN = {".ico", ".jpg", ".png"}
 SUFFIXES_SRC = {".css", ".html", ".js", ".md", ".py", ".sh", ".sql", ".txt"}
 SUFFIXES_TXT = SUFFIXES_SRC | {".csv", ".json", ".svg"}
 SUFFIXES = SUFFIXES_BIN | SUFFIXES_TXT
-TABLE_DEF = re.compile(r'<table\s+id="(.+?)"\s*>.+?<caption>(.+?)</caption>\s*</table>', re.MULTILINE + re.DOTALL)
-
-
-def find_figure_defs(files):
-    """Collect all figure definitions."""
-    found = defaultdict(list)
-    for path, content in files.items():
-        if path.suffix == ".md":
-            for figure in FIGURE_DEF.finditer(content):
-                found[figure[1]].append({
-                    "img": figure[2],
-                    "alt": figure[3],
-                    "caption": figure[4],
-                })
-    return found
+TABLE_DEF = re.compile(r'<table\s+id="(.+?)"\s*>.+?<caption>(.+?)</caption>\s*</table>', re.DOTALL + re.MULTILINE)
 
 
 def find_files(opt, skips=None):

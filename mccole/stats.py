@@ -1,11 +1,18 @@
 """Report site stats."""
 
 import argparse
+from collections import defaultdict
 from prettytable import PrettyTable
+import re
 
-from .util import MD_LINK_DEF, find_figure_defs, find_files, find_key_defs, find_table_defs, get_repo
+from .util import MD_LINK_DEF, find_files, find_key_defs, find_table_defs, get_repo
 
 
+FIGURE_DEF = re.compile(r'\[%\s*figure\b(.+?)%\]', re.DOTALL + re.MULTILINE)
+FIGURE_ALT = re.compile(r'alt="(.+?)"', re.MULTILINE)
+FIGURE_CAPTION = re.compile(r'caption="(.+?)"', re.MULTILINE)
+FIGURE_ID = re.compile(r'id="(.+?)"', re.MULTILINE)
+FIGURE_SRC = re.compile(r'src="(.+?)"', re.MULTILINE)
 TABLE_FMT = {
     "stat": "l",
     "value": "r",
@@ -21,19 +28,36 @@ def stats(opt):
     files = find_files(opt, {opt.out})
     table.add_row(("bibliography entries", len(find_key_defs(files, "bibliography"))))
     table.add_row(("glossary entries", len(find_key_defs(files, "glossary"))))
-    table.add_row(("figures", len(find_figure_defs(files))))
-    table.add_row(("link definitions", len(find_markdown_link_defs(files))))
-    table.add_row(("tables", len(find_table_defs(files))))
+
+    sections = {path: data["content"] for path, data in files.items()}
+    table.add_row(("figures", len(find_figure_defs(sections))))
+    table.add_row(("link definitions", len(find_markdown_link_defs(sections))))
+    table.add_row(("tables", len(find_table_defs(sections))))
     table.add_row(("issues", get_num_issues(opt.root)))
     table.add_row(("pull requests", get_num_pull_requests(opt.root)))
 
     print(table)
 
 
-def find_markdown_link_defs(files):
+def find_figure_defs(files):
+    """Collect all figure definitions."""
+    found = defaultdict(list)
+    for path, content in files.items():
+        if path.suffix == ".md":
+            for figure in FIGURE_DEF.finditer(content):
+                text = figure.group(1)
+                found[FIGURE_ID.search(text).group(1)].append({
+                    "src": FIGURE_SRC.search(text).group(1),
+                    "alt": FIGURE_ALT.search(text).group(1),
+                    "caption": FIGURE_CAPTION.search(text).group(1),
+                })
+    return found
+
+
+def find_markdown_link_defs(sections):
     """Collect Markdown link key definnitions."""
     found = set()
-    for filepath, content in files.items():
+    for filepath, content in sections.items():
         if filepath.suffix == ".md":
             for link in MD_LINK_DEF.finditer(content):
                 found.add(link[0])
