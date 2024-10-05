@@ -28,23 +28,21 @@ def render(opt):
     parser = make_shortcodes_parser()
 
     files = find_files(opt, skips)
-    files = {filepath: {"content": content} for filepath, content in files.items()}
-
     sections = {
-        filepath: info
-        for filepath, info in files.items()
-        if filepath.suffix == ".md"
+        path: info
+        for path, info in files.items()
+        if path.suffix == ".md"
     }
     extras = {
-        "bibliography": find_key_defs(sections, "bibliography", "content"),
-        "glossary": find_key_defs(sections, "glossary", "content"),
+        "bibliography": find_key_defs(sections, "bibliography"),
+        "glossary": find_key_defs(sections, "glossary"),
     }
-    for filepath, info in sections.items():
-        info["doc"] = render_markdown(env, opt, parser, extras, filepath, info["content"])
+    for path, info in sections.items():
+        info["doc"] = render_markdown(env, opt, parser, extras, path, info["content"])
 
-    for filepath, info in files.items():
-        result = str(info["doc"]) if filepath.suffix == ".md" else info["content"]
-        output_path = make_output_path(opt.out, config["renames"], filepath)
+    for path, info in files.items():
+        result = str(info["doc"]) if path.suffix == ".md" else info["content"]
+        output_path = make_output_path(opt.out, config["renames"], path)
         write_file(output_path, result)
 
 
@@ -135,7 +133,7 @@ def do_toc_lists(doc, source_path, extras):
 
 
 def find_ordering(sections):
-    """Create filepath-to-label ordering."""
+    """Create path-to-label ordering."""
     doc = sections[Path("README.md")]["doc"]
     chapters = {
         key: str(i+1)
@@ -149,7 +147,7 @@ def find_ordering(sections):
 
 
 def find_ordering_items(doc, selector):
-    """Extract ordered items' filepath keys."""
+    """Extract ordered items' path keys."""
     nodes = doc.select(selector)
     assert len(nodes) == 1
     return [

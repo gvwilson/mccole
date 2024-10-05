@@ -26,8 +26,8 @@ TABLE_DEF = re.compile(r'<table\s+id="(.+?)"\s*>.+?<caption>(.+?)</caption>\s*</
 def find_figure_defs(files):
     """Collect all figure definitions."""
     found = defaultdict(list)
-    for filepath, content in files.items():
-        if filepath.suffix == ".md":
+    for path, content in files.items():
+        if path.suffix == ".md":
             for figure in FIGURE_DEF.finditer(content):
                 found[figure[1]].append({
                     "img": figure[2],
@@ -40,27 +40,26 @@ def find_figure_defs(files):
 def find_files(opt, skips=None):
     """Collect all interesting files."""
     return {
-        filepath: read_file(filepath)
-        for filepath in Path(opt.root).glob("**/*.*")
-        if _is_interesting_file(filepath, skips)
+        path: {"content": read_file(path)}
+        for path in Path(opt.root).glob("**/*.*")
+        if _is_interesting_file(path, skips)
     }
 
 
-def find_key_defs(files, term, subkey=None):
+def find_key_defs(files, term):
     """Find key definitions in definition list file."""
     candidates = [k for k in files if term in str(k).lower()]
     if len(candidates) != 1:
         return None
     file_key = candidates[0]
-    content = files[file_key] if subkey is None else files[file_key][subkey]
-    return {m[0]:m[1] for m in KEY_DEF.findall(content)}
+    return {m[0]:m[1] for m in KEY_DEF.findall(files[file_key]["content"])}
 
 
 def find_table_defs(files):
     """Collect all table definitions."""
     found = defaultdict(list)
-    for filepath, content in files.items():
-        if filepath.suffix == ".md":
+    for path, content in files.items():
+        if path.suffix == ".md":
             for table in TABLE_DEF.finditer(content):
                 found[table[1]].append({"caption": table[2],})
     return found
@@ -113,33 +112,33 @@ def load_config(config_path):
     return config
 
 
-def read_file(filepath):
+def read_file(path):
     """Read file as bytes or text."""
-    if filepath.suffix in SUFFIXES_TXT:
-        return filepath.read_text()
+    if path.suffix in SUFFIXES_TXT:
+        return path.read_text()
     else:
-        return filepath.read_bytes()
+        return path.read_bytes()
 
 
-def write_file(filepath, content):
+def write_file(path, content):
     """Write file as bytes or text."""
-    filepath.parent.mkdir(parents=True, exist_ok=True)
-    if filepath.suffix in SUFFIXES_TXT:
-        return filepath.write_text(content)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.suffix in SUFFIXES_TXT:
+        return path.write_text(content)
     else:
-        return filepath.write_bytes(content)
+        return path.write_bytes(content)
 
 
-def _is_interesting_file(filepath, skips):
+def _is_interesting_file(path, skips):
     """Is this file worth checking?"""
-    if not filepath.is_file():
+    if not path.is_file():
         return False
-    if str(filepath).startswith("."):
+    if str(path).startswith("."):
         return False
-    if filepath.suffix not in SUFFIXES:
+    if path.suffix not in SUFFIXES:
         return False
-    if str(filepath.parent.name).startswith("."):
+    if str(path.parent.name).startswith("."):
         return False
-    if skips and any(str(filepath).startswith(s) for s in skips):
+    if skips and any(str(path).startswith(s) for s in skips):
         return False
     return True

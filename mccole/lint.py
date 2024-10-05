@@ -24,14 +24,10 @@ def lint(opt):
     files = find_files(opt, {opt.out})
     check_file_references(files)
 
-    sections = {
-        filepath: content
-        for filepath, content in files.items()
-        if filepath.suffix == ".md"
-    }
+    files = {path: data for path, data in files.items() if path.suffix == ".md"}
     extras = {
-        "bibliography": find_key_defs(sections, "bibliography"),
-        "glossary": find_key_defs(sections, "glossary"),
+        "bibliography": find_key_defs(files, "bibliography"),
+        "glossary": find_key_defs(files, "glossary"),
     }
 
     linters = [
@@ -45,6 +41,7 @@ def lint(opt):
         lint_markdown_links,
         lint_table_references,
     ]
+    sections = {path: data["content"] for path, data in files.items()}
     if all(list(f(opt, sections, extras) for f in linters)):
         print("All self-checks passed.")
 
@@ -52,15 +49,16 @@ def lint(opt):
 def check_file_references(files):
     """Check inter-file references."""
     ok = True
-    for filepath, content in files.items():
-        if filepath.suffix != ".md":
+    for path, data in files.items():
+        content = data["content"]
+        if path.suffix != ".md":
             continue
         for link in MD_FILE_LINK.finditer(content):
             if _is_special_link(link.group(2)):
                 continue
-            target = _resolve_path(filepath.parent, link.group(2))
+            target = _resolve_path(path.parent, link.group(2))
             if _is_missing(target, files):
-                print(f"Missing file: {filepath} => {target}")
+                print(f"Missing file: {path} => {target}")
                 ok = False
     return ok
 
@@ -77,12 +75,12 @@ def lint_bibliography_references(opt, sections, extras):
 def lint_codeblock_inclusions(opt, sections, extras):
     """Check file inclusions."""
     ok = True
-    for filepath, content in sections.items():
+    for path, content in sections.items():
         for block in MD_CODEBLOCK_FILE.finditer(content):
             inc_spec, expected = block.group(1), block.group(2).strip()
-            _, _, inc_text = get_inclusion(filepath, inc_spec)
+            _, _, inc_text = get_inclusion(path, inc_spec)
             if inc_text != expected:
-                print(f"Content mismatch: {filepath} / {inc_spec}")
+                print(f"Content mismatch: {path} / {inc_spec}")
                 ok = False
     return ok
 
@@ -90,33 +88,33 @@ def lint_codeblock_inclusions(opt, sections, extras):
 def lint_figure_numbers(opt, sections, extras):
     """Check figure numbering."""
     ok = True
-    for filepath, content in sections.items():
+    for path, content in sections.items():
         current = 1
         for caption in FIGURE_CAPTION.finditer(content):
             text = caption.group(1)
             if ("Figure" not in text) or (":" not in text):
-                print(f"Bad caption: {filepath} / '{text}'")
+                print(f"Bad caption: {path} / '{text}'")
                 ok = False
                 continue
             fields = text.split(":")
             if len(fields) != 2:
-                print(f"Bad caption: {filepath} / '{text}'")
+                print(f"Bad caption: {path} / '{text}'")
                 ok = False
                 continue
             fields = fields[0].split(" ")
             if len(fields) != 2:
-                print(f"Bad caption: {filepath} / '{text}'")
+                print(f"Bad caption: {path} / '{text}'")
                 ok = False
                 continue
             try:
                 number = int(fields[1])
                 if number != current:
-                    print(f"Caption number out of sequence: {filepath} / '{text}'")
+                    print(f"Caption number out of sequence: {path} / '{text}'")
                     ok = False
                 else:
                     current += 1
             except ValueError:
-                print(f"Bad caption number: {filepath} / '{text}'")
+                print(f"Bad caption number: {path} / '{text}'")
                 ok = False
     return ok
 
@@ -129,11 +127,11 @@ def lint_figure_references(opt, sections, extras):
 def lint_glossary_redefinitions(opt, sections, extras):
     """Check glossary redefinitions."""
     found = defaultdict(set)
-    for filepath, content in sections.items():
-        if "glossary" in str(filepath).lower():
+    for path, content in sections.items():
+        if "glossary" in str(path).lower():
             continue
         for m in GLOSS_REF.finditer(content):
-            found[m[1]].add(str(filepath))
+            found[m[1]].add(str(path))
 
     problems = {k:v for k, v in found.items() if len(v) > 1}
     for k, v in problems.items():
@@ -154,20 +152,20 @@ def lint_glossary_references(opt, sections, extras):
 def lint_link_definitions(opt, sections, extras):
     """Check that Markdown files define the links they use."""
     ok = True
-    for filepath, content in sections.items():
+    for path, content in sections.items():
         link_refs = {m[1] for m in MD_LINK_REF.findall(content)}
         link_defs = {m[0] for m in MD_LINK_DEF.findall(content)}
-        ok = ok and _report_diff(f"{filepath} links", link_refs, link_defs)
+        ok = ok and _report_diff(f"{path} links", link_refs, link_defs)
     return ok
 
 
 def lint_markdown_links(opt, sections, extras):
     """Check consistency of Markdown links."""
     found = defaultdict(lambda: defaultdict(set))
-    for filepath, content in sections.items():
+    for path, content in sections.items():
         for link in MD_LINK_DEF.finditer(content):
             label, url = link.group(1), link.group(2)
-            found[label][url].add(filepath)
+            found[label][url].add(path)
 
     ok = True
     for label, data in found.items():
@@ -195,10 +193,10 @@ def parse_args(parser):
 def _check_object_refs(sections, kind, pattern_def, pattern_ref):
     """Check for figure and table references within each Markdown file."""
     ok = True
-    for filepath, content in sections.items():
+    for path, content in sections.items():
         defined = set(pattern_def.findall(content))
         referenced = set(pattern_def.findall(content))
-        ok = _report_diff(f"{filepath} {kind}", referenced, defined) and ok
+        ok = _report_diff(f"{path} {kind}", referenced, defined) and ok
     return ok
 
 
@@ -206,12 +204,12 @@ def _check_references(sections, term, regexp, available):
     """Check all Markdown files for cross-references."""
     ok = True
     seen = set()
-    for filepath, content in sections.items():
+    for path, content in sections.items():
         found = {k.group(1) for k in regexp.finditer(content)}
         seen |= found
         missing = found - available
         if missing:
-            print(f"Missing {term} keys in {filepath}: {', '.join(sorted(missing))}")
+            print(f"Missing {term} keys in {path}: {', '.join(sorted(missing))}")
             ok = False
 
     unused = available - seen
