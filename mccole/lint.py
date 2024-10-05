@@ -5,14 +5,13 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from .util import MD_LINK_DEF, SUFFIXES, find_files, find_key_defs, get_inclusion
+from .util import GLOSS_REF, MD_LINK_DEF, SUFFIXES, find_files, find_key_defs, get_inclusion
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
 FIGURE_CAPTION = re.compile(r'<figcaption>(.+?)</figcaption>', re.MULTILINE)
 FIGURE_DEF = re.compile(r'<figure\s+id="(.+?)"\s*>', re.MULTILINE)
 FIGURE_REF = re.compile(r"\[[^\]]+?\]\(f:(.+?)\)", re.MULTILINE)
-GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
 MD_CODEBLOCK_FILE = re.compile(r'^```\s*\{\s*file="(.+?)"\s*\}\s*$(.+?)```\s*$', re.DOTALL + re.MULTILINE)
 MD_FILE_LINK = re.compile(r"\[(.+?)\]\((.+?)\)", re.MULTILINE)
 MD_LINK_REF = re.compile(r"\[(.+?)\]\[(.+?)\]", re.MULTILINE)
@@ -30,6 +29,11 @@ def lint(opt):
         for filepath, content in files.items()
         if filepath.suffix == ".md"
     }
+    extras = {
+        "bibliography": find_key_defs(sections, "bibliography"),
+        "glossary": find_key_defs(sections, "glossary"),
+    }
+
     linters = [
         lint_bibliography_references,
         lint_codeblock_inclusions,
@@ -41,7 +45,7 @@ def lint(opt):
         lint_markdown_links,
         lint_table_references,
     ]
-    if all(list(f(opt, sections) for f in linters)):
+    if all(list(f(opt, sections, extras) for f in linters)):
         print("All self-checks passed.")
 
 
@@ -61,16 +65,16 @@ def check_file_references(files):
     return ok
 
 
-def lint_bibliography_references(opt, sections):
+def lint_bibliography_references(opt, sections, extras):
     """Check bibliography references."""
-    available = find_key_defs(sections, "bibliography")
+    available = set(extras["bibliography"].keys())
     if available is None:
         print("No bibliography found (or multiple matches)")
         return False
     return _check_references(sections, "bibliography", BIB_REF, available)
 
 
-def lint_codeblock_inclusions(opt, sections):
+def lint_codeblock_inclusions(opt, sections, extras):
     """Check file inclusions."""
     ok = True
     for filepath, content in sections.items():
@@ -83,7 +87,7 @@ def lint_codeblock_inclusions(opt, sections):
     return ok
 
 
-def lint_figure_numbers(opt, sections):
+def lint_figure_numbers(opt, sections, extras):
     """Check figure numbering."""
     ok = True
     for filepath, content in sections.items():
@@ -117,12 +121,12 @@ def lint_figure_numbers(opt, sections):
     return ok
 
 
-def lint_figure_references(opt, sections):
+def lint_figure_references(opt, sections, extras):
     """Check figure references."""
     return _check_object_refs(sections, "figure", FIGURE_DEF, FIGURE_REF)
 
 
-def lint_glossary_redefinitions(opt, sections):
+def lint_glossary_redefinitions(opt, sections, extras):
     """Check glossary redefinitions."""
     found = defaultdict(set)
     for filepath, content in sections.items():
@@ -138,16 +142,16 @@ def lint_glossary_redefinitions(opt, sections):
     return len(problems) == 0
 
 
-def lint_glossary_references(opt, sections):
+def lint_glossary_references(opt, sections, extras):
     """Check glossary references."""
-    available = find_key_defs(sections, "glossary")
+    available = set(extras["glossary"].keys())
     if available is None:
         print("No glossary found (or multiple matches)")
         return False
     return _check_references(sections, "glossary", GLOSS_REF, available)
 
 
-def lint_link_definitions(opt, sections):
+def lint_link_definitions(opt, sections, extras):
     """Check that Markdown files define the links they use."""
     ok = True
     for filepath, content in sections.items():
@@ -157,7 +161,7 @@ def lint_link_definitions(opt, sections):
     return ok
 
 
-def lint_markdown_links(opt, sections):
+def lint_markdown_links(opt, sections, extras):
     """Check consistency of Markdown links."""
     found = defaultdict(lambda: defaultdict(set))
     for filepath, content in sections.items():
@@ -175,7 +179,7 @@ def lint_markdown_links(opt, sections):
     return ok
 
 
-def lint_table_references(opt, sections):
+def lint_table_references(opt, sections, extras):
     """Check figure references."""
     return _check_object_refs(sections, "table", TABLE_DEF, TABLE_REF)
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import shortcodes
 import sys
 
-from .util import find_files, get_inclusion, load_config, write_file
+from .util import find_files, find_key_defs, get_inclusion, load_config, write_file
 
 
 FIGURE = """\
@@ -35,8 +35,12 @@ def render(opt):
         for filepath, info in files.items()
         if filepath.suffix == ".md"
     }
+    extras = {
+        "bibliography": find_key_defs(sections, "bibliography", "content"),
+        "glossary": find_key_defs(sections, "glossary", "content"),
+    }
     for filepath, info in sections.items():
-        info["doc"] = render_markdown(env, opt, parser, filepath, info["content"])
+        info["doc"] = render_markdown(env, opt, parser, extras, filepath, info["content"])
 
     for filepath, info in files.items():
         result = str(info["doc"]) if filepath.suffix == ".md" else info["content"]
@@ -51,21 +55,25 @@ def choose_template(env, source_path):
     return env.get_template("page.html")
 
 
-def do_bibliography_links(doc, source_path):
+def do_bibliography_links(doc, source_path, extras):
     """Turn 'b:key' links into bibliography references."""
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
             node["href"] = f"@root/bibliography.html#{node['href'][2:]}"
 
 
-def do_glossary_links(doc, source_path):
-    """Turn 'g:key' links into glossary references."""
+def do_glossary(doc, source_path, extras):
+    """Turn 'g:key' links into glossary references and insert list of terms."""
+    seen = set()
     for node in doc.select("a[href]"):
         if node["href"].startswith("g:"):
-            node["href"] = f"@root/glossary.html#{node['href'][2:]}"
+            key = node["href"][2:]
+            node["href"] = f"@root/glossary.html#{key}"
+            seen.add(key)
+    _insert_term_list(doc, source_path, seen, extras)
 
 
-def do_inclusions_classes(doc, source_path):
+def do_inclusions_classes(doc, source_path, extras):
     """Adjust classes of file inclusions."""
     for node in doc.select("code[file]"):
         inc_text = node["file"]
@@ -76,14 +84,14 @@ def do_inclusions_classes(doc, source_path):
             n["class"] = n.get("class", []) + [f"language-{suffix}"]
 
 
-def do_markdown_links(doc, source_path):
+def do_markdown_links(doc, source_path, extras):
     """Fix .md links in HTML."""
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
 
 
-def do_tables(doc, source_path):
+def do_tables(doc, source_path, extras):
     """Eliminate duplicate table tags created by Markdown tables inside HTML tables."""
     for node in doc.select("table"):
         parent = node.parent
@@ -93,7 +101,7 @@ def do_tables(doc, source_path):
             parent.replace_with(node)
 
 
-def do_title(doc, source_path):
+def do_title(doc, source_path, extras):
     """Make sure title element is filled in."""
     try:
         doc.title.string = doc.h1.get_text()
@@ -102,7 +110,7 @@ def do_title(doc, source_path):
         sys.exit(1)
 
 
-def do_root_path_prefix(doc, source_path):
+def do_root_path_prefix(doc, source_path, extras):
     """Fix @root links in HTML."""
     depth = len(source_path.parents) - 1
     prefix = "./" if (depth == 0) else "../" * depth
@@ -117,7 +125,7 @@ def do_root_path_prefix(doc, source_path):
                 node[attr] = node[attr].replace("@root/", prefix)
 
 
-def do_toc_lists(doc, source_path):
+def do_toc_lists(doc, source_path, extras):
     """Fix 'chapters' and 'appendices' lists."""
     for kind in ("chapters", "appendices"):
         selector = f"ol.{kind} ol"
@@ -179,7 +187,7 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, parser, source_path, content):
+def render_markdown(env, opt, parser, extras, source_path, content):
     """Convert Markdown to HTML."""
     expanded = parser.parse(content)
     template = choose_template(env, source_path)
@@ -188,7 +196,7 @@ def render_markdown(env, opt, parser, source_path, content):
 
     transformers = (
         do_bibliography_links,
-        do_glossary_links,
+        do_glossary,
         do_inclusions_classes,
         do_markdown_links,
         do_tables,
@@ -198,7 +206,7 @@ def render_markdown(env, opt, parser, source_path, content):
     )
     doc = BeautifulSoup(html, "html.parser")
     for func in transformers:
-        func(doc, source_path)
+        func(doc, source_path, extras)
 
     return doc
 
@@ -209,6 +217,27 @@ def shortcode_figure(pargs, kwargs, context):
     assert actual_keys == {"id", "src", "alt", "caption"}, \
         f"Bad 'figure' shortcode with keys {actual_keys}"
     return FIGURE.format(**kwargs)
+
+
+def _insert_term_list(doc, source_path, seen, extras):
+    """Insert list of defined terms."""
+    target = doc.select("p#terms")
+    if not target:
+        return
+    assert len(target) == 1, f"Duplicate p#terms in {source_path}"
+    target = target[0]
+    if not seen:
+        target.decompose()
+        return
+    glossary = {key: extras["glossary"][key] for key in seen}
+    glossary = {k: v for k, v in sorted(glossary.items(), key=lambda item: item[1].lower())}
+    target.append("Terms defined: ")
+    for i, (key, term) in enumerate(glossary.items()):
+        if i > 0:
+            target.append(", ")
+        ref = doc.new_tag("a", href=f"@root/glossary.html#{key}")
+        ref.string = term
+        target.append(ref)
 
 
 if __name__ == "__main__":

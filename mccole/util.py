@@ -13,7 +13,8 @@ DEFAULT_CONFIG = {
     "skips": set(),
 }
 FIGURE_DEF = re.compile(r'<figure\s+id="(.+?)"\s*>\s+<img\s+src="(.+?)"\s+alt="(.+?)"\s*>\s+<figcaption>(.+?)</figcaption>\s+</figure>', re.MULTILINE)
-KEY_DEF = re.compile(r'^<span\s+id="(.+?)">.+?</span>\s*$', re.MULTILINE)
+GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
+KEY_DEF = re.compile(r'^<span\s+id="(.+?)">(.+?)</span>\s*$', re.MULTILINE)
 MD_LINK_DEF = re.compile(r"^\[(.+?)\]:\s+(.+?)\s*$", re.MULTILINE)
 SUFFIXES_BIN = {".ico", ".jpg", ".png"}
 SUFFIXES_SRC = {".css", ".html", ".js", ".md", ".py", ".sh", ".sql", ".txt"}
@@ -45,13 +46,14 @@ def find_files(opt, skips=None):
     }
 
 
-def find_key_defs(files, term):
+def find_key_defs(files, term, subkey=None):
     """Find key definitions in definition list file."""
     candidates = [k for k in files if term in str(k).lower()]
     if len(candidates) != 1:
         return None
     file_key = candidates[0]
-    return set(KEY_DEF.findall(files[file_key]))
+    content = files[file_key] if subkey is None else files[file_key][subkey]
+    return {m[0]:m[1] for m in KEY_DEF.findall(content)}
 
 
 def find_table_defs(files):
