@@ -11,12 +11,25 @@ import sys
 from .util import find_files, find_key_defs, get_inclusion, load_config, write_file
 
 
+COMMENT = {
+    "js": "//",
+    "py": "#",
+    "sql": "--",
+}
+
 FIGURE = """\
 <figure id="{id}">
   <img src="{src}" alt="{alt}">
   <figcaption>{caption}</figcaption>
 </figure>
 """
+
+INCLUSION = """\
+```{{file="{filename}"}}
+{content}
+```
+"""
+
 MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
 
 
@@ -68,7 +81,7 @@ def do_glossary(doc, source_path, extras):
             key = node["href"][2:]
             node["href"] = f"@root/glossary.html#{key}"
             seen.add(key)
-    _insert_term_list(doc, source_path, seen, extras)
+    insert_defined_terms(doc, source_path, seen, extras)
 
 
 def do_inclusions_classes(doc, source_path, extras):
@@ -156,8 +169,25 @@ def find_ordering_items(doc, selector):
     ]
 
 
-def fix_cross_references(sections, xref):
-    """Fix all cross-references."""
+def insert_defined_terms(doc, source_path, seen, extras):
+    """Insert list of defined terms."""
+    target = doc.select("p#terms")
+    if not target:
+        return
+    assert len(target) == 1, f"Duplicate p#terms in {source_path}"
+    target = target[0]
+    if not seen:
+        target.decompose()
+        return
+    glossary = {key: extras["glossary"][key] for key in seen}
+    glossary = {k: v for k, v in sorted(glossary.items(), key=lambda item: item[1].lower())}
+    target.append("Terms defined: ")
+    for i, (key, term) in enumerate(glossary.items()):
+        if i > 0:
+            target.append(", ")
+        ref = doc.new_tag("a", href=f"@root/glossary.html#{key}")
+        ref.string = term
+        target.append(ref)
 
 
 def make_output_path(output_dir, renames, source_path):
@@ -172,6 +202,7 @@ def make_shortcodes_parser():
     """Build shortcodes parser for Markdown-to-Markdown transformation."""
     parser = shortcodes.Parser()
     parser.register(shortcode_figure, "figure")
+    parser.register(shortcode_inclusion, "inc")
     return parser
 
 
@@ -187,7 +218,7 @@ def parse_args(parser):
 
 def render_markdown(env, opt, parser, extras, source_path, content):
     """Convert Markdown to HTML."""
-    expanded = parser.parse(content)
+    expanded = parser.parse(content, context=source_path)
     template = choose_template(env, source_path)
     html = markdown(expanded, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
@@ -217,25 +248,35 @@ def shortcode_figure(pargs, kwargs, context):
     return FIGURE.format(**kwargs)
 
 
-def _insert_term_list(doc, source_path, seen, extras):
-    """Insert list of defined terms."""
-    target = doc.select("p#terms")
-    if not target:
-        return
-    assert len(target) == 1, f"Duplicate p#terms in {source_path}"
-    target = target[0]
-    if not seen:
-        target.decompose()
-        return
-    glossary = {key: extras["glossary"][key] for key in seen}
-    glossary = {k: v for k, v in sorted(glossary.items(), key=lambda item: item[1].lower())}
-    target.append("Terms defined: ")
-    for i, (key, term) in enumerate(glossary.items()):
-        if i > 0:
-            target.append(", ")
-        ref = doc.new_tag("a", href=f"@root/glossary.html#{key}")
-        ref.string = term
-        target.append(ref)
+def shortcode_inclusion(pargs, kwargs, context):
+    """Convert figure shortcode."""
+    assert len(pargs) == 1, \
+        f"%inc in {context}: bad pargs '{pargs}'"
+    filename = pargs[0]
+    filepath = context.parent / filename
+    assert filepath.is_file(), \
+        f"Bad %inc in {context}: {filepath} does not exist or is not file"
+    content = filepath.read_text()
+    if kwargs:
+        assert set(kwargs.keys()).issubset({"keep"}), \
+            f"%inc in {context}: bad kwargs '{kwargs}'"
+        content = inclusion_keep(context, filepath, content, kwargs["keep"])
+    return INCLUSION.format(filename=filename, content=content.rstrip())
+
+
+def inclusion_keep(source, filepath, content, tag):
+    """Keep a section of a file."""
+    suffix = filepath.suffix.lstrip(".")
+    assert suffix in COMMENT, \
+        f"%inc in {source}: unknown inclusion suffix in {filepath}"
+    before = f"{COMMENT[suffix]} [{tag}]"
+    after = f"{COMMENT[suffix]} [/{tag}]"
+    assert (before in content) and (after in content), \
+        f"%inc in {source}: missing start/end for {COMMENT[suffix]} and {tag}"
+    content = content.split(before)[1].split(after)[0]
+    if content[0] == "\n":
+        content = content[1:]
+    return content
 
 
 if __name__ == "__main__":
