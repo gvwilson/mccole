@@ -8,7 +8,7 @@ from pathlib import Path
 import shortcodes
 import sys
 
-from .util import find_files, find_key_defs, get_inclusion, load_config, write_file
+from .util import find_files, find_key_defs, load_config, write_file
 
 
 COMMENT = {
@@ -202,7 +202,7 @@ def make_shortcodes_parser():
     """Build shortcodes parser for Markdown-to-Markdown transformation."""
     parser = shortcodes.Parser()
     parser.register(shortcode_figure, "figure")
-    parser.register(shortcode_inclusion, "inc")
+    parser.register(shortcode_inc, "inc")
     return parser
 
 
@@ -240,7 +240,7 @@ def render_markdown(env, opt, parser, extras, source_path, content):
     return doc
 
 
-def shortcode_figure(pargs, kwargs, context):
+def shortcode_figure(pargs, kwargs, filename):
     """Convert figure shortcode."""
     actual_keys = set(kwargs.keys())
     assert actual_keys == {"id", "src", "alt", "caption"}, \
@@ -248,27 +248,40 @@ def shortcode_figure(pargs, kwargs, context):
     return FIGURE.format(**kwargs)
 
 
-def shortcode_inclusion(pargs, kwargs, context):
-    """Convert figure shortcode."""
+def shortcode_inc(pargs, kwargs, filename):
+    """Convert inc shortcode."""
+    path, content = shortcode_inc_content(filename, pargs)
+    if len(kwargs) == 0:
+        pass
+    elif "keep" in kwargs:
+        content = shortcode_inc_keep(filename, path, content, kwargs["keep"])
+    else:
+        assert False, \
+            f"%inc in {filename}: bad kwargs '{kwargs}'"
+    content = content.rstrip()
+    return INCLUSION.format(filename=filename, content=content)
+
+
+def shortcode_inc_content(filename, pargs):
+    """Load included file."""
     assert len(pargs) == 1, \
-        f"%inc in {context}: bad pargs '{pargs}'"
-    filename = pargs[0]
-    filepath = context.parent / filename
-    assert filepath.is_file(), \
-        f"Bad %inc in {context}: {filepath} does not exist or is not file"
-    content = filepath.read_text()
-    if kwargs:
-        assert set(kwargs.keys()).issubset({"keep"}), \
-            f"%inc in {context}: bad kwargs '{kwargs}'"
-        content = inclusion_keep(context, filepath, content, kwargs["keep"])
-    return INCLUSION.format(filename=filename, content=content.rstrip())
+        f"%inc in {filename}: bad pargs '{pargs}'"
+    path = filename.parent / pargs[0]
+    assert path.is_file(), \
+        f"Bad %inc in {filename}: {path} does not exist or is not file"
+    return path, path.read_text()
 
 
-def inclusion_keep(source, filepath, content, tag):
+def shortcode_inc_head(source, path, content, count):
+    """Keep head of file."""
+    return content # FIXME
+
+
+def shortcode_inc_keep(source, path, content, tag):
     """Keep a section of a file."""
-    suffix = filepath.suffix.lstrip(".")
+    suffix = path.suffix.lstrip(".")
     assert suffix in COMMENT, \
-        f"%inc in {source}: unknown inclusion suffix in {filepath}"
+        f"%inc in {source}: unknown inclusion suffix in {path}"
     before = f"{COMMENT[suffix]} [{tag}]"
     after = f"{COMMENT[suffix]} [/{tag}]"
     assert (before in content) and (after in content), \

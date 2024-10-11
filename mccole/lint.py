@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from .util import GLOSS_REF, MD_LINK_DEF, SUFFIXES, find_files, find_key_defs, get_inclusion
+from .util import GLOSS_REF, MD_LINK_DEF, SUFFIXES, find_files, find_key_defs
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
@@ -32,7 +32,6 @@ def lint(opt):
 
     linters = [
         lint_bibliography_references,
-        lint_codeblock_inclusions,
         lint_figure_numbers,
         lint_figure_references,
         lint_glossary_redefinitions,
@@ -70,19 +69,6 @@ def lint_bibliography_references(opt, sections, extras):
         print("No bibliography found (or multiple matches)")
         return False
     return _check_references(sections, "bibliography", BIB_REF, available)
-
-
-def lint_codeblock_inclusions(opt, sections, extras):
-    """Check file inclusions."""
-    ok = True
-    for path, content in sections.items():
-        for block in MD_CODEBLOCK_FILE.finditer(content):
-            inc_spec, expected = block.group(1), block.group(2).strip()
-            _, _, inc_text = get_inclusion(path, inc_spec)
-            if inc_text != expected:
-                print(f"Content mismatch: {path} / {inc_spec}")
-                ok = False
-    return ok
 
 
 def lint_figure_numbers(opt, sections, extras):
