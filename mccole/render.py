@@ -169,6 +169,14 @@ def find_ordering_items(doc, selector):
     ]
 
 
+def get_included_file(kind, outer, inner):
+    """Load external included file."""
+    path = outer.parent / inner
+    assert path.is_file(), \
+        f"Bad %{kind} in {outer}: {path} does not exist or is not file"
+    return path, path.read_text()
+
+
 def insert_defined_terms(doc, source_path, seen, extras):
     """Insert list of defined terms."""
     target = doc.select("p#terms")
@@ -203,6 +211,7 @@ def make_shortcodes_parser():
     parser = shortcodes.Parser()
     parser.register(shortcode_figure, "figure")
     parser.register(shortcode_inc, "inc")
+    parser.register(shortcode_table, "table")
     return parser
 
 
@@ -250,7 +259,11 @@ def shortcode_figure(pargs, kwargs, filename):
 
 def shortcode_inc(pargs, kwargs, filename):
     """Convert inc shortcode."""
-    path, content = shortcode_inc_content(filename, pargs)
+    assert len(pargs) == 1, \
+        f"%inc in {filename}: bad pargs '{pargs}'"
+    inner = pargs[0]
+    path, content = get_included_file("inc", filename, inner)
+
     if len(kwargs) == 0:
         pass
     elif "keep" in kwargs:
@@ -258,23 +271,9 @@ def shortcode_inc(pargs, kwargs, filename):
     else:
         assert False, \
             f"%inc in {filename}: bad kwargs '{kwargs}'"
+
     content = content.rstrip()
-    return INCLUSION.format(filename=filename, content=content)
-
-
-def shortcode_inc_content(filename, pargs):
-    """Load included file."""
-    assert len(pargs) == 1, \
-        f"%inc in {filename}: bad pargs '{pargs}'"
-    path = filename.parent / pargs[0]
-    assert path.is_file(), \
-        f"Bad %inc in {filename}: {path} does not exist or is not file"
-    return path, path.read_text()
-
-
-def shortcode_inc_head(source, path, content, count):
-    """Keep head of file."""
-    return content # FIXME
+    return INCLUSION.format(filename=inner, content=content)
 
 
 def shortcode_inc_keep(source, path, content, tag):
@@ -290,6 +289,17 @@ def shortcode_inc_keep(source, path, content, tag):
     if content[0] == "\n":
         content = content[1:]
     return content
+
+
+def shortcode_table(pargs, kwargs, filename):
+    """Convert table shortcode."""
+    actual_keys = set(kwargs.keys())
+    assert actual_keys == {"id", "tbl", "caption"}, \
+        f"Bad 'table' shortcode with keys {actual_keys}"
+    path, content = get_included_file("table", filename, kwargs["tbl"])
+    caption = markdown(kwargs["caption"], extensions=MARKDOWN_EXTENSIONS)
+    content = markdown(content, extensions=MARKDOWN_EXTENSIONS)
+    return content.replace("<table>", f'<table id="{kwargs["id"]}">\n<caption>{caption}</caption>')
 
 
 if __name__ == "__main__":
