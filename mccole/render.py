@@ -17,6 +17,8 @@ COMMENT = {
     "sql": "--",
 }
 
+CROSSREF = '<a href="../{key}/index.md">{kind} {value}</a>'
+
 FIGURE = """\
 <figure id="{id}">
   <img src="{src}" alt="{alt}">
@@ -35,45 +37,54 @@ MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "ta
 
 def render(opt):
     """Main driver."""
+
+    # Setup.
     config = load_config(opt.config)
     skips = config["skips"] | {opt.out}
     env = Environment(loader=FileSystemLoader(opt.templates))
     parser = make_shortcodes_parser()
 
+    # Find all files to be rendered.
     files = find_files(opt, skips)
     sections = {
         path: info
         for path, info in files.items()
         if path.suffix == ".md"
     }
-    extras = {
+
+    # Extract cross-reference keys.
+    context = {
         "bibliography": find_key_defs(sections, "bibliography"),
         "glossary": find_key_defs(sections, "glossary"),
+        "order": find_order(sections[Path("README.md")]["content"]),
     }
-    for path, info in sections.items():
-        info["doc"] = render_markdown(env, opt, parser, extras, path, info["content"])
 
+    # Render all documents.
+    for path, info in sections.items():
+        info["doc"] = render_markdown(env, opt, parser, context, path, info["content"])
+
+    # Save results.
     for path, info in files.items():
         result = str(info["doc"]) if path.suffix == ".md" else info["content"]
         output_path = make_output_path(opt.out, config["renames"], path)
         write_file(output_path, result)
 
 
-def choose_template(env, source_path):
+def choose_template(env, source):
     """Select a template."""
-    if source_path.name == "slides.md":
+    if source.name == "slides.md":
         return env.get_template("slides.html")
     return env.get_template("page.html")
 
 
-def do_bibliography_links(doc, source_path, extras):
+def do_bibliography_links(doc, source, context):
     """Turn 'b:key' links into bibliography references."""
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
             node["href"] = f"@root/bibliography.html#{node['href'][2:]}"
 
 
-def do_glossary(doc, source_path, extras):
+def do_glossary(doc, source, context):
     """Turn 'g:key' links into glossary references and insert list of terms."""
     seen = set()
     for node in doc.select("a[href]"):
@@ -81,10 +92,10 @@ def do_glossary(doc, source_path, extras):
             key = node["href"][2:]
             node["href"] = f"@root/glossary.html#{key}"
             seen.add(key)
-    insert_defined_terms(doc, source_path, seen, extras)
+    insert_defined_terms(doc, source, seen, context)
 
 
-def do_inclusions_classes(doc, source_path, extras):
+def do_inclusions_classes(doc, source, context):
     """Adjust classes of file inclusions."""
     for node in doc.select("code[file]"):
         inc_text = node["file"]
@@ -95,14 +106,14 @@ def do_inclusions_classes(doc, source_path, extras):
             n["class"] = n.get("class", []) + [f"language-{suffix}"]
 
 
-def do_markdown_links(doc, source_path, extras):
+def do_markdown_links(doc, source, context):
     """Fix .md links in HTML."""
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
 
 
-def do_tables(doc, source_path, extras):
+def do_tables(doc, source, context):
     """Eliminate duplicate table tags created by Markdown tables inside HTML tables."""
     for node in doc.select("table"):
         parent = node.parent
@@ -112,18 +123,18 @@ def do_tables(doc, source_path, extras):
             parent.replace_with(node)
 
 
-def do_title(doc, source_path, extras):
+def do_title(doc, source, context):
     """Make sure title element is filled in."""
     try:
         doc.title.string = doc.h1.get_text()
     except Exception as exc:
-        print(f"{source_path} lacks H1 heading", file=sys.stderr)
+        print(f"{source} lacks H1 heading", file=sys.stderr)
         sys.exit(1)
 
 
-def do_root_path_prefix(doc, source_path, extras):
+def do_root_path_prefix(doc, source, context):
     """Fix @root links in HTML."""
-    depth = len(source_path.parents) - 1
+    depth = len(source.parents) - 1
     prefix = "./" if (depth == 0) else "../" * depth
     targets = (
         ("a[href]", "href"),
@@ -136,35 +147,27 @@ def do_root_path_prefix(doc, source_path, extras):
                 node[attr] = node[attr].replace("@root/", prefix)
 
 
-def do_toc_lists(doc, source_path, extras):
-    """Fix 'chapters' and 'appendices' lists."""
-    for kind in ("chapters", "appendices"):
-        selector = f"ol.{kind} ol"
-        for node in doc.select(selector):
-            node.parent.replace_with(node)
-            node["class"] = node.get("class", []) + [kind]
-
-
-def find_ordering(sections):
-    """Create path-to-label ordering."""
-    doc = sections[Path("README.md")]["doc"]
+def find_order(content):
+    """Create slug-to-label ordering."""
+    html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
+    doc = BeautifulSoup(html, "html.parser")
     chapters = {
-        key: str(i+1)
-        for i, key in enumerate(find_ordering_items(doc, "ol.chapters"))
+        key: {"kind": "Chapter", "value": str(i+1)}
+        for i, key in enumerate(find_order_items(doc, "div.chapters > ol"))
     }
     appendices = {
-        key: chr(ord("A")+i)
-        for i, key in enumerate(find_ordering_items(doc, "ol.appendices"))
+        key: {"kind": "Appendix", "value": chr(ord("A")+i)}
+        for i, key in enumerate(find_order_items(doc, "div.appendices > ol"))
     }
     return {**chapters, **appendices}
 
 
-def find_ordering_items(doc, selector):
+def find_order_items(doc, selector):
     """Extract ordered items' path keys."""
     nodes = doc.select(selector)
     assert len(nodes) == 1
     return [
-        link.select("a")[0]["href"].replace("/index.html", "").split("/")[-1]
+        link.select("a")[0]["href"].replace("/index.md", "").split("/")[-1]
         for link in nodes[0].select("li")
     ]
 
@@ -177,17 +180,17 @@ def get_included_file(kind, outer, inner):
     return path, path.read_text()
 
 
-def insert_defined_terms(doc, source_path, seen, extras):
+def insert_defined_terms(doc, source, seen, context):
     """Insert list of defined terms."""
     target = doc.select("p#terms")
     if not target:
         return
-    assert len(target) == 1, f"Duplicate p#terms in {source_path}"
+    assert len(target) == 1, f"Duplicate p#terms in {source}"
     target = target[0]
     if not seen:
         target.decompose()
         return
-    glossary = {key: extras["glossary"][key] for key in seen}
+    glossary = {key: context["glossary"][key] for key in seen}
     glossary = {k: v for k, v in sorted(glossary.items(), key=lambda item: item[1].lower())}
     target.append("Terms defined: ")
     for i, (key, term) in enumerate(glossary.items()):
@@ -198,17 +201,18 @@ def insert_defined_terms(doc, source_path, seen, extras):
         target.append(ref)
 
 
-def make_output_path(output_dir, renames, source_path):
+def make_output_path(output_dir, renames, source):
     """Build output path."""
-    if source_path.name in renames:
-        source_path = Path(source_path.parent, renames[source_path.name])
-    source_path = Path(str(source_path).replace(".md", ".html"))
-    return Path(output_dir, source_path)
+    if source.name in renames:
+        source = Path(source.parent, renames[source.name])
+    source = Path(str(source).replace(".md", ".html"))
+    return Path(output_dir, source)
 
 
 def make_shortcodes_parser():
     """Build shortcodes parser for Markdown-to-Markdown transformation."""
     parser = shortcodes.Parser()
+    parser.register(shortcode_crossref, "xref")
     parser.register(shortcode_figure, "figure")
     parser.register(shortcode_inc, "inc")
     parser.register(shortcode_table, "table")
@@ -225,10 +229,10 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, parser, extras, source_path, content):
+def render_markdown(env, opt, parser, context, source, content):
     """Convert Markdown to HTML."""
-    expanded = parser.parse(content, context=source_path)
-    template = choose_template(env, source_path)
+    expanded = parser.parse(content, context={"source": source, "order": context["order"]})
+    template = choose_template(env, source)
     html = markdown(expanded, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 
@@ -239,38 +243,48 @@ def render_markdown(env, opt, parser, extras, source_path, content):
         do_markdown_links,
         do_tables,
         do_title,
-        do_toc_lists,
         do_root_path_prefix, # must be last
     )
     doc = BeautifulSoup(html, "html.parser")
     for func in transformers:
-        func(doc, source_path, extras)
+        func(doc, source, context)
 
     return doc
 
 
-def shortcode_figure(pargs, kwargs, filename):
+def shortcode_crossref(pargs, kwargs, context):
+    """Convert xref shortcode."""
+    assert len(pargs) == 1, \
+        f"{context['source']}: bad 'xref' shortcode with pargs {pargs}"
+    key = pargs[0]
+    assert key in context["order"], \
+        f"{context['source']}: unknown key {key} in 'xref' shortcode"
+    info = context["order"][key]
+    return CROSSREF.format(key=key, kind=info["kind"], value=info["value"])
+
+
+def shortcode_figure(pargs, kwargs, context):
     """Convert figure shortcode."""
     actual_keys = set(kwargs.keys())
     assert actual_keys == {"id", "src", "alt", "caption"}, \
-        f"Bad 'figure' shortcode with keys {actual_keys}"
+        f"{context['source']}: bad 'figure' shortcode with keys {actual_keys}"
     return FIGURE.format(**kwargs)
 
 
-def shortcode_inc(pargs, kwargs, filename):
+def shortcode_inc(pargs, kwargs, context):
     """Convert inc shortcode."""
     assert len(pargs) == 1, \
-        f"%inc in {filename}: bad pargs '{pargs}'"
+        f"%inc in {context['source']}: bad pargs '{pargs}'"
     inner = pargs[0]
-    path, content = get_included_file("inc", filename, inner)
+    path, content = get_included_file("inc", context["source"], inner)
 
     if len(kwargs) == 0:
         pass
     elif "keep" in kwargs:
-        content = shortcode_inc_keep(filename, path, content, kwargs["keep"])
+        content = shortcode_inc_keep(context["source"], path, content, kwargs["keep"])
     else:
         assert False, \
-            f"%inc in {filename}: bad kwargs '{kwargs}'"
+            f"%inc in {context['source']}: bad kwargs '{kwargs}'"
 
     content = content.rstrip()
     return INCLUSION.format(filename=inner, content=content)
@@ -291,12 +305,12 @@ def shortcode_inc_keep(source, path, content, tag):
     return content
 
 
-def shortcode_table(pargs, kwargs, filename):
+def shortcode_table(pargs, kwargs, context):
     """Convert table shortcode."""
     actual_keys = set(kwargs.keys())
     assert actual_keys == {"id", "tbl", "caption"}, \
-        f"Bad 'table' shortcode with keys {actual_keys}"
-    path, content = get_included_file("table", filename, kwargs["tbl"])
+        f"{context['source']}: bad 'table' shortcode with keys {actual_keys}"
+    path, content = get_included_file("table", context["source"], kwargs["tbl"])
     caption = markdown(kwargs["caption"], extensions=MARKDOWN_EXTENSIONS)
     content = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     return content.replace("<table>", f'<table id="{kwargs["id"]}">\n<caption>{caption}</caption>')
