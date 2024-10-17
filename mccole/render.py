@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 from pathlib import Path
-import shortcodes
 import sys
 
 from .util import find_files, find_key_defs, load_config, write_file
@@ -17,22 +16,13 @@ COMMENT = {
     "sql": "--",
 }
 
-CROSSREF = '<a href="../{key}/index.md">{kind} {value}</a>'
-
-FIGURE = """\
-<figure id="{id}">
-  <img src="{src}" alt="{alt}">
-  <figcaption>{caption}</figcaption>
-</figure>
-"""
-
-INCLUSION = """\
-```{{file="{filename}"}}
-{content}
-```
-"""
-
-MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
+MARKDOWN_EXTENSIONS = [
+    "attr_list",
+    "def_list",
+    "fenced_code",
+    "md_in_html",
+    "tables"
+]
 
 
 def render(opt):
@@ -42,7 +32,6 @@ def render(opt):
     config = load_config(opt.config)
     skips = config["skips"] | {opt.out}
     env = Environment(loader=FileSystemLoader(opt.templates))
-    parser = make_shortcodes_parser()
 
     # Find all files to be rendered.
     files = find_files(opt, skips)
@@ -56,12 +45,11 @@ def render(opt):
     context = {
         "bibliography": find_key_defs(sections, "bibliography"),
         "glossary": find_key_defs(sections, "glossary"),
-        "order": find_order(sections[Path("README.md")]["content"]),
     }
 
     # Render all documents.
     for path, info in sections.items():
-        info["doc"] = render_markdown(env, opt, parser, context, path, info["content"])
+        info["doc"] = render_markdown(env, opt, context, path, info["content"])
 
     # Save results.
     for path, info in files.items():
@@ -95,15 +83,19 @@ def do_glossary(doc, source, context):
     insert_defined_terms(doc, source, seen, context)
 
 
-def do_inclusions_classes(doc, source, context):
+def do_inclusions(doc, source, context):
     """Adjust classes of file inclusions."""
-    for node in doc.select("code[file]"):
-        inc_text = node["file"]
-        if ":" in inc_text:
-            inc_text = inc_text.split(":")[0]
-        suffix = inc_text.split(".")[-1]
-        for n in (node, node.parent):
-            n["class"] = n.get("class", []) + [f"language-{suffix}"]
+    for node in doc.select("pre[data-file]"):
+        inc_file = node["data-file"]
+        path, content = inclusion_get(source, inc_file)
+        language = f"language-{path.suffix.lstrip('.')}"
+        if "data-keep" in node:
+            content = inclusion_keep(source, path, content, node["data-keep"])
+        code = doc.new_tag("code")
+        node.append(code)
+        code.string = content.rstrip()
+        code["class"] = language
+        node["class"] = language
 
 
 def do_markdown_links(doc, source, context):
@@ -111,16 +103,6 @@ def do_markdown_links(doc, source, context):
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
-
-
-def do_tables(doc, source, context):
-    """Eliminate duplicate table tags created by Markdown tables inside HTML tables."""
-    for node in doc.select("table"):
-        parent = node.parent
-        if parent.name == "table":
-            caption = parent.caption
-            node.append(caption)
-            parent.replace_with(node)
 
 
 def do_title(doc, source, context):
@@ -147,37 +129,27 @@ def do_root_path_prefix(doc, source, context):
                 node[attr] = node[attr].replace("@root/", prefix)
 
 
-def find_order(content):
-    """Create slug-to-label ordering."""
-    html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
-    doc = BeautifulSoup(html, "html.parser")
-    chapters = {
-        key: {"kind": "Chapter", "value": str(i+1)}
-        for i, key in enumerate(find_order_items(doc, "div.chapters > ol"))
-    }
-    appendices = {
-        key: {"kind": "Appendix", "value": chr(ord("A")+i)}
-        for i, key in enumerate(find_order_items(doc, "div.appendices > ol"))
-    }
-    return {**chapters, **appendices}
-
-
-def find_order_items(doc, selector):
-    """Extract ordered items' path keys."""
-    nodes = doc.select(selector)
-    assert len(nodes) == 1
-    return [
-        link.select("a")[0]["href"].replace("/index.md", "").split("/")[-1]
-        for link in nodes[0].select("li")
-    ]
-
-
-def get_included_file(kind, outer, inner):
+def inclusion_get(outer, inner):
     """Load external included file."""
     path = outer.parent / inner
     assert path.is_file(), \
-        f"Bad %{kind} in {outer}: {path} does not exist or is not file"
+        f"Bad inclusion in {outer}: {path} does not exist or is not file"
     return path, path.read_text()
+
+
+def inclusion_keep(source, path, content, tag):
+    """Keep a section of a file."""
+    suffix = path.suffix.lstrip(".")
+    assert suffix in COMMENT, \
+        f"%inc in {source}: unknown inclusion suffix in {path}"
+    before = f"{COMMENT[suffix]} [{tag}]"
+    after = f"{COMMENT[suffix]} [/{tag}]"
+    assert (before in content) and (after in content), \
+        f"%inc in {source}: missing start/end for {COMMENT[suffix]} and {tag}"
+    content = content.split(before)[1].split(after)[0]
+    if content[0] == "\n":
+        content = content[1:]
+    return content
 
 
 def insert_defined_terms(doc, source, seen, context):
@@ -209,16 +181,6 @@ def make_output_path(output_dir, renames, source):
     return Path(output_dir, source)
 
 
-def make_shortcodes_parser():
-    """Build shortcodes parser for Markdown-to-Markdown transformation."""
-    parser = shortcodes.Parser()
-    parser.register(shortcode_crossref, "xref")
-    parser.register(shortcode_figure, "figure")
-    parser.register(shortcode_inc, "inc")
-    parser.register(shortcode_table, "table")
-    return parser
-
-
 def parse_args(parser):
     """Parse command-line arguments."""
     parser.add_argument("--config", type=str, default="pyproject.toml", help="optional configuration file")
@@ -229,19 +191,17 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, parser, context, source, content):
+def render_markdown(env, opt, context, source, content):
     """Convert Markdown to HTML."""
-    expanded = parser.parse(content, context={"source": source, "order": context["order"]})
     template = choose_template(env, source)
-    html = markdown(expanded, extensions=MARKDOWN_EXTENSIONS)
+    html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 
     transformers = (
         do_bibliography_links,
         do_glossary,
-        do_inclusions_classes,
+        do_inclusions,
         do_markdown_links,
-        do_tables,
         do_title,
         do_root_path_prefix, # must be last
     )
@@ -250,70 +210,6 @@ def render_markdown(env, opt, parser, context, source, content):
         func(doc, source, context)
 
     return doc
-
-
-def shortcode_crossref(pargs, kwargs, context):
-    """Convert xref shortcode."""
-    assert len(pargs) == 1, \
-        f"{context['source']}: bad 'xref' shortcode with pargs {pargs}"
-    key = pargs[0]
-    assert key in context["order"], \
-        f"{context['source']}: unknown key {key} in 'xref' shortcode"
-    info = context["order"][key]
-    return CROSSREF.format(key=key, kind=info["kind"], value=info["value"])
-
-
-def shortcode_figure(pargs, kwargs, context):
-    """Convert figure shortcode."""
-    actual_keys = set(kwargs.keys())
-    assert actual_keys == {"id", "src", "alt", "caption"}, \
-        f"{context['source']}: bad 'figure' shortcode with keys {actual_keys}"
-    return FIGURE.format(**kwargs)
-
-
-def shortcode_inc(pargs, kwargs, context):
-    """Convert inc shortcode."""
-    assert len(pargs) == 1, \
-        f"%inc in {context['source']}: bad pargs '{pargs}'"
-    inner = pargs[0]
-    path, content = get_included_file("inc", context["source"], inner)
-
-    if len(kwargs) == 0:
-        pass
-    elif "keep" in kwargs:
-        content = shortcode_inc_keep(context["source"], path, content, kwargs["keep"])
-    else:
-        assert False, \
-            f"%inc in {context['source']}: bad kwargs '{kwargs}'"
-
-    content = content.rstrip()
-    return INCLUSION.format(filename=inner, content=content)
-
-
-def shortcode_inc_keep(source, path, content, tag):
-    """Keep a section of a file."""
-    suffix = path.suffix.lstrip(".")
-    assert suffix in COMMENT, \
-        f"%inc in {source}: unknown inclusion suffix in {path}"
-    before = f"{COMMENT[suffix]} [{tag}]"
-    after = f"{COMMENT[suffix]} [/{tag}]"
-    assert (before in content) and (after in content), \
-        f"%inc in {source}: missing start/end for {COMMENT[suffix]} and {tag}"
-    content = content.split(before)[1].split(after)[0]
-    if content[0] == "\n":
-        content = content[1:]
-    return content
-
-
-def shortcode_table(pargs, kwargs, context):
-    """Convert table shortcode."""
-    actual_keys = set(kwargs.keys())
-    assert actual_keys == {"id", "tbl", "caption"}, \
-        f"{context['source']}: bad 'table' shortcode with keys {actual_keys}"
-    path, content = get_included_file("table", context["source"], kwargs["tbl"])
-    caption = markdown(kwargs["caption"], extensions=MARKDOWN_EXTENSIONS)
-    content = markdown(content, extensions=MARKDOWN_EXTENSIONS)
-    return content.replace("<table>", f'<table id="{kwargs["id"]}">\n<caption>{caption}</caption>')
 
 
 if __name__ == "__main__":
