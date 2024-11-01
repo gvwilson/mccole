@@ -9,6 +9,7 @@ from pathlib import Path
 from .util import find_files, load_config, write_file
 
 
+ALSO_HTML_EXT = {".css", ".js", ".py", ".sql"}
 MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
 
 
@@ -21,6 +22,9 @@ def render(opt):
     for filepath, content in files.items():
         if filepath.suffix == ".md":
             render_markdown(env, opt, config["renames"], filepath, content)
+        elif filepath.suffix in ALSO_HTML_EXT:
+            render_markdown(env, opt, config["renames"], filepath, content, as_html=True)
+            copy_file(opt.out, config["renames"], filepath, content)
         else:
             copy_file(opt.out, config["renames"], filepath, content)
 
@@ -53,11 +57,13 @@ def do_glossary_links(doc, source_path):
             node["href"] = f"@root/glossary.html#{node['href'][2:]}"
 
 
-def do_markdown_links(doc, source_path):
-    """Fix .md links in HTML."""
+def do_interfile_links(doc, source_path):
+    """Fix suffix links in HTML."""
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
+        elif Path(node["href"]).suffix in ALSO_HTML_EXT:
+            node["href"] = f"{node['href']}.html"
 
 
 def do_tables(doc, source_path):
@@ -118,8 +124,10 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, renames, source_path, content):
+def render_markdown(env, opt, renames, source_path, content, as_html=False):
     """Convert Markdown to HTML."""
+    if as_html:
+        content = f"# {source_path}\n```\n{content}```"
     template = choose_template(env, source_path)
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
@@ -127,7 +135,7 @@ def render_markdown(env, opt, renames, source_path, content):
     transformers = (
         do_bibliography_links,
         do_glossary_links,
-        do_markdown_links,
+        do_interfile_links,
         do_tables,
         do_title,
         do_toc_lists,
@@ -137,7 +145,8 @@ def render_markdown(env, opt, renames, source_path, content):
     for func in transformers:
         func(doc, source_path)
 
-    output_path = make_output_path(opt.out, renames, source_path)
+    src = Path(f"{source_path}.html") if as_html else source_path
+    output_path = make_output_path(opt.out, renames, src)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(str(doc))
 
