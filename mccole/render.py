@@ -10,6 +10,14 @@ import sys
 from .util import find_files, find_key_defs, load_config, write_file
 
 
+ALSO_HTML_SUFFIX = {".css", ".js", ".py", ".sql"}
+
+AS_HTML = """\
+# {path}
+```
+{content}```
+"""
+
 COMMENT = {
     "js": "//",
     "py": "#",
@@ -33,29 +41,12 @@ def render(opt):
     skips = config["skips"] | {opt.out}
     env = Environment(loader=FileSystemLoader(opt.templates))
 
-    # Find all files to be rendered.
+    # Find and render files.
     files = find_files(opt, skips)
-    sections = {
-        path: info
-        for path, info in files.items()
-        if path.suffix == ".md"
-    }
-
-    # Extract cross-reference keys.
-    context = {
-        "bibliography": find_key_defs(sections, "bibliography"),
-        "glossary": find_key_defs(sections, "glossary"),
-    }
-
-    # Render all documents.
-    for path, info in sections.items():
-        info["doc"] = render_markdown(env, opt, context, path, info["content"])
-
-    # Save results.
-    for path, info in files.items():
-        result = str(info["doc"]) if path.suffix == ".md" else info["content"]
-        output_path = make_output_path(opt.out, config["renames"], path)
-        write_file(output_path, result)
+    markdown, also_html, others = split_files(files)
+    handle_markdown(env, opt, config, markdown)
+    handle_also_html(env, opt, config, also_html)
+    handle_others(env, opt, config, others)
 
 
 def choose_template(env, source):
@@ -70,6 +61,15 @@ def do_bibliography_links(doc, source, context):
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
             node["href"] = f"@root/bibliography.html#{node['href'][2:]}"
+
+
+def do_cross_links(doc, source, context):
+    """Fix .md links in HTML."""
+    for node in doc.select("a[href]"):
+        if node["href"].endswith(".md"):
+            node["href"] = node["href"].replace(".md", ".html").lower()
+        elif Path(node["href"]).suffix in ALSO_HTML_SUFFIX:
+            node["href"] = f"{node['href']}.html"
 
 
 def do_glossary(doc, source, context):
@@ -98,13 +98,6 @@ def do_inclusions(doc, source, context):
         node["class"] = language
 
 
-def do_markdown_links(doc, source, context):
-    """Fix .md links in HTML."""
-    for node in doc.select("a[href]"):
-        if node["href"].endswith(".md"):
-            node["href"] = node["href"].replace(".md", ".html").lower()
-
-
 def do_title(doc, source, context):
     """Make sure title element is filled in."""
     try:
@@ -127,6 +120,46 @@ def do_root_path_prefix(doc, source, context):
         for node in doc.select(selector):
             if "@root/" in node[attr]:
                 node[attr] = node[attr].replace("@root/", prefix)
+
+
+def handle_also_html(env, opt, config, files):
+    """Handle files that are also saved as HTML files."""
+    context = {
+        "bibliography": {},
+        "glossary": {},
+    }
+    for path, info in files.items():
+        output_path = make_output_path(opt.out, config["renames"], path)
+        write_file(output_path, info["content"])
+
+        embedded = AS_HTML.format(path=path, content=info["content"])
+        embedded = render_markdown(env, opt, context, path, embedded)
+        write_file(Path(f"{output_path}.html"), str(embedded))
+
+
+def handle_markdown(env, opt, config, files):
+    """Handle Markdown files."""
+    # Extract cross-reference keys.
+    context = {
+        "bibliography": find_key_defs(files, "bibliography"),
+        "glossary": find_key_defs(files, "glossary"),
+    }
+
+    # Render all documents.
+    for path, info in files.items():
+        info["doc"] = render_markdown(env, opt, context, path, info["content"])
+
+    # Save results.
+    for path, info in files.items():
+        output_path = make_output_path(opt.out, config["renames"], path)
+        write_file(output_path, str(info["doc"]))
+
+
+def handle_others(env, opt, config, files):
+    """Handle copy-only files."""
+    for path, info in files.items():
+        output_path = make_output_path(opt.out, config["renames"], path)
+        write_file(output_path, info["content"])
 
 
 def inclusion_get(outer, inner):
@@ -199,9 +232,9 @@ def render_markdown(env, opt, context, source, content):
 
     transformers = (
         do_bibliography_links,
+        do_cross_links,
         do_glossary,
         do_inclusions,
-        do_markdown_links,
         do_title,
         do_root_path_prefix, # must be last
     )
@@ -210,6 +243,21 @@ def render_markdown(env, opt, context, source, content):
         func(doc, source, context)
 
     return doc
+
+
+def split_files(files):
+    """Divide files into categories."""
+    markdown = {}
+    also_html = {}
+    others = {}
+    for path, info in files.items():
+        if path.suffix == ".md":
+            markdown[path] = info
+        elif path.suffix in ALSO_HTML_SUFFIX:
+            also_html[path] = info
+        else:
+            others[path] = info
+    return markdown, also_html, others
 
 
 if __name__ == "__main__":
