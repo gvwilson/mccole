@@ -124,16 +124,12 @@ def do_root_path_prefix(doc, source, context):
 
 def handle_also_html(env, opt, config, files):
     """Handle files that are also saved as HTML files."""
-    context = {
-        "bibliography": {},
-        "glossary": {},
-    }
     for path, info in files.items():
         output_path = make_output_path(opt.out, config["renames"], path)
         write_file(output_path, info["content"])
 
         embedded = AS_HTML.format(path=path, content=info["content"])
-        embedded = render_markdown(env, opt, context, path, embedded)
+        embedded = render_markdown(env, opt, path, embedded)
         write_file(Path(f"{output_path}.html"), str(embedded))
 
 
@@ -147,7 +143,7 @@ def handle_markdown(env, opt, config, files):
 
     # Render all documents.
     for path, info in files.items():
-        info["doc"] = render_markdown(env, opt, context, path, info["content"])
+        info["doc"] = render_markdown(env, opt, path, info["content"], context)
 
     # Save results.
     for path, info in files.items():
@@ -224,23 +220,26 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, context, source, content):
+def render_markdown(env, opt, source, content, context={}):
     """Convert Markdown to HTML."""
+    # Generate HTML.
     template = choose_template(env, source)
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 
+    # Apply transforms if always required or if context provided.
     transformers = (
-        do_bibliography_links,
-        do_cross_links,
-        do_glossary,
-        do_inclusions,
-        do_title,
-        do_root_path_prefix, # must be last
+        (False, do_bibliography_links),
+        (False, do_cross_links),
+        (False, do_glossary),
+        (False, do_inclusions),
+        (True, do_title),
+        (True, do_root_path_prefix), # must be last
     )
     doc = BeautifulSoup(html, "html.parser")
-    for func in transformers:
-        func(doc, source, context)
+    for is_required, func in transformers:
+        if context or is_required:
+            func(doc, source, context)
 
     return doc
 
