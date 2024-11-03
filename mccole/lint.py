@@ -9,7 +9,7 @@ from .util import GLOSS_REF, MD_LINK_DEF, SUFFIXES, find_files, find_key_defs
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
-FIGURE_CAPTION = re.compile(r'<figcaption>(.+?)</figcaption>', re.MULTILINE)
+FIGURE_CAPTION = re.compile(r"<figcaption>(.+?)</figcaption>", re.MULTILINE)
 FIGURE_DEF = re.compile(r'<figure\s+id="(.+?)"\s*>', re.MULTILINE)
 FIGURE_REF = re.compile(r"\[[^\]]+?\]\(f:(.+?)\)", re.MULTILINE)
 MD_CODEBLOCK_FILE = re.compile(r'^```\s*\{\s*file="(.+?)"\s*\}\s*$(.+?)```\s*$', re.DOTALL + re.MULTILINE)

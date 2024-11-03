@@ -8,7 +8,7 @@ import re
 from .util import MD_LINK_DEF, find_files, find_key_defs, find_table_defs, get_repo
 
 
-FIGURE_DEF = re.compile(r'\[%\s*figure\b(.+?)%\]', re.DOTALL + re.MULTILINE)
+FIGURE_DEF = re.compile(r"\[%\s*figure\b(.+?)%\]", re.DOTALL + re.MULTILINE)
 FIGURE_ALT = re.compile(r'alt="(.+?)"', re.MULTILINE)
 FIGURE_CAPTION = re.compile(r'caption="(.+?)"', re.MULTILINE)
 FIGURE_ID = re.compile(r'id="(.+?)"', re.MULTILINE)

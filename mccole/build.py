@@ -18,12 +18,6 @@ AS_HTML = """\
 {content}```
 """
 
-COMMENT = {
-    "js": "//",
-    "py": "#",
-    "sql": "--",
-}
-
 MARKDOWN_EXTENSIONS = [
     "attr_list",
     "def_list",
@@ -33,7 +27,7 @@ MARKDOWN_EXTENSIONS = [
 ]
 
 
-def render(opt):
+def build(opt):
     """Main driver."""
 
     # Setup.
@@ -41,7 +35,7 @@ def render(opt):
     skips = config["skips"] | {opt.out}
     env = Environment(loader=FileSystemLoader(opt.templates))
 
-    # Find and render files.
+    # Find and build files.
     files = find_files(opt, skips)
     markdown, also_html, others = split_files(files)
     handle_markdown(env, opt, config, markdown)
@@ -83,26 +77,22 @@ def do_glossary(doc, source, context):
     insert_defined_terms(doc, source, seen, context)
 
 
-def do_inclusions(doc, source, context):
+def do_inclusion_classes(doc, source, context):
     """Adjust classes of file inclusions."""
-    for node in doc.select("pre[data-file]"):
-        inc_file = node["data-file"]
-        path, content = inclusion_get(source, inc_file)
-        language = f"language-{path.suffix.lstrip('.')}"
-        if "data-keep" in node:
-            content = inclusion_keep(source, path, content, node["data-keep"])
-        code = doc.new_tag("code")
-        node.append(code)
-        code.string = content.rstrip()
-        code["class"] = language
+    for node in doc.select("code[data-file]"):
+        inc = node["data-file"]
+        if ":" in inc:
+            inc = inc.split(":")[0]
+        language = f"language-{Path(inc).suffix.lstrip('.')}"
         node["class"] = language
+        node.parent["class"] = language
 
 
 def do_title(doc, source, context):
     """Make sure title element is filled in."""
     try:
         doc.title.string = doc.h1.get_text()
-    except Exception as exc:
+    except Exception:
         print(f"{source} lacks H1 heading", file=sys.stderr)
         sys.exit(1)
 
@@ -158,29 +148,6 @@ def handle_others(env, opt, config, files):
         write_file(output_path, info["content"])
 
 
-def inclusion_get(outer, inner):
-    """Load external included file."""
-    path = outer.parent / inner
-    assert path.is_file(), \
-        f"Bad inclusion in {outer}: {path} does not exist or is not file"
-    return path, path.read_text()
-
-
-def inclusion_keep(source, path, content, tag):
-    """Keep a section of a file."""
-    suffix = path.suffix.lstrip(".")
-    assert suffix in COMMENT, \
-        f"%inc in {source}: unknown inclusion suffix in {path}"
-    before = f"{COMMENT[suffix]} [{tag}]"
-    after = f"{COMMENT[suffix]} [/{tag}]"
-    assert (before in content) and (after in content), \
-        f"%inc in {source}: missing start/end for {COMMENT[suffix]} and {tag}"
-    content = content.split(before)[1].split(after)[0]
-    if content[0] == "\n":
-        content = content[1:]
-    return content
-
-
 def insert_defined_terms(doc, source, seen, context):
     """Insert list of defined terms."""
     target = doc.select("p#terms")
@@ -232,7 +199,7 @@ def render_markdown(env, opt, source, content, context={}):
         (False, do_bibliography_links),
         (False, do_cross_links),
         (False, do_glossary),
-        (False, do_inclusions),
+        (False, do_inclusion_classes),
         (True, do_title),
         (True, do_root_path_prefix), # must be last
     )
@@ -261,4 +228,4 @@ def split_files(files):
 
 if __name__ == "__main__":
     opt = parse_args(argparse.ArgumentParser()).parse_args()
-    render(opt)
+    build(opt)
