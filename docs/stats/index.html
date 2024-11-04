@@ -9,12 +9,12 @@
       
       
       
-        <link rel="prev" href="../render/">
+        <link rel="prev" href="../refresh/">
       
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.43">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.35f28582.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
       
       
 
@@ -234,6 +234,46 @@
   
   
     <li class="md-nav__item">
+      <a href="../build/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lint/" class="md-nav__link">
         
   
@@ -254,11 +294,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../render/" class="md-nav__link">
+      <a href="../refresh/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Render
+    Refresh
   </span>
   
 
@@ -334,9 +374,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mccole.stats.find_figure_defs" class="md-nav__link">
+    <span class="md-ellipsis">
+      find_figure_defs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#mccole.stats.find_markdown_link_defs" class="md-nav__link">
     <span class="md-ellipsis">
       find_markdown_link_defs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.stats.get_num_issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_num_issues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.stats.get_num_pull_requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_num_pull_requests
     </span>
   </a>
   
@@ -402,9 +469,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mccole.stats.find_figure_defs" class="md-nav__link">
+    <span class="md-ellipsis">
+      find_figure_defs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#mccole.stats.find_markdown_link_defs" class="md-nav__link">
     <span class="md-ellipsis">
       find_markdown_link_defs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.stats.get_num_issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_num_issues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.stats.get_num_pull_requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_num_pull_requests
     </span>
   </a>
   
@@ -447,6 +541,11 @@
 
 
 
+
+
+
+
+
   <div class="doc doc-children">
 
 
@@ -472,31 +571,39 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/stats.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main driver.&quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">field_names</span><span class="o">=</span><span class="n">TABLE_FMT</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">TABLE_FMT</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">table</span><span class="o">.</span><span class="n">align</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
-    <span class="n">files</span> <span class="o">=</span> <span class="n">find_files</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">]))</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">find_files</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="p">{</span><span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">})</span>
     <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;bibliography entries&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_key_defs</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s2">&quot;bibliography&quot;</span><span class="p">))))</span>
     <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;glossary entries&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_key_defs</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s2">&quot;glossary&quot;</span><span class="p">))))</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;figures&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_figure_defs</span><span class="p">(</span><span class="n">files</span><span class="p">))))</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;link definitions&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_markdown_link_defs</span><span class="p">(</span><span class="n">files</span><span class="p">))))</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;tables&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_table_defs</span><span class="p">(</span><span class="n">files</span><span class="p">))))</span>
+
+    <span class="n">sections</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;figures&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_figure_defs</span><span class="p">(</span><span class="n">sections</span><span class="p">))))</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;link definitions&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_markdown_link_defs</span><span class="p">(</span><span class="n">sections</span><span class="p">))))</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;tables&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_table_defs</span><span class="p">(</span><span class="n">sections</span><span class="p">))))</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;issues&quot;</span><span class="p">,</span> <span class="n">get_num_issues</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">)))</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">((</span><span class="s2">&quot;pull requests&quot;</span><span class="p">,</span> <span class="n">get_num_pull_requests</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">)))</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -508,8 +615,54 @@
 <div class="doc doc-object doc-function">
 
 
+<h2 id="mccole.stats.find_figure_defs" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">find_figure_defs</span><span class="p">(</span><span class="n">files</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Collect all figure definitions.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/stats.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_figure_defs</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect all figure definitions.&quot;&quot;&quot;</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.md&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">figure</span> <span class="ow">in</span> <span class="n">FIGURE_DEF</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">found</span><span class="p">[</span><span class="n">FIGURE_ID</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="n">FIGURE_SRC</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="s2">&quot;alt&quot;</span><span class="p">:</span> <span class="n">FIGURE_ALT</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="s2">&quot;caption&quot;</span><span class="p">:</span> <span class="n">FIGURE_CAPTION</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                <span class="p">})</span>
+    <span class="k">return</span> <span class="n">found</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="mccole.stats.find_markdown_link_defs" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">find_markdown_link_defs</span><span class="p">(</span><span class="n">files</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">find_markdown_link_defs</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span></code>
 
 </h2>
 
@@ -520,21 +673,73 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/stats.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_markdown_link_defs</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_markdown_link_defs</span><span class="p">(</span><span class="n">sections</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect Markdown link key definnitions.&quot;&quot;&quot;</span>
     <span class="n">found</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.md&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">MD_LINK_DEF</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
                 <span class="n">found</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">found</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.stats.get_num_issues" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_num_issues</span><span class="p">(</span><span class="n">root</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get issue count from repository.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/stats.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_num_issues</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get issue count from repository.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_repo</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">open_issues_count</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.stats.get_num_pull_requests" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_num_pull_requests</span><span class="p">(</span><span class="n">root</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get pull request count from repository.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/stats.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_num_pull_requests</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get pull request count from repository.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_repo</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">get_pulls</span><span class="p">()</span><span class="o">.</span><span class="n">totalCount</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -556,11 +761,11 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/stats.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse command-line arguments.&quot;&quot;&quot;</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;docs&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--root&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;root directory&quot;</span><span class="p">)</span>
@@ -624,10 +829,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.56dfad97.min.js"></script>
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
       
     
   </body>
