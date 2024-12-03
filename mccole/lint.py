@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from .util import GLOSS_REF, MD_LINK_DEF, SUFFIXES, find_files, find_key_defs
+from .util import GLOSS_REF, MD_LINK_DEF, SUFFIXES, find_files, find_key_defs, load_config
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
@@ -21,7 +21,9 @@ TABLE_REF = re.compile(r"\[[^\]]+?\]\(t:(.+?)\)", re.MULTILINE)
 
 def lint(opt):
     """Main driver."""
-    files = find_files(opt, {opt.out})
+    config = load_config(opt.config)
+    skips = config["skips"] | {opt.out}
+    files = find_files(opt, skips)
     check_file_references(files)
 
     files = {path: data for path, data in files.items() if path.suffix == ".md"}
