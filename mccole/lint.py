@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from .util import GLOSS_REF, MD_LINK_DEF, SUFFIXES, find_files, find_key_defs, load_config
+from .util import GLOSS_REF, SUFFIXES, find_files, find_key_defs, load_config, load_links
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
@@ -38,12 +38,11 @@ def lint(opt):
         lint_figure_references,
         lint_glossary_redefinitions,
         lint_glossary_references,
-        lint_link_definitions,
-        lint_markdown_links,
+        lint_link_references,
         lint_table_references,
     ]
     sections = {path: data["content"] for path, data in files.items()}
-    if all(list(f(opt, sections, extras) for f in linters)):
+    if all(list(f(opt, config, sections, extras) for f in linters)):
         print("All self-checks passed.")
 
 
@@ -64,7 +63,7 @@ def check_file_references(files):
     return ok
 
 
-def lint_bibliography_references(opt, sections, extras):
+def lint_bibliography_references(opt, config, sections, extras):
     """Check bibliography references."""
     available = set(extras["bibliography"].keys())
     if available is None:
@@ -73,7 +72,7 @@ def lint_bibliography_references(opt, sections, extras):
     return _check_references(sections, "bibliography", BIB_REF, available)
 
 
-def lint_figure_numbers(opt, sections, extras):
+def lint_figure_numbers(opt, config, sections, extras):
     """Check figure numbering."""
     ok = True
     for path, content in sections.items():
@@ -107,12 +106,12 @@ def lint_figure_numbers(opt, sections, extras):
     return ok
 
 
-def lint_figure_references(opt, sections, extras):
+def lint_figure_references(opt, config, sections, extras):
     """Check figure references."""
     return _check_object_refs(sections, "figure", FIGURE_DEF, FIGURE_REF)
 
 
-def lint_glossary_redefinitions(opt, sections, extras):
+def lint_glossary_redefinitions(opt, config, sections, extras):
     """Check glossary redefinitions."""
     found = defaultdict(set)
     for path, content in sections.items():
@@ -128,7 +127,7 @@ def lint_glossary_redefinitions(opt, sections, extras):
     return len(problems) == 0
 
 
-def lint_glossary_references(opt, sections, extras):
+def lint_glossary_references(opt, config, sections, extras):
     """Check glossary references."""
     available = set(extras["glossary"].keys())
     if available is None:
@@ -137,35 +136,19 @@ def lint_glossary_references(opt, sections, extras):
     return _check_references(sections, "glossary", GLOSS_REF, available)
 
 
-def lint_link_definitions(opt, sections, extras):
-    """Check that Markdown files define the links they use."""
+def lint_link_references(opt, config, sections, extras):
+    """Check that Markdown files use links that have been defined."""
+    if not config["links"]:
+        return True
     ok = True
+    links = set(config["links"].keys())
+    link_refs = set()
     for path, content in sections.items():
-        link_refs = {m[1] for m in MD_LINK_REF.findall(content)}
-        link_defs = {m[0] for m in MD_LINK_DEF.findall(content)}
-        ok = ok and _report_diff(f"{path} links", link_refs, link_defs)
-    return ok
+        link_refs |= {m[1] for m in MD_LINK_REF.findall(content)}
+    return _report_diff(f"links used", link_refs, links)
 
 
-def lint_markdown_links(opt, sections, extras):
-    """Check consistency of Markdown links."""
-    found = defaultdict(lambda: defaultdict(set))
-    for path, content in sections.items():
-        for link in MD_LINK_DEF.finditer(content):
-            label, url = link.group(1), link.group(2)
-            found[label][url].add(path)
-
-    ok = True
-    for label, data in found.items():
-        if len(data) > 1:
-            info = {str(k):", ".join(sorted(str(p) for p in v)) for k, v in data.items()}
-            msg = ", ".join(f"{k} in {v}" for k, v in info.items())
-            print(f"Inconsistent link {label}: {msg}")
-            ok = False
-    return ok
-
-
-def lint_table_references(opt, sections, extras):
+def lint_table_references(opt, config, sections, extras):
     """Check figure references."""
     return _check_object_refs(sections, "table", TABLE_DEF, TABLE_REF)
 

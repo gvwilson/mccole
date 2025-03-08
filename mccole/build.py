@@ -7,7 +7,7 @@ from markdown import markdown
 from pathlib import Path
 import sys
 
-from .util import find_files, find_key_defs, load_config, write_file
+from .util import find_files, find_key_defs, load_config, load_links, write_file
 
 
 ALSO_HTML_SUFFIX = {".css", ".js", ".py", ".sql"}
@@ -32,6 +32,7 @@ def build(opt):
 
     # Setup.
     config = load_config(opt.config)
+    config["links_md"] = "\n".join(["", *(f"[{key}]: {url}" for key, url in config["links"].items())])
     skips = config["skips"] | {opt.out}
     env = Environment(loader=FileSystemLoader(opt.templates))
 
@@ -119,7 +120,7 @@ def handle_also_html(env, opt, config, files):
         write_file(output_path, info["content"])
 
         embedded = AS_HTML.format(path=path, content=info["content"])
-        embedded = render_markdown(env, opt, path, embedded)
+        embedded = render_markdown(env, opt, config["links_md"], path, embedded)
         write_file(Path(f"{output_path}.html"), str(embedded))
 
 
@@ -133,7 +134,7 @@ def handle_markdown(env, opt, config, files):
 
     # Render all documents.
     for path, info in files.items():
-        info["doc"] = render_markdown(env, opt, path, info["content"], context)
+        info["doc"] = render_markdown(env, opt, config["links_md"], path, info["content"], context)
 
     # Save results.
     for path, info in files.items():
@@ -187,10 +188,11 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, source, content, context={}):
+def render_markdown(env, opt, links, source, content, context={}):
     """Convert Markdown to HTML."""
     # Generate HTML.
     template = choose_template(env, source)
+    content += links
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 

@@ -5,7 +5,7 @@ from collections import defaultdict
 from prettytable import PrettyTable
 import re
 
-from .util import MD_LINK_DEF, find_files, find_key_defs, find_table_defs, get_repo
+from .util import find_files, find_key_defs, find_table_defs, get_repo
 
 
 FIGURE_DEF = re.compile(r"\[%\s*figure\b(.+?)%\]", re.DOTALL + re.MULTILINE)
@@ -31,7 +31,6 @@ def stats(opt):
 
     sections = {path: data["content"] for path, data in files.items()}
     table.add_row(("figures", len(find_figure_defs(sections))))
-    table.add_row(("link definitions", len(find_markdown_link_defs(sections))))
     table.add_row(("tables", len(find_table_defs(sections))))
     table.add_row(("issues", get_num_issues(opt.root)))
     table.add_row(("pull requests", get_num_pull_requests(opt.root)))
@@ -51,16 +50,6 @@ def find_figure_defs(files):
                     "alt": FIGURE_ALT.search(text).group(1),
                     "caption": FIGURE_CAPTION.search(text).group(1),
                 })
-    return found
-
-
-def find_markdown_link_defs(sections):
-    """Collect Markdown link key definnitions."""
-    found = set()
-    for filepath, content in sections.items():
-        if filepath.suffix == ".md":
-            for link in MD_LINK_DEF.finditer(content):
-                found.add(link[0])
     return found
 
 

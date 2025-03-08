@@ -10,7 +10,7 @@ mypkg = ["*.css", "*.js", "*.html"]
 
 [project]
 name = "mccole"
-version = "0.3.7"
+version = "0.4.1"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
     {name = "Juanan Pereira", email = "juanan.pereira@ehu.eus"},
@@ -35,6 +35,7 @@ dependencies = [
     "markdown>=3.6",
     "prettytable>=3.11",
     "pygithub>=2.4",
+    "pyyaml>=6.0",
     "ruff>=0.6.0",
     "tomli>=2.0.1",
 ]
