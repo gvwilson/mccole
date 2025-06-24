@@ -8,6 +8,7 @@ import re
 import tomli
 import yaml
 
+ALSO_HTML_SUFFIX = {".css", ".js", ".py", ".sql"}
 DEFAULT_CONFIG = {
     "duplicates": set(),
     "skips": set(),
@@ -69,6 +70,7 @@ def load_config(config_path):
         print(f"configuration file {config_path} does not have 'tool.mccole' section")
         return DEFAULT_CONFIG
     config = config["tool"]["mccole"]
+    config["also"] = set(config["also"]) if "also" in config else set(ALSO_HTML_SUFFIX)
     if "duplicates" in config:
         config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
     if "skips" in config:

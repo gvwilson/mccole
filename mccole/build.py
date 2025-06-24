@@ -10,8 +10,6 @@ import sys
 from .util import find_files, find_key_defs, load_config, load_links, write_file
 
 
-ALSO_HTML_SUFFIX = {".css", ".js", ".py", ".sql"}
-
 AS_HTML = """\
 # {path}
 ```
@@ -38,7 +36,7 @@ def build(opt):
 
     # Find and build files.
     files = find_files(opt, skips)
-    markdown, also_html, others = split_files(files)
+    markdown, also_html, others = split_files(config, files)
     handle_markdown(env, opt, config, markdown)
     handle_also_html(env, opt, config, also_html)
     handle_others(env, opt, config, others)
@@ -51,23 +49,23 @@ def choose_template(env, source):
     return env.get_template("page.html")
 
 
-def do_bibliography_links(doc, source, context):
+def do_bibliography_links(config, doc, source, context):
     """Turn 'b:key' links into bibliography references."""
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
             node["href"] = f"@root/bibliography.html#{node['href'][2:]}"
 
 
-def do_cross_links(doc, source, context):
+def do_cross_links(config, doc, source, context):
     """Fix .md links in HTML."""
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
-        elif Path(node["href"]).suffix in ALSO_HTML_SUFFIX:
+        elif Path(node["href"]).suffix in config["also"]:
             node["href"] = f"{node['href']}.html"
 
 
-def do_glossary(doc, source, context):
+def do_glossary(config, doc, source, context):
     """Turn 'g:key' links into glossary references and insert list of terms."""
     seen = set()
     for node in doc.select("a[href]"):
@@ -78,7 +76,7 @@ def do_glossary(doc, source, context):
     insert_defined_terms(doc, source, seen, context)
 
 
-def do_inclusion_classes(doc, source, context):
+def do_inclusion_classes(config, doc, source, context):
     """Adjust classes of file inclusions."""
     for node in doc.select("code[data-file]"):
         inc = node["data-file"]
@@ -89,7 +87,7 @@ def do_inclusion_classes(doc, source, context):
         node.parent["class"] = language
 
 
-def do_title(doc, source, context):
+def do_title(config, doc, source, context):
     """Make sure title element is filled in."""
     try:
         doc.title.string = doc.h1.get_text()
@@ -98,7 +96,7 @@ def do_title(doc, source, context):
         sys.exit(1)
 
 
-def do_root_path_prefix(doc, source, context):
+def do_root_path_prefix(config, doc, source, context):
     """Fix @root links in HTML."""
     depth = len(source.parents) - 1
     prefix = "./" if (depth == 0) else "../" * depth
@@ -120,7 +118,7 @@ def handle_also_html(env, opt, config, files):
         write_file(output_path, info["content"])
 
         embedded = AS_HTML.format(path=path, content=info["content"])
-        embedded = render_markdown(env, opt, config["links_md"], path, embedded)
+        embedded = render_markdown(env, opt, config, path, embedded)
         write_file(Path(f"{output_path}.html"), str(embedded))
 
 
@@ -134,7 +132,7 @@ def handle_markdown(env, opt, config, files):
 
     # Render all documents.
     for path, info in files.items():
-        info["doc"] = render_markdown(env, opt, config["links_md"], path, info["content"], context)
+        info["doc"] = render_markdown(env, opt, config, path, info["content"], context)
 
     # Save results.
     for path, info in files.items():
@@ -188,11 +186,11 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, links, source, content, context={}):
+def render_markdown(env, opt, config, source, content, context={}):
     """Convert Markdown to HTML."""
     # Generate HTML.
     template = choose_template(env, source)
-    content += links
+    content += config["links_md"]
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 
@@ -208,12 +206,12 @@ def render_markdown(env, opt, links, source, content, context={}):
     doc = BeautifulSoup(html, "html.parser")
     for is_required, func in transformers:
         if context or is_required:
-            func(doc, source, context)
+            func(config, doc, source, context)
 
     return doc
 
 
-def split_files(files):
+def split_files(config, files):
     """Divide files into categories."""
     markdown = {}
     also_html = {}
@@ -221,7 +219,7 @@ def split_files(files):
     for path, info in files.items():
         if path.suffix == ".md":
             markdown[path] = info
-        elif path.suffix in ALSO_HTML_SUFFIX:
+        elif path.suffix in config["also"]:
             also_html[path] = info
         else:
             others[path] = info
