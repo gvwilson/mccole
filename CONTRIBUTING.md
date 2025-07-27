@@ -19,7 +19,7 @@ but must abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 -   `pip install build twine`
 -   `python -m build`
--   `twine upload --verbose -u __token__ -p pypi-your-access-token dist/*`
+-   `twine upload --verbose -u __token__ -p your-pypi-access-token dist/*`
 
 ## Labels
 
