@@ -236,7 +236,7 @@
 
     # Find and build files.
     files = find_files(opt, skips)
-    markdown, also_html, others = split_files(files)
+    markdown, also_html, others = split_files(config, files)
     handle_markdown(env, opt, config, markdown)
     handle_also_html(env, opt, config, also_html)
     handle_others(env, opt, config, others)</code></pre>
@@ -275,7 +275,7 @@
 
 
 <h2 id="mccole.build.do_bibliography_links" class="doc doc-heading">
-            <code class="highlight language-python">do_bibliography_links(doc, source, context)</code>
+            <code class="highlight language-python">do_bibliography_links(config, doc, source, context)</code>
 
 </h2>
 
@@ -287,7 +287,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def do_bibliography_links(doc, source, context):
+              <pre class="highlight"><code class="language-python">def do_bibliography_links(config, doc, source, context):
     """Turn 'b:key' links into bibliography references."""
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
@@ -301,7 +301,7 @@
 
 
 <h2 id="mccole.build.do_cross_links" class="doc doc-heading">
-            <code class="highlight language-python">do_cross_links(doc, source, context)</code>
+            <code class="highlight language-python">do_cross_links(config, doc, source, context)</code>
 
 </h2>
 
@@ -313,12 +313,12 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def do_cross_links(doc, source, context):
+              <pre class="highlight"><code class="language-python">def do_cross_links(config, doc, source, context):
     """Fix .md links in HTML."""
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
-        elif Path(node["href"]).suffix in ALSO_HTML_SUFFIX:
+        elif Path(node["href"]).suffix in config["also"]:
             node["href"] = f"{node['href']}.html"</code></pre>
             </details>
     </div>
@@ -329,7 +329,7 @@
 
 
 <h2 id="mccole.build.do_glossary" class="doc doc-heading">
-            <code class="highlight language-python">do_glossary(doc, source, context)</code>
+            <code class="highlight language-python">do_glossary(config, doc, source, context)</code>
 
 </h2>
 
@@ -341,7 +341,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def do_glossary(doc, source, context):
+              <pre class="highlight"><code class="language-python">def do_glossary(config, doc, source, context):
     """Turn 'g:key' links into glossary references and insert list of terms."""
     seen = set()
     for node in doc.select("a[href]"):
@@ -359,7 +359,7 @@
 
 
 <h2 id="mccole.build.do_inclusion_classes" class="doc doc-heading">
-            <code class="highlight language-python">do_inclusion_classes(doc, source, context)</code>
+            <code class="highlight language-python">do_inclusion_classes(config, doc, source, context)</code>
 
 </h2>
 
@@ -371,7 +371,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def do_inclusion_classes(doc, source, context):
+              <pre class="highlight"><code class="language-python">def do_inclusion_classes(config, doc, source, context):
     """Adjust classes of file inclusions."""
     for node in doc.select("code[data-file]"):
         inc = node["data-file"]
@@ -389,7 +389,7 @@
 
 
 <h2 id="mccole.build.do_title" class="doc doc-heading">
-            <code class="highlight language-python">do_title(doc, source, context)</code>
+            <code class="highlight language-python">do_title(config, doc, source, context)</code>
 
 </h2>
 
@@ -401,7 +401,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def do_title(doc, source, context):
+              <pre class="highlight"><code class="language-python">def do_title(config, doc, source, context):
     """Make sure title element is filled in."""
     try:
         doc.title.string = doc.h1.get_text()
@@ -417,7 +417,7 @@
 
 
 <h2 id="mccole.build.do_root_path_prefix" class="doc doc-heading">
-            <code class="highlight language-python">do_root_path_prefix(doc, source, context)</code>
+            <code class="highlight language-python">do_root_path_prefix(config, doc, source, context)</code>
 
 </h2>
 
@@ -429,7 +429,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def do_root_path_prefix(doc, source, context):
+              <pre class="highlight"><code class="language-python">def do_root_path_prefix(config, doc, source, context):
     """Fix @root links in HTML."""
     depth = len(source.parents) - 1
     prefix = "./" if (depth == 0) else "../" * depth
@@ -470,7 +470,7 @@
         write_file(output_path, info["content"])
 
         embedded = AS_HTML.format(path=path, content=info["content"])
-        embedded = render_markdown(env, opt, config["links_md"], path, embedded)
+        embedded = render_markdown(env, opt, config, path, embedded)
         write_file(Path(f"{output_path}.html"), str(embedded))</code></pre>
             </details>
     </div>
@@ -503,7 +503,7 @@
 
     # Render all documents.
     for path, info in files.items():
-        info["doc"] = render_markdown(env, opt, config["links_md"], path, info["content"], context)
+        info["doc"] = render_markdown(env, opt, config, path, info["content"], context)
 
     # Save results.
     for path, info in files.items():
@@ -640,7 +640,7 @@
 
 
 <h2 id="mccole.build.render_markdown" class="doc doc-heading">
-            <code class="highlight language-python">render_markdown(env, opt, links, source, content, context={})</code>
+            <code class="highlight language-python">render_markdown(env, opt, config, source, content, context={})</code>
 
 </h2>
 
@@ -652,11 +652,11 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def render_markdown(env, opt, links, source, content, context={}):
+              <pre class="highlight"><code class="language-python">def render_markdown(env, opt, config, source, content, context={}):
     """Convert Markdown to HTML."""
     # Generate HTML.
     template = choose_template(env, source)
-    content += links
+    content += config["links_md"]
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 
@@ -672,7 +672,7 @@
     doc = BeautifulSoup(html, "html.parser")
     for is_required, func in transformers:
         if context or is_required:
-            func(doc, source, context)
+            func(config, doc, source, context)
 
     return doc</code></pre>
             </details>
@@ -684,7 +684,7 @@
 
 
 <h2 id="mccole.build.split_files" class="doc doc-heading">
-            <code class="highlight language-python">split_files(files)</code>
+            <code class="highlight language-python">split_files(config, files)</code>
 
 </h2>
 
@@ -696,7 +696,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <pre class="highlight"><code class="language-python">def split_files(files):
+              <pre class="highlight"><code class="language-python">def split_files(config, files):
     """Divide files into categories."""
     markdown = {}
     also_html = {}
@@ -704,7 +704,7 @@
     for path, info in files.items():
         if path.suffix == ".md":
             markdown[path] = info
-        elif path.suffix in ALSO_HTML_SUFFIX:
+        elif path.suffix in config["also"]:
             also_html[path] = info
         else:
             others[path] = info
