@@ -6,7 +6,6 @@ from github import Github
 from pathlib import Path
 import re
 import tomli
-import yaml
 
 DEFAULT_CONFIG = {
     "duplicates": set(),
@@ -14,7 +13,8 @@ DEFAULT_CONFIG = {
 }
 GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
 KEY_DEF = re.compile(r'^<span\s+id="(.+?)">(.+?)</span>\s*$', re.MULTILINE)
-SUFFIXES_BIN = {".ico", ".jpg", ".png"}
+LINK_DEF = re.compile(r'<a\s+id="(.+?)"\s+href="(.+?)"\s*>(.+?)</a>\s*$', re.MULTILINE)
+SUFFIXES_BIN = {".ico", ".jpg", ".png", ".webp"}
 SUFFIXES_SRC = {".css", ".html", ".js", ".md", ".py", ".sh", ".sql", ".txt"}
 SUFFIXES_TXT = SUFFIXES_SRC | {".csv", ".json", ".svg"}
 SUFFIXES = SUFFIXES_BIN | SUFFIXES_TXT
@@ -78,9 +78,9 @@ def load_config(config_path):
 
 
 def load_links(path):
-    """Read YAML links file and convert to Markdown links."""
-    links = yaml.safe_load(Path(path).read_text())
-    return {x["key"]: x["url"] for x in links}
+    """Read Markdown links file and convert to dictionary."""
+    text = Path(path).read_text()
+    return {m[0]: m[1] for m in LINK_DEF.findall(text)}
 
 
 def read_file(path):

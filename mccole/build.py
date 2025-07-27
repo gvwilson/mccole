@@ -7,7 +7,7 @@ from markdown import markdown
 from pathlib import Path
 import sys
 
-from .util import find_files, find_key_defs, load_config, load_links, write_file
+from .util import find_files, find_key_defs, load_config, write_file
 
 
 ALSO_HTML_SUFFIX = {".css", ".js", ".py", ".sql"}

@@ -8,6 +8,11 @@ commands:
 	| sed -e 's/## //g' \
 	| column -t -s ':'
 
+## docs: rebuild documentation
+.PHONY: docs
+docs:
+	mkdocs build
+
 ## lint: check code and project
 lint:
 	@ruff check mccole

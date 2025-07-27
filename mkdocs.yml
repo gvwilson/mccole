@@ -11,9 +11,6 @@ plugins:
           members_order: source
           filters: []
 
-theme:
-  name: "material"
-
 markdown_extensions:
 - markdown_include.include:
     base_path: docs

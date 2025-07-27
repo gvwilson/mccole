@@ -5,7 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 import re
 
-from .util import GLOSS_REF, SUFFIXES, find_files, find_key_defs, load_config, load_links
+from .util import GLOSS_REF, SUFFIXES, find_files, find_key_defs, load_config
 
 
 BIB_REF = re.compile(r"\[.+?\]\(b:(.+?)\)", re.MULTILINE)
@@ -140,12 +140,11 @@ def lint_link_references(opt, config, sections, extras):
     """Check that Markdown files use links that have been defined."""
     if not config["links"]:
         return True
-    ok = True
     links = set(config["links"].keys())
     link_refs = set()
     for path, content in sections.items():
         link_refs |= {m[1] for m in MD_LINK_REF.findall(content)}
-    return _report_diff(f"links used", link_refs, links)
+    return _report_diff("links used", link_refs, links)
 
 
 def lint_table_references(opt, config, sections, extras):

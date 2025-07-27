@@ -1,734 +1,186 @@
-
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-      
-      
-      
-        <link rel="prev" href="../install/">
-      
-      
-        <link rel="next" href="../refresh/">
-      
-      
-      <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.43">
-    
-    
-      
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Lint - McCole Docs</title>
-      
-    
-    
-      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
-      
-      
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
 
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">McCole Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-    
-    
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
-    
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">McCole</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../CODE_OF_CONDUCT/" class="nav-link">Code of Conduct</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../CONTRIBUTING/" class="nav-link">Contributing</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../LICENSE/" class="nav-link">MIT License</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../build/" class="nav-link">Build</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../install/" class="nav-link">Install</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Lint</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../refresh/" class="nav-link">Refresh</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../stats/" class="nav-link">Stats</a>
+                            </li>
+                        </ul>
 
-    
-    
-    
-  </head>
-  
-  
-    <body dir="ltr">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#mccole.lint" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="McCole Docs" class="md-header__button md-logo" aria-label="McCole Docs" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            McCole Docs
-          </span>
-        </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Lint
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-    
-  </nav>
-  
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href=".." title="McCole Docs" class="md-nav__button md-logo" aria-label="McCole Docs" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
-
-    </a>
-    McCole Docs
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    McCole
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CODE_OF_CONDUCT/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Code of Conduct
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CONTRIBUTING/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Contributing
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../LICENSE/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MIT License
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../build/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Build
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../install/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Install
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Lint
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    Lint
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.check_file_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      check_file_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_bibliography_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_bibliography_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_figure_numbers" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_figure_numbers
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_figure_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_figure_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_glossary_redefinitions" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_glossary_redefinitions
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_glossary_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_glossary_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_link_definitions" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_link_definitions
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_markdown_links" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_markdown_links
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_table_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_table_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.parse_args" class="md-nav__link">
-    <span class="md-ellipsis">
-      parse_args
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._check_object_refs" class="md-nav__link">
-    <span class="md-ellipsis">
-      _check_object_refs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._check_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      _check_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._is_missing" class="md-nav__link">
-    <span class="md-ellipsis">
-      _is_missing
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._is_special_link" class="md-nav__link">
-    <span class="md-ellipsis">
-      _is_special_link
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._report_diff" class="md-nav__link">
-    <span class="md-ellipsis">
-      _report_diff
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._resolve_path" class="md-nav__link">
-    <span class="md-ellipsis">
-      _resolve_path
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../refresh/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Refresh
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../stats/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Stats
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
+                    <ul class="nav navbar-nav ms-md-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href="../install/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../refresh/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
                 </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
+            </div>
+        </div>
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.check_file_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      check_file_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_bibliography_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_bibliography_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_figure_numbers" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_figure_numbers
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_figure_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_figure_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_glossary_redefinitions" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_glossary_redefinitions
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_glossary_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_glossary_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_link_definitions" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_link_definitions
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_markdown_links" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_markdown_links
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.lint_table_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      lint_table_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint.parse_args" class="md-nav__link">
-    <span class="md-ellipsis">
-      parse_args
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._check_object_refs" class="md-nav__link">
-    <span class="md-ellipsis">
-      _check_object_refs
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._check_references" class="md-nav__link">
-    <span class="md-ellipsis">
-      _check_references
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._is_missing" class="md-nav__link">
-    <span class="md-ellipsis">
-      _is_missing
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._is_special_link" class="md-nav__link">
-    <span class="md-ellipsis">
-      _is_special_link
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._report_diff" class="md-nav__link">
-    <span class="md-ellipsis">
-      _report_diff
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mccole.lint._resolve_path" class="md-nav__link">
-    <span class="md-ellipsis">
-      _resolve_path
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
             
-          
-          
-            <div class="md-content" data-md-component="content">
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-  <h1>Lint</h1>
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint" class="nav-link">lint</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint" class="nav-link">lint</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.check_file_references" class="nav-link">check_file_references</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_bibliography_references" class="nav-link">lint_bibliography_references</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_figure_numbers" class="nav-link">lint_figure_numbers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_figure_references" class="nav-link">lint_figure_references</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_glossary_redefinitions" class="nav-link">lint_glossary_redefinitions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_glossary_references" class="nav-link">lint_glossary_references</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_link_references" class="nav-link">lint_link_references</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_table_references" class="nav-link">lint_table_references</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.parse_args" class="nav-link">parse_args</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint._check_object_refs" class="nav-link">_check_object_refs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint._check_references" class="nav-link">_check_references</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint._is_missing" class="nav-link">_is_missing</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint._is_special_link" class="nav-link">_is_special_link</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint._report_diff" class="nav-link">_report_diff</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint._resolve_path" class="nav-link">_resolve_path</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
 
 <div class="doc doc-object doc-module">
 
@@ -738,6 +190,7 @@
     <div class="doc doc-contents first">
 
         <p>Check site consistency.</p>
+
 
 
 
@@ -760,7 +213,7 @@
 
 
 <h2 id="mccole.lint.lint" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></code>
+            <code class="highlight language-python">lint(opt)</code>
 
 </h2>
 
@@ -769,56 +222,34 @@
 
         <p>Main driver.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main driver.&quot;&quot;&quot;</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">find_files</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="p">{</span><span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">})</span>
-    <span class="n">check_file_references</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+              <pre class="highlight"><code class="language-python">def lint(opt):
+    """Main driver."""
+    config = load_config(opt.config)
+    skips = config["skips"] | {opt.out}
+    files = find_files(opt, skips)
+    check_file_references(files)
 
-    <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="n">data</span> <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.md&quot;</span><span class="p">}</span>
-    <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;bibliography&quot;</span><span class="p">:</span> <span class="n">find_key_defs</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s2">&quot;bibliography&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;glossary&quot;</span><span class="p">:</span> <span class="n">find_key_defs</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s2">&quot;glossary&quot;</span><span class="p">),</span>
-    <span class="p">}</span>
+    files = {path: data for path, data in files.items() if path.suffix == ".md"}
+    extras = {
+        "bibliography": find_key_defs(files, "bibliography"),
+        "glossary": find_key_defs(files, "glossary"),
+    }
 
-    <span class="n">linters</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">lint_bibliography_references</span><span class="p">,</span>
-        <span class="n">lint_figure_numbers</span><span class="p">,</span>
-        <span class="n">lint_figure_references</span><span class="p">,</span>
-        <span class="n">lint_glossary_redefinitions</span><span class="p">,</span>
-        <span class="n">lint_glossary_references</span><span class="p">,</span>
-        <span class="n">lint_link_definitions</span><span class="p">,</span>
-        <span class="n">lint_markdown_links</span><span class="p">,</span>
-        <span class="n">lint_table_references</span><span class="p">,</span>
-    <span class="p">]</span>
-    <span class="n">sections</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">linters</span><span class="p">)):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All self-checks passed.&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+    linters = [
+        lint_bibliography_references,
+        lint_figure_numbers,
+        lint_figure_references,
+        lint_glossary_redefinitions,
+        lint_glossary_references,
+        lint_link_references,
+        lint_table_references,
+    ]
+    sections = {path: data["content"] for path, data in files.items()}
+    if all(list(f(opt, config, sections, extras) for f in linters)):
+        print("All self-checks passed.")</code></pre>
             </details>
     </div>
 
@@ -828,7 +259,7 @@
 
 
 <h2 id="mccole.lint.check_file_references" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">check_file_references</span><span class="p">(</span><span class="n">files</span><span class="p">)</span></code>
+            <code class="highlight language-python">check_file_references(files)</code>
 
 </h2>
 
@@ -837,38 +268,24 @@
 
         <p>Check inter-file references.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">check_file_references</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check inter-file references.&quot;&quot;&quot;</span>
-    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;.md&quot;</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">MD_FILE_LINK</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">_is_special_link</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
-                <span class="k">continue</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="n">_resolve_path</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">link</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">_is_missing</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing file: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> =&gt; </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">ok</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def check_file_references(files):
+    """Check inter-file references."""
+    ok = True
+    for path, data in files.items():
+        content = data["content"]
+        if path.suffix != ".md":
+            continue
+        for link in MD_FILE_LINK.finditer(content):
+            if _is_special_link(link.group(2)):
+                continue
+            target = _resolve_path(path.parent, link.group(2))
+            if _is_missing(target, files):
+                print(f"Missing file: {path} =&gt; {target}")
+                ok = False
+    return ok</code></pre>
             </details>
     </div>
 
@@ -878,7 +295,7 @@
 
 
 <h2 id="mccole.lint.lint_bibliography_references" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_bibliography_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
+            <code class="highlight language-python">lint_bibliography_references(opt, config, sections, extras)</code>
 
 </h2>
 
@@ -887,22 +304,16 @@
 
         <p>Check bibliography references.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_bibliography_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check bibliography references.&quot;&quot;&quot;</span>
-    <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;bibliography&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="k">if</span> <span class="n">available</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No bibliography found (or multiple matches)&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">_check_references</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="s2">&quot;bibliography&quot;</span><span class="p">,</span> <span class="n">BIB_REF</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def lint_bibliography_references(opt, config, sections, extras):
+    """Check bibliography references."""
+    available = set(extras["bibliography"].keys())
+    if available is None:
+        print("No bibliography found (or multiple matches)")
+        return False
+    return _check_references(sections, "bibliography", BIB_REF, available)</code></pre>
             </details>
     </div>
 
@@ -912,7 +323,7 @@
 
 
 <h2 id="mccole.lint.lint_figure_numbers" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_figure_numbers</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
+            <code class="highlight language-python">lint_figure_numbers(opt, config, sections, extras)</code>
 
 </h2>
 
@@ -921,72 +332,41 @@
 
         <p>Check figure numbering.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_figure_numbers</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check figure numbering.&quot;&quot;&quot;</span>
-    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">current</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">caption</span> <span class="ow">in</span> <span class="n">FIGURE_CAPTION</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="n">caption</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Figure&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">text</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">text</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad caption: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> / &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-                <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">continue</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad caption: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> / &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-                <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">continue</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad caption: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> / &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-                <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">continue</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">number</span> <span class="o">!=</span> <span class="n">current</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Caption number out of sequence: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> / &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">current</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad caption number: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> / &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-                <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">ok</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def lint_figure_numbers(opt, config, sections, extras):
+    """Check figure numbering."""
+    ok = True
+    for path, content in sections.items():
+        current = 1
+        for caption in FIGURE_CAPTION.finditer(content):
+            text = caption.group(1)
+            if ("Figure" not in text) or (":" not in text):
+                print(f"Bad caption: {path} / '{text}'")
+                ok = False
+                continue
+            fields = text.split(":")
+            if len(fields) != 2:
+                print(f"Bad caption: {path} / '{text}'")
+                ok = False
+                continue
+            fields = fields[0].split(" ")
+            if len(fields) != 2:
+                print(f"Bad caption: {path} / '{text}'")
+                ok = False
+                continue
+            try:
+                number = int(fields[1])
+                if number != current:
+                    print(f"Caption number out of sequence: {path} / '{text}'")
+                    ok = False
+                else:
+                    current += 1
+            except ValueError:
+                print(f"Bad caption number: {path} / '{text}'")
+                ok = False
+    return ok</code></pre>
             </details>
     </div>
 
@@ -996,7 +376,7 @@
 
 
 <h2 id="mccole.lint.lint_figure_references" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_figure_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
+            <code class="highlight language-python">lint_figure_references(opt, config, sections, extras)</code>
 
 </h2>
 
@@ -1005,14 +385,12 @@
 
         <p>Check figure references.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_figure_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check figure references.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="s2">&quot;figure&quot;</span><span class="p">,</span> <span class="n">FIGURE_DEF</span><span class="p">,</span> <span class="n">FIGURE_REF</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def lint_figure_references(opt, config, sections, extras):
+    """Check figure references."""
+    return _check_object_refs(sections, "figure", FIGURE_DEF, FIGURE_REF)</code></pre>
             </details>
     </div>
 
@@ -1022,7 +400,7 @@
 
 
 <h2 id="mccole.lint.lint_glossary_redefinitions" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_glossary_redefinitions</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
+            <code class="highlight language-python">lint_glossary_redefinitions(opt, config, sections, extras)</code>
 
 </h2>
 
@@ -1031,36 +409,23 @@
 
         <p>Check glossary redefinitions.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_glossary_redefinitions</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check glossary redefinitions.&quot;&quot;&quot;</span>
-    <span class="n">found</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="s2">&quot;glossary&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-            <span class="k">continue</span>
-        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">GLOSS_REF</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
-            <span class="n">found</span><span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+              <pre class="highlight"><code class="language-python">def lint_glossary_redefinitions(opt, config, sections, extras):
+    """Check glossary redefinitions."""
+    found = defaultdict(set)
+    for path, content in sections.items():
+        if "glossary" in str(path).lower():
+            continue
+        for m in GLOSS_REF.finditer(content):
+            found[m[1]].add(str(path))
 
-    <span class="n">problems</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">found</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">}</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">problems</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;glossary key </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> redefined: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">problems</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-</code></pre></div></td></tr></table></div>
+    problems = {k:v for k, v in found.items() if len(v) &gt; 1}
+    for k, v in problems.items():
+        if len(v) &gt; 1:
+            print(f"glossary key {k} redefined: {', '.join(sorted(v))}")
+    return len(problems) == 0</code></pre>
             </details>
     </div>
 
@@ -1070,7 +435,7 @@
 
 
 <h2 id="mccole.lint.lint_glossary_references" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_glossary_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
+            <code class="highlight language-python">lint_glossary_references(opt, config, sections, extras)</code>
 
 </h2>
 
@@ -1079,22 +444,16 @@
 
         <p>Check glossary references.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_glossary_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check glossary references.&quot;&quot;&quot;</span>
-    <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;glossary&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="k">if</span> <span class="n">available</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No glossary found (or multiple matches)&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">_check_references</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="s2">&quot;glossary&quot;</span><span class="p">,</span> <span class="n">GLOSS_REF</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def lint_glossary_references(opt, config, sections, extras):
+    """Check glossary references."""
+    available = set(extras["glossary"].keys())
+    if available is None:
+        print("No glossary found (or multiple matches)")
+        return False
+    return _check_references(sections, "glossary", GLOSS_REF, available)</code></pre>
             </details>
     </div>
 
@@ -1103,86 +462,28 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="mccole.lint.lint_link_definitions" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_link_definitions</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
+<h2 id="mccole.lint.lint_link_references" class="doc doc-heading">
+            <code class="highlight language-python">lint_link_references(opt, config, sections, extras)</code>
 
 </h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>Check that Markdown files define the links they use.</p>
+        <p>Check that Markdown files use links that have been defined.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_link_definitions</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that Markdown files define the links they use.&quot;&quot;&quot;</span>
-    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">link_refs</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">MD_LINK_REF</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
-        <span class="n">link_defs</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">MD_LINK_DEF</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
-        <span class="n">ok</span> <span class="o">=</span> <span class="n">ok</span> <span class="ow">and</span> <span class="n">_report_diff</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> links&quot;</span><span class="p">,</span> <span class="n">link_refs</span><span class="p">,</span> <span class="n">link_defs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ok</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="mccole.lint.lint_markdown_links" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_markdown_links</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Check consistency of Markdown links.</p>
-
-            <details class="quote">
-              <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_markdown_links</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check consistency of Markdown links.&quot;&quot;&quot;</span>
-    <span class="n">found</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">MD_LINK_DEF</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
-            <span class="n">label</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">link</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">found</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="n">url</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-
-    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">found</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">info</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inconsistent link </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">ok</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def lint_link_references(opt, config, sections, extras):
+    """Check that Markdown files use links that have been defined."""
+    if not config["links"]:
+        return True
+    links = set(config["links"].keys())
+    link_refs = set()
+    for path, content in sections.items():
+        link_refs |= {m[1] for m in MD_LINK_REF.findall(content)}
+    return _report_diff("links used", link_refs, links)</code></pre>
             </details>
     </div>
 
@@ -1192,7 +493,7 @@
 
 
 <h2 id="mccole.lint.lint_table_references" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_table_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
+            <code class="highlight language-python">lint_table_references(opt, config, sections, extras)</code>
 
 </h2>
 
@@ -1201,14 +502,12 @@
 
         <p>Check figure references.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">lint_table_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check figure references.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="s2">&quot;table&quot;</span><span class="p">,</span> <span class="n">TABLE_DEF</span><span class="p">,</span> <span class="n">TABLE_REF</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def lint_table_references(opt, config, sections, extras):
+    """Check figure references."""
+    return _check_object_refs(sections, "table", TABLE_DEF, TABLE_REF)</code></pre>
             </details>
     </div>
 
@@ -1218,7 +517,7 @@
 
 
 <h2 id="mccole.lint.parse_args" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span></code>
+            <code class="highlight language-python">parse_args(parser)</code>
 
 </h2>
 
@@ -1227,20 +526,15 @@
 
         <p>Parse command-line arguments.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse command-line arguments.&quot;&quot;&quot;</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;pyproject.toml&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;optional configuration file&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;docs&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--root&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;root directory&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">parser</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def parse_args(parser):
+    """Parse command-line arguments."""
+    parser.add_argument("--config", type=str, default="pyproject.toml", help="optional configuration file")
+    parser.add_argument("--out", type=str, default="docs", help="output directory")
+    parser.add_argument("--root", type=str, default=".", help="root directory")
+    return parser</code></pre>
             </details>
     </div>
 
@@ -1250,7 +544,7 @@
 
 
 <h2 id="mccole.lint._check_object_refs" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">pattern_def</span><span class="p">,</span> <span class="n">pattern_ref</span><span class="p">)</span></code>
+            <code class="highlight language-python">_check_object_refs(sections, kind, pattern_def, pattern_ref)</code>
 
 </h2>
 
@@ -1259,24 +553,17 @@
 
         <p>Check for figure and table references within each Markdown file.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">pattern_def</span><span class="p">,</span> <span class="n">pattern_ref</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for figure and table references within each Markdown file.&quot;&quot;&quot;</span>
-    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">defined</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pattern_def</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
-        <span class="n">referenced</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pattern_def</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
-        <span class="n">ok</span> <span class="o">=</span> <span class="n">_report_diff</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">referenced</span><span class="p">,</span> <span class="n">defined</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ok</span>
-    <span class="k">return</span> <span class="n">ok</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def _check_object_refs(sections, kind, pattern_def, pattern_ref):
+    """Check for figure and table references within each Markdown file."""
+    ok = True
+    for path, content in sections.items():
+        defined = set(pattern_def.findall(content))
+        referenced = set(pattern_def.findall(content))
+        ok = _report_diff(f"{path} {kind}", referenced, defined) and ok
+    return ok</code></pre>
             </details>
     </div>
 
@@ -1286,7 +573,7 @@
 
 
 <h2 id="mccole.lint._check_references" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_check_references</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">regexp</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span></code>
+            <code class="highlight language-python">_check_references(sections, term, regexp, available)</code>
 
 </h2>
 
@@ -1295,44 +582,27 @@
 
         <p>Check all Markdown files for cross-references.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_check_references</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">regexp</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check all Markdown files for cross-references.&quot;&quot;&quot;</span>
-    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">found</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">regexp</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
-        <span class="n">seen</span> <span class="o">|=</span> <span class="n">found</span>
-        <span class="n">missing</span> <span class="o">=</span> <span class="n">found</span> <span class="o">-</span> <span class="n">available</span>
-        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing </span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2"> keys in </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">missing</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
+              <pre class="highlight"><code class="language-python">def _check_references(sections, term, regexp, available):
+    """Check all Markdown files for cross-references."""
+    ok = True
+    seen = set()
+    for path, content in sections.items():
+        found = {k.group(1) for k in regexp.finditer(content)}
+        seen |= found
+        missing = found - available
+        if missing:
+            print(f"Missing {term} keys in {path}: {', '.join(sorted(missing))}")
+            ok = False
 
-    <span class="n">unused</span> <span class="o">=</span> <span class="n">available</span> <span class="o">-</span> <span class="n">seen</span>
-    <span class="k">if</span> <span class="n">unused</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unused </span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2"> keys: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unused</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
+    unused = available - seen
+    if unused:
+        print(f"Unused {term} keys: {', '.join(sorted(unused))}")
+        ok = False
 
-    <span class="k">return</span> <span class="n">ok</span>
-</code></pre></div></td></tr></table></div>
+    return ok</code></pre>
             </details>
     </div>
 
@@ -1342,7 +612,7 @@
 
 
 <h2 id="mccole.lint._is_missing" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_is_missing</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span></code>
+            <code class="highlight language-python">_is_missing(actual, available)</code>
 
 </h2>
 
@@ -1351,18 +621,14 @@
 
         <p>Is a file missing?</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_is_missing</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Is a file missing?&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="n">actual</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span> <span class="ow">or</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">actual</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIXES</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">actual</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">)</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def _is_missing(actual, available):
+    """Is a file missing?"""
+    return (not actual.exists()) or (
+        (actual.suffix in SUFFIXES) and (actual not in available)
+    )</code></pre>
             </details>
     </div>
 
@@ -1372,7 +638,7 @@
 
 
 <h2 id="mccole.lint._is_special_link" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_is_special_link</span><span class="p">(</span><span class="n">link</span><span class="p">)</span></code>
+            <code class="highlight language-python">_is_special_link(link)</code>
 
 </h2>
 
@@ -1381,14 +647,12 @@
 
         <p>Is this link handled specially?</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_is_special_link</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Is this link handled specially?&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">link</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;b:&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">link</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;g:&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def _is_special_link(link):
+    """Is this link handled specially?"""
+    return link.startswith("b:") or link.startswith("g:")</code></pre>
             </details>
     </div>
 
@@ -1398,7 +662,7 @@
 
 
 <h2 id="mccole.lint._report_diff" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_report_diff</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">refs</span><span class="p">,</span> <span class="n">defs</span><span class="p">)</span></code>
+            <code class="highlight language-python">_report_diff(msg, refs, defs)</code>
 
 </h2>
 
@@ -1407,24 +671,17 @@
 
         <p>Report differences if any.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_report_diff</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">refs</span><span class="p">,</span> <span class="n">defs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Report differences if any.&quot;&quot;&quot;</span>
-    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;missing&quot;</span><span class="p">,</span> <span class="n">refs</span> <span class="o">-</span> <span class="n">defs</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;unused&quot;</span><span class="p">,</span> <span class="n">defs</span> <span class="o">-</span> <span class="n">refs</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">vals</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">ok</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def _report_diff(msg, refs, defs):
+    """Report differences if any."""
+    ok = True
+    for (kind, vals) in (("missing", refs - defs), ("unused", defs - refs)):
+        if vals:
+            print(f"{msg} {kind}: {', '.join(vals)}")
+            ok = False
+    return ok</code></pre>
             </details>
     </div>
 
@@ -1434,7 +691,7 @@
 
 
 <h2 id="mccole.lint._resolve_path" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_resolve_path</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></code>
+            <code class="highlight language-python">_resolve_path(source, dest)</code>
 
 </h2>
 
@@ -1443,22 +700,16 @@
 
         <p>Account for '..' in paths.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_resolve_path</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Account for &#39;..&#39; in paths.&quot;&quot;&quot;</span>
-    <span class="k">while</span> <span class="n">dest</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;../&quot;</span><span class="p">:</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">parent</span>
-        <span class="n">dest</span> <span class="o">=</span> <span class="n">dest</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span>
-</code></pre></div></td></tr></table></div>
+              <pre class="highlight"><code class="language-python">def _resolve_path(source, dest):
+    """Account for '..' in paths."""
+    while dest[:3] == "../":
+        source = source.parent
+        dest = dest[3:]
+    result = Path(source, dest)
+    return result</code></pre>
             </details>
     </div>
 
@@ -1470,58 +721,61 @@
 
     </div>
 
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
+</div></div>
             </div>
-          
-          
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
 </div>
-      
-    </div>
-  </div>
-</footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
-    
-    
-      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
-      
-    
-  </body>
+
+    </body>
 </html>
