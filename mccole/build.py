@@ -40,21 +40,21 @@ def choose_template(env, source):
     return env.get_template("page.html")
 
 
-def do_bibliography_links(config, doc, source, context):
+def do_bibliography_links(config, doc, source, dest, context):
     """Turn 'b:key' links into bibliography references."""
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
             node["href"] = f"@root/bibliography/#{node['href'][2:]}"
 
 
-def do_cross_links(config, doc, source, context):
+def do_cross_links(config, doc, source, dest, context):
     """Fix .md links in HTML."""
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
 
 
-def do_glossary(config, doc, source, context):
+def do_glossary(config, doc, source, dest, context):
     """Turn 'g:key' links into glossary references and insert list of terms."""
     seen = set()
     for node in doc.select("a[href]"):
@@ -65,7 +65,7 @@ def do_glossary(config, doc, source, context):
     insert_defined_terms(doc, source, seen, context)
 
 
-def do_inclusion_classes(config, doc, source, context):
+def do_inclusion_classes(config, doc, source, dest, context):
     """Adjust classes of file inclusions."""
     for node in doc.select("code[data-file]"):
         inc = node["data-file"]
@@ -76,7 +76,7 @@ def do_inclusion_classes(config, doc, source, context):
         node.parent["class"] = language
 
 
-def do_title(config, doc, source, context):
+def do_title(config, doc, source, dest, context):
     """Make sure title element is filled in."""
     try:
         doc.title.string = doc.h1.get_text()
@@ -85,9 +85,9 @@ def do_title(config, doc, source, context):
         sys.exit(1)
 
 
-def do_root_path_prefix(config, doc, source, context):
+def do_root_path_prefix(config, doc, source, dest, context):
     """Fix @root links in HTML."""
-    depth = len(source.parents) - 1
+    depth = len(dest.parents) - 2
     prefix = "./" if (depth == 0) else "../" * depth
     targets = (
         ("a[href]", "href"),
@@ -109,20 +109,17 @@ def handle_markdown(env, opt, config, files):
     }
 
     # Render all documents.
-    for path, info in files.items():
-        info["doc"] = render_markdown(env, opt, config, path, info["content"], context)
-
-    # Save results.
-    for path, info in files.items():
-        output_path = make_output_path(opt.out, config["renames"], path)
-        write_file(output_path, str(info["doc"]))
+    for source, info in files.items():
+        dest = make_output_path(opt.out, config["renames"], source)
+        info["doc"] = render_markdown(env, opt, config, source, dest, info["content"], context)
+        write_file(dest, str(info["doc"]))
 
 
 def handle_others(env, opt, config, files):
     """Handle copy-only files."""
-    for path, info in files.items():
-        output_path = make_output_path(opt.out, config["renames"], path)
-        write_file(output_path, info["content"])
+    for source, info in files.items():
+        dest = make_output_path(opt.out, config["renames"], source)
+        write_file(dest, info["content"])
 
 
 def insert_defined_terms(doc, source, seen, context):
@@ -167,7 +164,7 @@ def parse_args(parser):
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
 
 
-def render_markdown(env, opt, config, source, content, context={}):
+def render_markdown(env, opt, config, source, dest, content, context={}):
     """Convert Markdown to HTML."""
     # Generate HTML.
     template = choose_template(env, source)
@@ -187,7 +184,7 @@ def render_markdown(env, opt, config, source, content, context={}):
     doc = BeautifulSoup(html, "html.parser")
     for is_required, func in transformers:
         if context or is_required:
-            func(config, doc, source, context)
+            func(config, doc, source, dest, context)
 
     return doc
 

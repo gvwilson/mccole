@@ -1,13 +1,11 @@
 [tool.mccole]
-skips = ["templates"]
+skips = ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "LICENSE.md", "templates"]
 
 [tool.mccole.renames]
-"CODE_OF_CONDUCT.md" = "code_of_conduct"
-"CONTRIBUTING.md" = "contributing"
-"LICENSE.md" = "license"
 "README.md" = ""
 "bibliography.md" = "bibliography"
 "glossary.md" = "glossary"
+"license.md" = "license"
 
 [tool.mccole.links]
 wilson-greg = ["https://third-bit.com", "Greg Wilson"]
