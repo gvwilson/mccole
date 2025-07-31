@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Build - McCole Docs</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">McCole Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">McCole</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../CODE_OF_CONDUCT/" class="nav-link">Code of Conduct</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../CONTRIBUTING/" class="nav-link">Contributing</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../LICENSE/" class="nav-link">MIT License</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Build</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../install/" class="nav-link">Install</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../lint/" class="nav-link">Lint</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../refresh/" class="nav-link">Refresh</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../serve/" class="nav-link">Serve</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../stats/" class="nav-link">Stats</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href="../LICENSE/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../install/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build" class="nav-link">build</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.build" class="nav-link">build</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.choose_template" class="nav-link">choose_template</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.do_bibliography_links" class="nav-link">do_bibliography_links</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.do_cross_links" class="nav-link">do_cross_links</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.do_glossary" class="nav-link">do_glossary</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.do_inclusion_classes" class="nav-link">do_inclusion_classes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.do_title" class="nav-link">do_title</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.do_root_path_prefix" class="nav-link">do_root_path_prefix</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.handle_markdown" class="nav-link">handle_markdown</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.handle_others" class="nav-link">handle_others</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.insert_defined_terms" class="nav-link">insert_defined_terms</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.make_output_path" class="nav-link">make_output_path</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.parse_args" class="nav-link">parse_args</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.render_markdown" class="nav-link">render_markdown</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="2"><a href="#mccole.build.split_files" class="nav-link">split_files</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="mccole.build"></a>
+    <div class="doc doc-contents first">
+
+        <p>Convert Markdown to HTML.</p>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.build" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">build</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Main driver.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main driver.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Setup.</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;links_md&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;links&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())])</span>
+    <span class="n">skips</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;skips&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="p">{</span><span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">}</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">templates</span><span class="p">))</span>
+
+    <span class="c1"># Find and build files.</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">find_files</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">skips</span><span class="p">)</span>
+    <span class="n">markdown</span><span class="p">,</span> <span class="n">others</span> <span class="o">=</span> <span class="n">split_files</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    <span class="n">handle_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">markdown</span><span class="p">)</span>
+    <span class="n">handle_others</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">others</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.choose_template" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">choose_template</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Select a template.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">choose_template</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select a template.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;page.html&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.do_bibliography_links" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">do_bibliography_links</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Turn 'b:key' links into bibliography references.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_bibliography_links</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Turn &#39;b:key&#39; links into bibliography references.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;b:&quot;</span><span class="p">):</span>
+            <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@root/bibliography/#</span><span class="si">{</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.do_cross_links" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">do_cross_links</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fix .md links in HTML.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_cross_links</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fix .md links in HTML.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.md&quot;</span><span class="p">):</span>
+            <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.md&quot;</span><span class="p">,</span> <span class="s2">&quot;.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.do_glossary" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">do_glossary</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Turn 'g:key' links into glossary references and insert list of terms.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_glossary</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Turn &#39;g:key&#39; links into glossary references and insert list of terms.&quot;&quot;&quot;</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;g:&quot;</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@root/glossary/#</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">insert_defined_terms</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.do_inclusion_classes" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">do_inclusion_classes</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Adjust classes of file inclusions.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_inclusion_classes</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjust classes of file inclusions.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;code[data-file]&quot;</span><span class="p">):</span>
+        <span class="n">inc</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;data-file&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">inc</span><span class="p">:</span>
+            <span class="n">inc</span> <span class="o">=</span> <span class="n">inc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">language</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;language-</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">inc</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">node</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">language</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">language</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.do_title" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">do_title</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Make sure title element is filled in.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_title</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make sure title element is filled in.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">h1</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> lacks H1 heading&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.do_root_path_prefix" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">do_root_path_prefix</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Fix @root links in HTML.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_root_path_prefix</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fix @root links in HTML.&quot;&quot;&quot;</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dest</span><span class="o">.</span><span class="n">parents</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;../&quot;</span> <span class="o">*</span> <span class="n">depth</span>
+    <span class="n">targets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;link[href]&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;script[src]&quot;</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">selector</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selector</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;@root/&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="n">attr</span><span class="p">]:</span>
+                <span class="n">node</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;@root/&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.handle_markdown" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">handle_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Handle Markdown files.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">handle_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle Markdown files.&quot;&quot;&quot;</span>
+    <span class="c1"># Extract cross-reference keys.</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;bibliography&quot;</span><span class="p">:</span> <span class="n">find_key_defs</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s2">&quot;bibliography&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;glossary&quot;</span><span class="p">:</span> <span class="n">find_key_defs</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="s2">&quot;glossary&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Render all documents.</span>
+    <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">make_output_path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;renames&quot;</span><span class="p">],</span> <span class="n">source</span><span class="p">)</span>
+        <span class="n">info</span><span class="p">[</span><span class="s2">&quot;doc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">render_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span>
+        <span class="n">write_file</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;doc&quot;</span><span class="p">]))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.handle_others" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">handle_others</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Handle copy-only files.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">handle_others</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle copy-only files.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">make_output_path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;renames&quot;</span><span class="p">],</span> <span class="n">source</span><span class="p">)</span>
+        <span class="n">write_file</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.insert_defined_terms" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">insert_defined_terms</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Insert list of defined terms.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">insert_defined_terms</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert list of defined terms.&quot;&quot;&quot;</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;p#terms&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Duplicate p#terms in </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">seen</span><span class="p">:</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span>
+        <span class="k">return</span>
+    <span class="n">glossary</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">context</span><span class="p">[</span><span class="s2">&quot;glossary&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">}</span>
+    <span class="n">glossary</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glossary</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())}</span>
+    <span class="n">target</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Terms defined: &quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">term</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">glossary</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">new_tag</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;@root/glossary/#</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ref</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="n">term</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.make_output_path" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">make_output_path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">renames</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Build output path.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_output_path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">renames</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build output path.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">renames</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">renames</span><span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;index.html&quot;</span>
+    <span class="k">elif</span> <span class="n">source</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.md&quot;</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.html&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">source</span>
+    <span class="k">return</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">temp</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.parse_args" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Parse command-line arguments.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse command-line arguments.&quot;&quot;&quot;</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;pyproject.toml&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;optional configuration file&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--css&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;CSS file&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--icon&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;favicon.ico&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;icon file&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;docs&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--root&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;root directory&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--templates&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;templates directory&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.render_markdown" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">render_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{})</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convert Markdown to HTML.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert Markdown to HTML.&quot;&quot;&quot;</span>
+    <span class="c1"># Generate HTML.</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">choose_template</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">+=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;links_md&quot;</span><span class="p">]</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">markdown</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="n">MARKDOWN_EXTENSIONS</span><span class="p">)</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">html</span><span class="p">,</span> <span class="n">css_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">css</span><span class="p">,</span> <span class="n">icon_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">icon</span><span class="p">)</span>
+
+    <span class="c1"># Apply transforms if always required or if context provided.</span>
+    <span class="n">transformers</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_bibliography_links</span><span class="p">),</span>
+        <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_cross_links</span><span class="p">),</span>
+        <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_glossary</span><span class="p">),</span>
+        <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">do_inclusion_classes</span><span class="p">),</span>
+        <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">do_title</span><span class="p">),</span>
+        <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">do_root_path_prefix</span><span class="p">),</span> <span class="c1"># must be last</span>
+    <span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">is_required</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">transformers</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">or</span> <span class="n">is_required</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">doc</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.build.split_files" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">split_files</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Divide files into categories.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>mccole/build.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_files</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Divide files into categories.&quot;&quot;&quot;</span>
+    <span class="n">markdown</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">others</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.md&quot;</span><span class="p">:</span>
+            <span class="n">markdown</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">others</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="k">return</span> <span class="n">markdown</span><span class="p">,</span> <span class="n">others</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
