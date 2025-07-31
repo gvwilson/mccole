@@ -8,10 +8,7 @@ import sys
 
 INSTALL_FILES = (
     "templates/page.html",
-    "templates/slides.html",
-    "static/page.css",
-    "static/slides.css",
-    "static/slides.js",
+    "static/mccole.css",
 )
 
 

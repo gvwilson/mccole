@@ -7,14 +7,8 @@ from markdown import markdown
 from pathlib import Path
 import sys
 
-from .util import find_files, find_key_defs, load_config, write_file
+from .util import SUFFIXES_BIN, find_files, find_key_defs, load_config, write_file
 
-
-AS_HTML = """\
-# {path}
-```
-{content}```
-"""
 
 MARKDOWN_EXTENSIONS = [
     "attr_list",
@@ -30,22 +24,19 @@ def build(opt):
 
     # Setup.
     config = load_config(opt.config)
-    config["links_md"] = "\n".join(["", *(f"[{key}]: {url}" for key, url in config["links"].items())])
+    config["links_md"] = "\n".join(["", *(f"[{key}]: {url}" for (key, (url, text)) in config["links"].items())])
     skips = config["skips"] | {opt.out}
     env = Environment(loader=FileSystemLoader(opt.templates))
 
     # Find and build files.
     files = find_files(opt, skips)
-    markdown, also_html, others = split_files(config, files)
+    markdown, others = split_files(config, files)
     handle_markdown(env, opt, config, markdown)
-    handle_also_html(env, opt, config, also_html)
     handle_others(env, opt, config, others)
 
 
 def choose_template(env, source):
     """Select a template."""
-    if source.name == "slides.md":
-        return env.get_template("slides.html")
     return env.get_template("page.html")
 
 
@@ -53,7 +44,7 @@ def do_bibliography_links(config, doc, source, context):
     """Turn 'b:key' links into bibliography references."""
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
-            node["href"] = f"@root/bibliography.html#{node['href'][2:]}"
+            node["href"] = f"@root/bibliography/#{node['href'][2:]}"
 
 
 def do_cross_links(config, doc, source, context):
@@ -61,8 +52,6 @@ def do_cross_links(config, doc, source, context):
     for node in doc.select("a[href]"):
         if node["href"].endswith(".md"):
             node["href"] = node["href"].replace(".md", ".html").lower()
-        elif Path(node["href"]).suffix in config["also"]:
-            node["href"] = f"{node['href']}.html"
 
 
 def do_glossary(config, doc, source, context):
@@ -71,7 +60,7 @@ def do_glossary(config, doc, source, context):
     for node in doc.select("a[href]"):
         if node["href"].startswith("g:"):
             key = node["href"][2:]
-            node["href"] = f"@root/glossary.html#{key}"
+            node["href"] = f"@root/glossary/#{key}"
             seen.add(key)
     insert_defined_terms(doc, source, seen, context)
 
@@ -109,17 +98,6 @@ def do_root_path_prefix(config, doc, source, context):
         for node in doc.select(selector):
             if "@root/" in node[attr]:
                 node[attr] = node[attr].replace("@root/", prefix)
-
-
-def handle_also_html(env, opt, config, files):
-    """Handle files that are also saved as HTML files."""
-    for path, info in files.items():
-        output_path = make_output_path(opt.out, config["renames"], path)
-        write_file(output_path, info["content"])
-
-        embedded = AS_HTML.format(path=path, content=info["content"])
-        embedded = render_markdown(env, opt, config, path, embedded)
-        write_file(Path(f"{output_path}.html"), str(embedded))
 
 
 def handle_markdown(env, opt, config, files):
@@ -163,7 +141,7 @@ def insert_defined_terms(doc, source, seen, context):
     for i, (key, term) in enumerate(glossary.items()):
         if i > 0:
             target.append(", ")
-        ref = doc.new_tag("a", href=f"@root/glossary.html#{key}")
+        ref = doc.new_tag("a", href=f"@root/glossary/#{key}")
         ref.string = term
         target.append(ref)
 
@@ -171,16 +149,19 @@ def insert_defined_terms(doc, source, seen, context):
 def make_output_path(output_dir, renames, source):
     """Build output path."""
     if source.name in renames:
-        source = Path(source.parent, renames[source.name])
-    source = Path(str(source).replace(".md", ".html"))
-    return Path(output_dir, source)
+        temp = source.parent / renames[source.name] / "index.html"
+    elif source.suffix == ".md":
+        temp = source.with_suffix("").with_suffix(".html")
+    else:
+        temp = source
+    return output_dir / temp
 
 
 def parse_args(parser):
     """Parse command-line arguments."""
     parser.add_argument("--config", type=str, default="pyproject.toml", help="optional configuration file")
     parser.add_argument("--css", type=str, help="CSS file")
-    parser.add_argument("--icon", type=str, help="icon file")
+    parser.add_argument("--icon", type=str, default="favicon.ico", help="icon file")
     parser.add_argument("--out", type=str, default="docs", help="output directory")
     parser.add_argument("--root", type=str, default=".", help="root directory")
     parser.add_argument("--templates", type=str, default="templates", help="templates directory")
@@ -214,16 +195,13 @@ def render_markdown(env, opt, config, source, content, context={}):
 def split_files(config, files):
     """Divide files into categories."""
     markdown = {}
-    also_html = {}
     others = {}
     for path, info in files.items():
         if path.suffix == ".md":
             markdown[path] = info
-        elif path.suffix in config["also"]:
-            also_html[path] = info
         else:
             others[path] = info
-    return markdown, also_html, others
+    return markdown, others
 
 
 if __name__ == "__main__":

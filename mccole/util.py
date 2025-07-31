@@ -16,8 +16,7 @@ GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
 KEY_DEF = re.compile(r'^<span\s+id="(.+?)">(.+?)</span>\s*$', re.MULTILINE)
 LINK_DEF = re.compile(r'<a\s+id="(.+?)"\s+href="(.+?)"\s*>(.+?)</a>\s*$', re.MULTILINE)
 SUFFIXES_BIN = {".ico", ".jpg", ".png", ".webp"}
-SUFFIXES_SRC = {".css", ".html", ".js", ".md", ".py", ".sh", ".sql", ".txt"}
-SUFFIXES_TXT = SUFFIXES_SRC | {".csv", ".json", ".svg"}
+SUFFIXES_TXT = {".css", "csv", ".html", ".js", "json", ".md", ".py", ".sh", ".sql", ".svg", ".txt"}
 SUFFIXES = SUFFIXES_BIN | SUFFIXES_TXT
 TABLE_DEF = re.compile(r'<table\s+id="(.+?)"\s*>.+?<caption>(.+?)</caption>\s*</table>', re.DOTALL + re.MULTILINE)
 
@@ -70,19 +69,13 @@ def load_config(config_path):
         print(f"configuration file {config_path} does not have 'tool.mccole' section")
         return DEFAULT_CONFIG
     config = config["tool"]["mccole"]
-    config["also"] = set(config["also"]) if "also" in config else set(ALSO_HTML_SUFFIX)
     if "duplicates" in config:
         config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
     if "skips" in config:
         config["skips"] = set(config["skips"])
-    config["links"] = load_links(config["links"]) if "links" in config else {}
+    if "links" not in config:
+        config["links"] = {}
     return config
-
-
-def load_links(path):
-    """Read Markdown links file and convert to dictionary."""
-    text = Path(path).read_text()
-    return {m[0]: m[1] for m in LINK_DEF.findall(text)}
 
 
 def read_file(path):

@@ -1,0 +1,13 @@
+[tool.mccole]
+skips = ["templates"]
+
+[tool.mccole.renames]
+"CODE_OF_CONDUCT.md" = "code_of_conduct"
+"CONTRIBUTING.md" = "contributing"
+"LICENSE.md" = "license"
+"README.md" = ""
+"bibliography.md" = "bibliography"
+"glossary.md" = "glossary"
+
+[tool.mccole.links]
+wilson-greg = ["https://third-bit.com", "Greg Wilson"]
