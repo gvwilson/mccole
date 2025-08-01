@@ -38,7 +38,6 @@ def lint(opt):
         lint_figure_references,
         lint_glossary_redefinitions,
         lint_glossary_references,
-        lint_link_references,
         lint_table_references,
     ]
     sections = {path: data["content"] for path, data in files.items()}
@@ -134,17 +133,6 @@ def lint_glossary_references(opt, config, sections, extras):
         print("No glossary found (or multiple matches)")
         return False
     return _check_references(sections, "glossary", GLOSS_REF, available)
-
-
-def lint_link_references(opt, config, sections, extras):
-    """Check that Markdown files use links that have been defined."""
-    if not config["links"]:
-        return True
-    links = set(config["links"].keys())
-    link_refs = set()
-    for path, content in sections.items():
-        link_refs |= {m[1] for m in MD_LINK_REF.findall(content)}
-    return _report_diff("links used", link_refs, links)
 
 
 def lint_table_references(opt, config, sections, extras):
