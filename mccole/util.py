@@ -9,7 +9,7 @@ import tomli
 
 ALSO_HTML_SUFFIX = {".css", ".js", ".py", ".sql"}
 DEFAULT_CONFIG = {
-    "duplicates": set(),
+    "renames": {},
     "skips": set(),
 }
 GLOSS_REF = re.compile(r"\[[^\]]+?\]\(g:(.+?)\)", re.MULTILINE)
@@ -64,15 +64,22 @@ def load_config(config_path):
     """Load configuration file or construct default."""
     if config_path is None:
         return DEFAULT_CONFIG
+
     config = tomli.loads(Path(config_path).read_text())
     if ("tool" not in config) or ("mccole" not in config["tool"]):
         print(f"configuration file {config_path} does not have 'tool.mccole' section")
         return DEFAULT_CONFIG
     config = config["tool"]["mccole"]
-    if "duplicates" in config:
-        config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
-    if "skips" in config:
-        config["skips"] = set(config["skips"])
+
+    config["skips"] = set(config["skips"]) if "skips" in config else set()
+
+    if "renames" not in config:
+        config["renames"] = {}
+
+    overlap = set(config["renames"].keys()) & config["skips"]
+    if overlap:
+        print(f"overlap between skips and renames in configuration: {', '.join(sorted(overlap))}")
+
     return config
 
 

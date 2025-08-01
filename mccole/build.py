@@ -46,7 +46,7 @@ def do_bibliography_links(config, doc, source, dest, context):
             node["href"] = f"@root/bibliography/#{node['href'][2:]}"
 
 
-def do_glossary(config, doc, source, dest, context):
+def do_glossary_links(config, doc, source, dest, context):
     """Turn 'g:key' links into glossary references and insert list of terms."""
     seen = set()
     for node in doc.select("a[href]"):
@@ -66,6 +66,18 @@ def do_inclusion_classes(config, doc, source, dest, context):
         language = f"language-{Path(inc).suffix.lstrip('.')}"
         node["class"] = language
         node.parent["class"] = language
+
+
+def do_markdown_links(config, doc, source, dest, context):
+    """Fix local internal .md links."""
+    for node in doc.select("a[href]"):
+        target = node["href"]
+        if not target.endswith(".md"):
+            continue
+        filename = target.split("/")[-1]
+        if filename not in config["renames"]:
+            continue
+        node["href"] = f"@root/{config['renames'][filename]}/"
 
 
 def do_title(config, doc, source, dest, context):
@@ -166,9 +178,10 @@ def render_markdown(env, opt, config, source, dest, content, context={}):
     # Apply transforms if always required or if context provided.
     transformers = (
         (False, do_bibliography_links),
-        (False, do_glossary),
+        (False, do_glossary_links),
         (False, do_inclusion_classes),
         (True, do_title),
+        (False, do_markdown_links),
         (True, do_root_path_prefix), # must be last
     )
     doc = BeautifulSoup(html, "html.parser")
