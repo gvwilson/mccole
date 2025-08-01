@@ -135,12 +135,14 @@ but must abide by our <a href="../CODE_OF_CONDUCT/">Code of Conduct</a>.</p>
 <li><code>pyproject.toml</code>: Python package description</li>
 <li><code>Makefile</code>: repeatable commands</li>
 <li><code>mccole/</code>: Python source</li>
+<li><code>test/</code>: sample project to run experiments</li>
 </ul>
 <h2 id="build-and-release">Build and Release</h2>
 <ul>
-<li><code>pip install build twine</code></li>
-<li><code>python -m build</code></li>
-<li><code>twine upload --verbose -u __token__ -p your-pypi-access-token dist/*</code></li>
+<li><code>uv venv</code> and <code>source .venv/bin/activate</code> to create virtual environment</li>
+<li><code>uv sync --extra dev</code> to install package and development dependenies</li>
+<li><code>python -m build</code> to build package</li>
+<li><code>twine upload --verbose -u __token__ -p your-pypi-access-token dist/*</code> to publish</li>
 </ul>
 <h2 id="labels">Labels</h2>
 <table>

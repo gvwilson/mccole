@@ -24,7 +24,7 @@ def main():
     install_parser(subparsers.add_parser("install", help="install files"))
     lint_parser(subparsers.add_parser("lint", help="check site"))
     build_parser(subparsers.add_parser("profile", help="profile building site"))
-    refresh_parser(subparsers.add_parser("refresh", help="check site"))
+    refresh_parser(subparsers.add_parser("refresh", help="update file inclusions in place"))
     serve_parser(subparsers.add_parser("serve", help="serve site"))
     stats_parser(subparsers.add_parser("stats", help="show stats"))
 

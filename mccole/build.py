@@ -7,7 +7,7 @@ from markdown import markdown
 from pathlib import Path
 import sys
 
-from .util import SUFFIXES_BIN, find_files, find_key_defs, load_config, write_file
+from .util import find_files, find_key_defs, load_config, write_file
 
 
 MARKDOWN_EXTENSIONS = [
@@ -24,7 +24,6 @@ def build(opt):
 
     # Setup.
     config = load_config(opt.config)
-    config["links_md"] = "\n".join(["", *(f"[{key}]: {url}" for (key, (url, text)) in config["links"].items())])
     skips = config["skips"] | {opt.out}
     env = Environment(loader=FileSystemLoader(opt.templates))
 
@@ -45,13 +44,6 @@ def do_bibliography_links(config, doc, source, dest, context):
     for node in doc.select("a[href]"):
         if node["href"].startswith("b:"):
             node["href"] = f"@root/bibliography/#{node['href'][2:]}"
-
-
-def do_cross_links(config, doc, source, dest, context):
-    """Fix .md links in HTML."""
-    for node in doc.select("a[href]"):
-        if node["href"].endswith(".md"):
-            node["href"] = node["href"].replace(".md", ".html").lower()
 
 
 def do_glossary(config, doc, source, dest, context):
@@ -168,14 +160,12 @@ def render_markdown(env, opt, config, source, dest, content, context={}):
     """Convert Markdown to HTML."""
     # Generate HTML.
     template = choose_template(env, source)
-    content += config["links_md"]
     html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
 
     # Apply transforms if always required or if context provided.
     transformers = (
         (False, do_bibliography_links),
-        (False, do_cross_links),
         (False, do_glossary),
         (False, do_inclusion_classes),
         (True, do_title),

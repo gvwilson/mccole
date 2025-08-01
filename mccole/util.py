@@ -73,8 +73,6 @@ def load_config(config_path):
         config["duplicates"] = set(frozenset(v) for v in config["duplicates"])
     if "skips" in config:
         config["skips"] = set(config["skips"])
-    if "links" not in config:
-        config["links"] = {}
     return config
 
 

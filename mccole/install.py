@@ -7,8 +7,9 @@ import sys
 
 
 INSTALL_FILES = (
-    "templates/page.html",
+    "settings.toml",
     "static/mccole.css",
+    "templates/page.html",
 )
 
 

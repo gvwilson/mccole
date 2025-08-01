@@ -6,11 +6,11 @@ build-backend = "setuptools.build_meta"
 packages = ["mccole"]
 
 [tool.setuptools.package-data]
-mypkg = ["*.css", "*.js", "*.html"]
+mccole = ["settings.toml", "static/*.css", "templates/*.html"]
 
 [project]
 name = "mccole"
-version = "0.5.0"
+version = "0.5.2"
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
@@ -40,10 +40,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-docs = [
+dev = [
+  "build",
   "markdown-include",
   "mkdocs",
   "mkdocstrings[python]",
+  "twine",
 ]
 
 [project.scripts]

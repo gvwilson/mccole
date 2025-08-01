@@ -14,12 +14,14 @@ but must abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
 -   `pyproject.toml`: Python package description
 -   `Makefile`: repeatable commands
 -   `mccole/`: Python source
+-   `test/`: sample project to run experiments
 
 ## Build and Release
 
--   `pip install build twine`
--   `python -m build`
--   `twine upload --verbose -u __token__ -p your-pypi-access-token dist/*`
+-   `uv venv` and `source .venv/bin/activate` to create virtual environment
+-   `uv sync --extra dev` to install package and development dependenies
+-   `python -m build` to build package
+-   `twine upload --verbose -u __token__ -p your-pypi-access-token dist/*` to publish
 
 ## Labels
 
