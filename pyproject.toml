@@ -10,7 +10,7 @@ mccole = ["settings.toml", "static/*.css", "templates/*.html"]
 
 [project]
 name = "mccole"
-version = "0.5.4"
+version = "0.5.5"
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},

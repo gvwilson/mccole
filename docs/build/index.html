@@ -494,12 +494,14 @@
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_root_path_prefix</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">do_root_path_prefix</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fix @root links in HTML.&quot;&quot;&quot;</span>
     <span class="n">depth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dest</span><span class="o">.</span><span class="n">parents</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
     <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;../&quot;</span> <span class="o">*</span> <span class="n">depth</span>
     <span class="n">targets</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;img[src]&quot;</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">),</span>
         <span class="p">(</span><span class="s2">&quot;link[href]&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">),</span>
         <span class="p">(</span><span class="s2">&quot;script[src]&quot;</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">),</span>
     <span class="p">)</span>
@@ -529,8 +531,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
-<span class="normal">108</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
@@ -541,7 +542,8 @@
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
-<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">handle_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<span class="normal">119</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">handle_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle Markdown files.&quot;&quot;&quot;</span>
     <span class="c1"># Extract cross-reference keys.</span>
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
@@ -576,11 +578,11 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
-<span class="normal">123</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
-<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">handle_others</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<span class="normal">126</span>
+<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">handle_others</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle copy-only files.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">dest</span> <span class="o">=</span> <span class="n">make_output_path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;renames&quot;</span><span class="p">],</span> <span class="n">source</span><span class="p">)</span>
@@ -607,8 +609,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
@@ -625,7 +626,8 @@
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">insert_defined_terms</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="normal">147</span>
+<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">insert_defined_terms</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert list of defined terms.&quot;&quot;&quot;</span>
     <span class="n">target</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;p#terms&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
@@ -666,15 +668,15 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
-<span class="normal">151</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span>
-<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_output_path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">renames</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="normal">158</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_output_path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">renames</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build output path.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">renames</span><span class="p">:</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">renames</span><span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;index.html&quot;</span>
@@ -705,14 +707,14 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
-<span class="normal">162</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
-<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+<span class="normal">168</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse command-line arguments.&quot;&quot;&quot;</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;pyproject.toml&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;optional configuration file&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--css&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;CSS file&quot;</span><span class="p">)</span>
@@ -742,8 +744,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
-<span class="normal">172</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
@@ -763,7 +764,8 @@
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
-<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{}):</span>
+<span class="normal">192</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render_markdown</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{}):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert Markdown to HTML.&quot;&quot;&quot;</span>
     <span class="c1"># Generate HTML.</span>
     <span class="n">template</span> <span class="o">=</span> <span class="n">choose_template</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
@@ -807,8 +809,7 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/build.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
-<span class="normal">196</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
@@ -816,7 +817,8 @@
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
-<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_files</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_files</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Divide files into categories.&quot;&quot;&quot;</span>
     <span class="n">markdown</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">others</span> <span class="o">=</span> <span class="p">{}</span>

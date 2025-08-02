@@ -95,6 +95,7 @@ def do_root_path_prefix(config, doc, source, dest, context):
     prefix = "./" if (depth == 0) else "../" * depth
     targets = (
         ("a[href]", "href"),
+        ("img[src]", "src"),
         ("link[href]", "href"),
         ("script[src]", "src"),
     )

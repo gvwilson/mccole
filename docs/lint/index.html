@@ -136,11 +136,6 @@
               </ul>
             </li>
             
-            <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_link_references" class="nav-link">lint_link_references</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
             <li class="nav-item" data-bs-level="2"><a href="#mccole.lint.lint_table_references" class="nav-link">lint_table_references</a>
               <ul class="nav flex-column">
               </ul>
@@ -251,8 +246,7 @@
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main driver.&quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
     <span class="n">skips</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;skips&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="p">{</span><span class="n">opt</span><span class="o">.</span><span class="n">out</span><span class="p">}</span>
@@ -271,7 +265,6 @@
         <span class="n">lint_figure_references</span><span class="p">,</span>
         <span class="n">lint_glossary_redefinitions</span><span class="p">,</span>
         <span class="n">lint_glossary_references</span><span class="p">,</span>
-        <span class="n">lint_link_references</span><span class="p">,</span>
         <span class="n">lint_table_references</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">sections</span> <span class="o">=</span> <span class="p">{</span><span class="n">path</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -299,7 +292,8 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
+<span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
@@ -312,8 +306,7 @@
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_file_references</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_file_references</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check inter-file references.&quot;&quot;&quot;</span>
     <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -350,13 +343,13 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
+<span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
 <span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_bibliography_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_bibliography_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check bibliography references.&quot;&quot;&quot;</span>
     <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;bibliography&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="k">if</span> <span class="n">available</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -385,7 +378,8 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 74</span>
+<span class="normal"> 75</span>
 <span class="normal"> 76</span>
 <span class="normal"> 77</span>
 <span class="normal"> 78</span>
@@ -415,8 +409,7 @@
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_figure_numbers</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_figure_numbers</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check figure numbering.&quot;&quot;&quot;</span>
     <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -470,9 +463,9 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_figure_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_figure_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check figure references.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="s2">&quot;figure&quot;</span><span class="p">,</span> <span class="n">FIGURE_DEF</span><span class="p">,</span> <span class="n">FIGURE_REF</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -497,7 +490,8 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+<span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
@@ -509,8 +503,7 @@
 <span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_glossary_redefinitions</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
+<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_glossary_redefinitions</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check glossary redefinitions.&quot;&quot;&quot;</span>
     <span class="n">found</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -546,58 +539,19 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
+<span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_glossary_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_glossary_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check glossary references.&quot;&quot;&quot;</span>
     <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;glossary&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="k">if</span> <span class="n">available</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No glossary found (or multiple matches)&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="n">_check_references</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="s2">&quot;glossary&quot;</span><span class="p">,</span> <span class="n">GLOSS_REF</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="mccole.lint.lint_link_references" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lint_link_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Check that Markdown files use links that have been defined.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_link_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that Markdown files use links that have been defined.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;links&quot;</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="n">links</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;links&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="n">link_refs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">link_refs</span> <span class="o">|=</span> <span class="p">{</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">MD_LINK_REF</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
-    <span class="k">return</span> <span class="n">_report_diff</span><span class="p">(</span><span class="s2">&quot;links used&quot;</span><span class="p">,</span> <span class="n">link_refs</span><span class="p">,</span> <span class="n">links</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -620,9 +574,9 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_table_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lint_table_references</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check figure references.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="s2">&quot;table&quot;</span><span class="p">,</span> <span class="n">TABLE_DEF</span><span class="p">,</span> <span class="n">TABLE_REF</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -647,12 +601,12 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse command-line arguments.&quot;&quot;&quot;</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;pyproject.toml&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;optional configuration file&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;docs&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory&quot;</span><span class="p">)</span>
@@ -680,14 +634,14 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">pattern_def</span><span class="p">,</span> <span class="n">pattern_ref</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_object_refs</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">pattern_def</span><span class="p">,</span> <span class="n">pattern_ref</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for figure and table references within each Markdown file.&quot;&quot;&quot;</span>
     <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -717,24 +671,24 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_references</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">regexp</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
+<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_references</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">regexp</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check all Markdown files for cross-references.&quot;&quot;&quot;</span>
     <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -774,11 +728,11 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_missing</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_missing</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Is a file missing?&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="n">actual</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span> <span class="ow">or</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">actual</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIXES</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">actual</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">)</span>
@@ -805,9 +759,9 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_special_link</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_special_link</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Is this link handled specially?&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">link</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;b:&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">link</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;g:&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -832,14 +786,14 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_report_diff</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">refs</span><span class="p">,</span> <span class="n">defs</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_report_diff</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">refs</span><span class="p">,</span> <span class="n">defs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Report differences if any.&quot;&quot;&quot;</span>
     <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;missing&quot;</span><span class="p">,</span> <span class="n">refs</span> <span class="o">-</span> <span class="n">defs</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;unused&quot;</span><span class="p">,</span> <span class="n">defs</span> <span class="o">-</span> <span class="n">refs</span><span class="p">)):</span>
@@ -869,13 +823,13 @@
 
             <details class="quote">
               <summary>Source code in <code>mccole/lint.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_resolve_path</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_resolve_path</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Account for &#39;..&#39; in paths.&quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="n">dest</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;../&quot;</span><span class="p">:</span>
         <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">parent</span>
