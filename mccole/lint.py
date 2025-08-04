@@ -53,6 +53,8 @@ def check_file_references(files):
         if path.suffix != ".md":
             continue
         for link in MD_FILE_LINK.finditer(content):
+            if _is_external_link(link.group(2)):
+                continue
             if _is_special_link(link.group(2)):
                 continue
             target = _resolve_path(path.parent, link.group(2))
@@ -176,6 +178,11 @@ def _check_references(sections, term, regexp, available):
         ok = False
 
     return ok
+
+
+def _is_external_link(link):
+    """Is this an external link?"""
+    return link.startswith("http")
 
 
 def _is_missing(actual, available):
