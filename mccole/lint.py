@@ -187,6 +187,7 @@ def _is_external_link(link):
 
 def _is_missing(actual, available):
     """Is a file missing?"""
+    actual = Path(actual)
     return (not actual.exists()) or (
         (actual.suffix in SUFFIXES) and (actual not in available)
     )
@@ -209,11 +210,12 @@ def _report_diff(msg, refs, defs):
 
 def _resolve_path(source, dest):
     """Account for '..' in paths."""
-    while dest[:3] == "../":
-        source = source.parent
-        dest = dest[3:]
-    result = Path(source, dest)
-    return result
+    if dest.endswith("/"):
+        dest = f"{dest}/index.md"
+    dest = Path(dest)
+    depth = len(dest.parents) - 2
+    prefix = "./" if (depth == 0) else "../" * depth
+    return f"{source}/{dest.name}"
 
 
 if __name__ == "__main__":

@@ -4,8 +4,7 @@
 
 -   Refer to [absolute URL](https://third-bit.com/)
 
--   Refer to license with `LICENSE.md`: [license](../LICENSE.md)
--   Refer to license with `@root/license/`: [license](@root/license/)
+-   Refer to code of conduct with `@root/conduct/`: [conduct](@root/conduct/)
 -   Refer to license with `../license/`: [license](../license/)
 
 -   Refer to existing bibliography [Beckerman2022](b:Beckerman2022)
