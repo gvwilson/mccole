@@ -1,5 +1,7 @@
 # Runnable tasks.
 
+PYTHON = uv run python
+
 all: commands
 
 ## commands: show available commands (*)
@@ -8,6 +10,10 @@ commands:
 	| sed -e 's/## //g' \
 	| column -t -s ':'
 
+## build: build package
+build:
+	${PYTHON} -m build
+
 ## docs: rebuild documentation
 .PHONY: docs
 docs:
@@ -15,15 +21,11 @@ docs:
 
 ## lint: check code and project
 lint:
-	@ruff check mccole
+	@ruff check mccole tests
 
-## site: create documentation
-site:
-	mkdocs build
-
-## serve: serve documentation
-serve:
-	mkdocs serve
+## test: run tests with coverage
+test:
+	${PYTHON} -m coverage run -m pytest tests && ${PYTHON} -m coverage report --show-missing
 
 ## clean: clean up
 clean:

@@ -1,98 +1,87 @@
-"""Convert Markdown to HTML."""
+"""Build HTML site from source files."""
 
 import argparse
-from bs4 import BeautifulSoup
-from jinja2 import Environment, FileSystemLoader
-from markdown import markdown
 from pathlib import Path
 import sys
 
-from .util import find_files, find_key_defs, load_config, write_file
+from bs4 import BeautifulSoup
+from jinja2 import Environment, FileSystemLoader
+from markdown import markdown
+import tomli
 
 
-MARKDOWN_EXTENSIONS = [
-    "attr_list",
-    "def_list",
-    "fenced_code",
-    "md_in_html",
-    "tables"
-]
+BOILERPLATE = {
+    "README.md": Path(""),
+    "CODE_OF_CONDUCT.md": Path("conduct"),
+    "CONTRIBUTING.md": Path("contrib"),
+    "LICENSE.md": Path("license"),
+}
+MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
 
 
 def build(opt):
     """Main driver."""
-
-    # Setup.
-    config = load_config(opt.config)
-    skips = config["skips"] | {opt.out}
-    env = Environment(loader=FileSystemLoader(opt.templates))
-
-    # Find and build files.
-    files = find_files(opt, skips)
-    markdown, others = split_files(config, files)
-    handle_markdown(env, opt, config, markdown)
-    handle_others(env, opt, config, others)
+    opt.settings = _load_config(opt.config)
+    files = _find_files(opt)
+    markdown, others = _separate_files(files)
+    opt.dst.mkdir(parents=True, exist_ok=True)
+    _handle_markdown(opt, markdown)
+    _handle_others(opt, others)
 
 
-def choose_template(env, source):
-    """Select a template."""
-    return env.get_template("page.html")
+def construct_parser(parser):
+    """Parse command-line arguments."""
+    parser.add_argument("--config", default="pyproject.toml", help="configuration file")
+    parser.add_argument("--dst", type=Path, default="docs", help="output directory")
+    parser.add_argument("--src", type=Path, default=".", help="source directory")
+    parser.add_argument(
+        "--templates", type=Path, default="templates", help="templates directory"
+    )
 
 
-def do_bibliography_links(config, doc, source, dest, context):
-    """Turn 'b:key' links into bibliography references."""
+def _do_bibliography_links(opt, dest, doc):
+    """Handle 'b:' bibliography links."""
     for node in doc.select("a[href]"):
-        if node["href"].startswith("b:"):
-            node["href"] = f"@root/bibliography/#{node['href'][2:]}"
-
-
-def do_glossary_links(config, doc, source, dest, context):
-    """Turn 'g:key' links into glossary references and insert list of terms."""
-    seen = set()
-    for node in doc.select("a[href]"):
-        if node["href"].startswith("g:"):
-            key = node["href"][2:]
-            node["href"] = f"@root/glossary/#{key}"
-            seen.add(key)
-    insert_defined_terms(doc, source, seen, context)
-
-
-def do_inclusion_classes(config, doc, source, dest, context):
-    """Adjust classes of file inclusions."""
-    for node in doc.select("code[data-file]"):
-        inc = node["data-file"]
-        if ":" in inc:
-            inc = inc.split(":")[0]
-        language = f"language-{Path(inc).suffix.lstrip('.')}"
-        node["class"] = language
-        node.parent["class"] = language
-
-
-def do_markdown_links(config, doc, source, dest, context):
-    """Fix local internal .md links."""
-    for node in doc.select("a[href]"):
-        target = node["href"]
-        if not target.endswith(".md"):
+        if not node["href"].startswith("b:"):
             continue
-        filename = target.split("/")[-1]
-        if filename not in config["renames"]:
+        assert node["href"].count(":") == 1
+        key = node["href"].split(":")[1]
+        node.string = key
+        node["href"] = _make_root_prefix(opt, dest) + f"bibliography/#{key}"
+
+
+def _do_glossary_links(opt, dest, doc):
+    """Handle 'g:' glossary links."""
+    for node in doc.select("a[href]"):
+        if not node["href"].startswith("g:"):
             continue
-        node["href"] = f"@root/{config['renames'][filename]}/"
+        assert node["href"].count(":") == 1
+        key = node["href"].split(":")[1]
+        node["href"] = _make_root_prefix(opt, dest) + f"glossary/#{key}"
 
 
-def do_title(config, doc, source, dest, context):
-    """Make sure title element is filled in."""
-    try:
-        doc.title.string = doc.h1.get_text()
-    except Exception:
-        print(f"{source} lacks H1 heading", file=sys.stderr)
-        sys.exit(1)
+def _do_markdown_links(opt, dest, doc):
+    """Handle ./SOMETHING.md links."""
+    for node in doc.select("a[href]"):
+        if not node["href"].endswith(".md"):
+            continue
+        target = str(Path(node["href"]).name)
+        if target not in BOILERPLATE:
+            _warn(f"unknown Markdown link {node['href']} for {dest}")
+            continue
+        node["href"] = f"@/" if target == "README.md" else f"@/{BOILERPLATE[target]}/"
 
 
-def do_root_path_prefix(config, doc, source, dest, context):
-    """Fix @root links in HTML."""
-    depth = len(dest.parents) - 2
-    prefix = "./" if (depth == 0) else "../" * depth
+def _do_pre_code_classes(opt, dest, doc):
+    """Add language classes to <pre> elements."""
+    for node in doc.select("pre>code"):
+        cls = node.get("class", [])
+        node.parent["class"] = node.parent.get("class", []) + cls
+
+
+def _do_root_links(opt, dest, doc):
+    """Handle '@/' links."""
+    prefix = _make_root_prefix(opt, dest)
     targets = (
         ("a[href]", "href"),
         ("img[src]", "src"),
@@ -101,110 +90,138 @@ def do_root_path_prefix(config, doc, source, dest, context):
     )
     for selector, attr in targets:
         for node in doc.select(selector):
-            if "@root/" in node[attr]:
-                node[attr] = node[attr].replace("@root/", prefix)
+            if node[attr].startswith("@/"):
+                node[attr] = node[attr].replace("@/", prefix)
 
 
-def handle_markdown(env, opt, config, files):
+def _do_title(opt, dest, doc):
+    """Make sure title element is filled in."""
+    if doc.title is None:
+        _warn(f"{dest} does not have <title> element")
+        return
+    try:
+        doc.title.string = doc.h1.get_text()
+    except Exception:
+        _warn(f"{dest} lacks H1 heading")
+
+
+def _find_files(opt):
+    """Collect all interesting files."""
+    return [
+        path for path in Path(opt.src).glob("**/*.*") if _is_interesting_file(opt, path)
+    ]
+
+
+def _handle_markdown(opt, files):
     """Handle Markdown files."""
-    # Extract cross-reference keys.
-    context = {
-        "bibliography": find_key_defs(files, "bibliography"),
-        "glossary": find_key_defs(files, "glossary"),
-    }
-
-    # Render all documents.
-    for source, info in files.items():
-        dest = make_output_path(opt.out, config["renames"], source)
-        info["doc"] = render_markdown(env, opt, config, source, dest, info["content"], context)
-        write_file(dest, str(info["doc"]))
+    env = Environment(loader=FileSystemLoader(opt.templates))
+    for source in files:
+        dest = _make_output_path(opt, source)
+        html = _render_markdown(opt, env, source, dest)
+        dest.write_text(html)
 
 
-def handle_others(env, opt, config, files):
+def _handle_others(opt, files):
     """Handle copy-only files."""
-    for source, info in files.items():
-        dest = make_output_path(opt.out, config["renames"], source)
-        write_file(dest, info["content"])
+    for source in files:
+        dest = _make_output_path(opt, source)
+        content = source.read_bytes()
+        dest.write_bytes(content)
 
 
-def insert_defined_terms(doc, source, seen, context):
-    """Insert list of defined terms."""
-    target = doc.select("p#terms")
-    if not target:
-        return
-    assert len(target) == 1, f"Duplicate p#terms in {source}"
-    target = target[0]
-    if not seen:
-        target.decompose()
-        return
-    glossary = {key: context["glossary"][key] for key in seen}
-    glossary = {k: v for k, v in sorted(glossary.items(), key=lambda item: item[1].lower())}
-    target.append("Terms defined: ")
-    for i, (key, term) in enumerate(glossary.items()):
-        if i > 0:
-            target.append(", ")
-        ref = doc.new_tag("a", href=f"@root/glossary/#{key}")
-        ref.string = term
-        target.append(ref)
+def _is_interesting_file(opt, path):
+    """Is this file worth copying over?"""
+    relative = path.relative_to(opt.src)
+    if not path.is_file():
+        return False
+    if str(relative).startswith("."):
+        return False
+    if path.samefile(opt.config):
+        return False
+    if path.is_relative_to(opt.dst):
+        return False
+    if path.is_relative_to(opt.templates):
+        return False
+
+    skips = opt.settings["skips"]
+    if skips and any(relative.is_relative_to(s) for s in skips):
+        return False
+
+    return True
 
 
-def make_output_path(output_dir, renames, source):
+def _load_config(filename):
+    """Read configuration data."""
+    config = tomli.loads(Path(filename).read_text())
+
+    if ("tool" not in config) or ("mccole" not in config["tool"]):
+        _warn(f"configuration file {filename} does not have 'tool.mccole'")
+        return {"skips": set()}
+
+    config = config["tool"]["mccole"]
+    config["skips"] = set(config["skips"]) if "skips" in config else set()
+
+    overlap = set(BOILERPLATE.keys()) & config["skips"]
+    if overlap:
+        _warn(
+            f"overlap between skips and renames in config {filename}: {', '.join(sorted(overlap))}"
+        )
+
+    return config
+
+
+def _make_output_path(opt, source):
     """Build output path."""
-    if source.name in renames:
-        temp = source.parent / renames[source.name] / "index.html"
-    elif source.suffix == ".md":
-        temp = source.with_suffix("").with_suffix(".html")
-    else:
-        temp = source
-    return output_dir / temp
+    source_str = str(source.name)
+    temp = BOILERPLATE[source_str] / "index.md" if source_str in BOILERPLATE else source
+    temp = temp.with_suffix("").with_suffix(".html") if temp.suffix == ".md" else temp
+    temp = opt.src / temp
+    result = opt.dst / temp.relative_to(opt.src)
+    result.parent.mkdir(parents=True, exist_ok=True)
+    return result
 
 
-def parse_args(parser):
-    """Parse command-line arguments."""
-    parser.add_argument("--config", type=str, default="pyproject.toml", help="optional configuration file")
-    parser.add_argument("--css", type=str, help="CSS file")
-    parser.add_argument("--icon", type=str, default="favicon.ico", help="icon file")
-    parser.add_argument("--out", type=str, default="docs", help="output directory")
-    parser.add_argument("--root", type=str, default=".", help="root directory")
-    parser.add_argument("--templates", type=str, default="templates", help="templates directory")
+def _make_root_prefix(opt, path):
+    """Create prefix to root for path."""
+    relative = path.relative_to(opt.dst)
+    depth = len(relative.parents) - 1
+    assert depth >= 0
+    return "./" if (depth == 0) else "../" * depth
 
 
-def render_markdown(env, opt, config, source, dest, content, context={}):
+def _render_markdown(opt, env, source, dest):
     """Convert Markdown to HTML."""
-    # Generate HTML.
-    template = choose_template(env, source)
-    html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
-    html = template.render(content=html, css_file=opt.css, icon_file=opt.icon)
+    content = source.read_text()
+    template = env.get_template("page.html")
+    raw_html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
+    rendered_html = template.render(content=raw_html)
 
-    # Apply transforms if always required or if context provided.
-    transformers = (
-        (False, do_bibliography_links),
-        (False, do_glossary_links),
-        (False, do_inclusion_classes),
-        (True, do_title),
-        (False, do_markdown_links),
-        (True, do_root_path_prefix), # must be last
-    )
-    doc = BeautifulSoup(html, "html.parser")
-    for is_required, func in transformers:
-        if context or is_required:
-            func(config, doc, source, dest, context)
+    doc = BeautifulSoup(rendered_html, "html.parser")
+    for func in [
+        _do_bibliography_links,
+        _do_glossary_links,
+        _do_markdown_links,
+        _do_pre_code_classes,
+        _do_root_links,
+        _do_title,
+    ]:
+        func(opt, dest, doc)
 
-    return doc
+    return str(doc)
 
 
-def split_files(config, files):
+def _separate_files(files):
     """Divide files into categories."""
-    markdown = {}
-    others = {}
-    for path, info in files.items():
+    markdown = []
+    others = []
+    for path in files:
         if path.suffix == ".md":
-            markdown[path] = info
+            markdown.append(path)
         else:
-            others[path] = info
+            others.append(path)
     return markdown, others
 
 
-if __name__ == "__main__":
-    opt = parse_args(argparse.ArgumentParser()).parse_args()
-    build(opt)
+def _warn(msg):
+    """Print warning."""
+    print(msg, file=sys.stderr)

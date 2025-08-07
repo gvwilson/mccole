@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Contributing - McCole Docs</title>
+        <title>Contributing - McCole</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/fontawesome.min.css" rel="stylesheet">
         <link href="../css/brands.min.css" rel="stylesheet">
@@ -25,7 +25,7 @@
     <body>
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="..">McCole Docs</a>
+                <a class="navbar-brand" href="..">McCole</a>
                 <!-- Expander button -->
                 <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -49,21 +49,6 @@
                             </li>
                             <li class="nav-item">
                                 <a href="../build/" class="nav-link">Build</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../install/" class="nav-link">Install</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../lint/" class="nav-link">Lint</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../refresh/" class="nav-link">Refresh</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../serve/" class="nav-link">Serve</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../stats/" class="nav-link">Stats</a>
                             </li>
                         </ul>
 
@@ -98,22 +83,6 @@
             
             <li class="nav-item" data-bs-level="1"><a href="#contributing" class="nav-link">Contributing</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#site-structure" class="nav-link">Site Structure</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#build-and-release" class="nav-link">Build and Release</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#labels" class="nav-link">Labels</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#contributors" class="nav-link">Contributors</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
               </ul>
             </li>
         </ul>
@@ -123,85 +92,19 @@
 
 <h1 id="contributing">Contributing</h1>
 <p>Contributions are very welcome.
-Please file issues or submit pull requests in our <a href="https://github.com/lessonomicon/mccole">GitHub repository</a>.
+Please file issues or submit pull requests in our <a href="https://github.com/gvwilson/mccole">GitHub repository</a>.
 All contributors will be acknowledged,
 but must abide by our <a href="../CODE_OF_CONDUCT/">Code of Conduct</a>.</p>
-<h2 id="site-structure">Site Structure</h2>
 <ul>
-<li><code>README.md</code>: overview</li>
-<li><code>LICENSE.md</code>: content license</li>
-<li><code>CODE_OF_CONDUCT.md</code>: code of conduct</li>
-<li><code>CONTRIBUTING.md</code>: this contributors' guide</li>
-<li><code>pyproject.toml</code>: Python package description</li>
-<li><code>Makefile</code>: repeatable commands</li>
-<li><code>mccole/</code>: Python source</li>
-<li><code>test/</code>: sample project to run experiments</li>
+<li>Setup:<ul>
+<li><code>uv venv</code> (once)</li>
+<li><code>source .venv/bin/activate</code></li>
+<li><code>uv sync --extra dev</code></li>
 </ul>
-<h2 id="build-and-release">Build and Release</h2>
-<ul>
-<li><code>uv venv</code> and <code>source .venv/bin/activate</code> to create virtual environment</li>
-<li><code>uv sync --extra dev</code> to install package and development dependenies</li>
-<li><code>python -m build</code> to build package</li>
-<li><code>twine upload --verbose -u __token__ -p your-pypi-access-token dist/*</code> to publish</li>
-</ul>
-<h2 id="labels">Labels</h2>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Description</th>
-<th>Color</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>change</td>
-<td>something different</td>
-<td>#FBCA04</td>
-</tr>
-<tr>
-<td>feature</td>
-<td>new feature</td>
-<td>#B60205</td>
-</tr>
-<tr>
-<td>fix</td>
-<td>something broken</td>
-<td>#5319E7</td>
-</tr>
-<tr>
-<td>good first issue</td>
-<td>newcomers are always welcome</td>
-<td>#D4C5F9</td>
-</tr>
-<tr>
-<td>talk</td>
-<td>question or discussion</td>
-<td>#0E8A16</td>
-</tr>
-<tr>
-<td>task</td>
-<td>one-off task</td>
-<td>#1D76DB</td>
-</tr>
-</tbody>
-</table>
-<p>Please use <a href="https://www.conventionalcommits.org/">Conventional Commits</a> style for pull requests
-by using <code>change:</code>, <code>feature:</code>, <code>fix:</code>, or <code>task:</code> as the first word
-in the title of the commit message.
-You may also use <code>publish:</code> if the PR just rebuilds the HTML version of the lesson.</p>
-<h2 id="contributors"><a id="contributors">Contributors</a></h2>
-<ul>
-<li>
-<p><a href="https://ikasten.io/"><em>Juanan Pereira</em></a> is a lecturer in Computer Science
-    at the University of the Basque Country (UPV/EHU), where he researches and tries 
-    to integrate open source software, software engineering, and LLMs in education.</p>
 </li>
-<li>
-<p><a href="https://third-bit.com/"><em>Greg Wilson</em></a> is a programmer, author, and educator based in Toronto.
-    He was the co-founder and first Executive Director of Software Carpentry
-    and received ACM SIGSOFT's Influential Educator Award in 2020.</p>
-</li>
+<li>Check package: <code>make lint</code></li>
+<li>Build package: <code>make build</code> or <code>python -m build</code></li>
+<li>Publish package: <code>twine upload --verbose -u __token__ -p your-pypi-access-token dist/*</code></li>
 </ul></div>
             </div>
         </div>

@@ -5,22 +5,18 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["mccole"]
 
-[tool.setuptools.package-data]
-mccole = ["settings.toml", "static/*.css", "templates/*.html"]
-
 [project]
 name = "mccole"
-version = "0.5.5"
+version = "0.6.0"
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
-    {name = "Juanan Pereira", email = "juanan.pereira@ehu.eus"},
 ]
 maintainers = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
 ]
-description = "Simple template for static web sites"
-keywords = ["static site generator"]
+description = "Simple static site generator for tutorials"
+keywords = ["open source", "static site generator"]
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -28,34 +24,23 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "beautifulsoup4>=4.12.3",
-    "gitpython>=3.1",
-    "html5validator>=0.4.2",
-    "jinja2>=3.1.4",
-    "markdown>=3.6",
-    "prettytable>=3.11",
-    "pygithub>=2.4",
-    "ruff>=0.6.0",
-    "tomli>=2.0.1",
+    "beautifulsoup4",
+    "jinja2",
+    "markdown",
+    "tomli"
 ]
 
 [project.optional-dependencies]
 dev = [
-  "build",
-  "markdown-include",
-  "mkdocs",
-  "mkdocstrings[python]",
-  "twine",
+    "build",
+    "coverage",
+    "markdown-include",
+    "mkdocs",
+    "mkdocstrings[python]",
+    "pytest",
+    "ruff",
+    "twine"
 ]
 
 [project.scripts]
 mccole = "mccole:clui.main"
-
-[tool.mccole]
-skips = ["dist", "mccole.egg-info"]
-
-[tool.mccole.renames]
-"CODE_OF_CONDUCT.md" = "code_of_conduct.md"
-"CONTRIBUTING.md" = "contributing.md"
-"LICENSE.md" = "license.md"
-"README.md" = "index.md"
