@@ -5,6 +5,7 @@ import importlib.metadata
 import sys
 
 from .build import build, construct_parser as build_parser
+from .init import init, construct_parser as init_parser
 from .lint import lint, construct_parser as lint_parser
 
 
@@ -15,6 +16,7 @@ def main():
 
     subparsers = parser.add_subparsers(dest="cmd")
     build_parser(subparsers.add_parser("build", help="build site"))
+    init_parser(subparsers.add_parser("init", help="(re-)initialize site"))
     lint_parser(subparsers.add_parser("lint", help="check site"))
 
     opt = parser.parse_args()
@@ -22,6 +24,8 @@ def main():
         print(importlib.metadata.version("mccole"))
     elif opt.cmd == "build":
         build(opt)
+    elif opt.cmd == "init":
+        init(opt)
     elif opt.cmd == "lint":
         lint(opt)
     else:

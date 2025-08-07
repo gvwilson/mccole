@@ -29,7 +29,6 @@ test:
 
 ## clean: clean up
 clean:
-	@rm -rf dist docs mccole.egg-info
 	@find . -type f -name '*~' -exec rm {} \;
 	@find . -type d -name __pycache__ | xargs rm -r
 	@find . -type d -name .pytest_cache | xargs rm -r

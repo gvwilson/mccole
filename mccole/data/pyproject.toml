@@ -1,0 +1,11 @@
+[project]
+name = "NAME"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "linkchecker",
+    "mccole"
+]
+
+[tool.mccole]
+skips = ["uv.lock"]

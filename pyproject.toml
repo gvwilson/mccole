@@ -5,9 +5,12 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["mccole"]
 
+[tool.setuptools.package-data]
+"*" = ["data/**/*"]
+
 [project]
 name = "mccole"
-version = "0.6.0"
+version = "0.6.1"
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
