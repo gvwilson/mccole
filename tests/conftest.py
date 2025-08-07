@@ -9,6 +9,14 @@ CONFIG = """\
 skips = []
 """
 
+GLOSSARY = """`
+# Glossary
+<span id="first">first term</span>
+:   body
+<span id="second">second term</span>
+:   body
+"""
+
 TEMPLATE = """\
 <html>
   <head>
@@ -37,6 +45,15 @@ def build_opt(bare_fs):
         src=bare_fs,
         templates=bare_fs / "templates",
     )
+
+
+@pytest.fixture
+def glossary_path(bare_fs, build_opt):
+    """Create glossary file and return its path."""
+    glossary_path = bare_fs / build_opt.src / "glossary" / "index.md"
+    glossary_path.parent.mkdir()
+    glossary_path.write_text(GLOSSARY)
+    return glossary_path
 
 
 @pytest.fixture

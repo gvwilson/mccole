@@ -2,6 +2,7 @@
 
 import argparse
 from pathlib import Path
+import re
 import sys
 
 from bs4 import BeautifulSoup
@@ -16,6 +17,7 @@ BOILERPLATE = {
     "CONTRIBUTING.md": Path("contrib"),
     "LICENSE.md": Path("license"),
 }
+GLOSSARY_MD = re.compile(r'^<span\s+id="(.+?)"\s*>(.+?)</span>', re.MULTILINE)
 MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
 
 
@@ -24,6 +26,7 @@ def build(opt):
     opt.settings = _load_config(opt.config)
     files = _find_files(opt)
     markdown, others = _separate_files(files)
+    opt._glossary = _load_glossary(markdown)
     opt.dst.mkdir(parents=True, exist_ok=True)
     _handle_markdown(opt, markdown)
     _handle_others(opt, others)
@@ -58,6 +61,29 @@ def _do_glossary_links(opt, dest, doc):
         assert node["href"].count(":") == 1
         key = node["href"].split(":")[1]
         node["href"] = _make_root_prefix(opt, dest) + f"glossary/#{key}"
+
+
+def _do_glossary_terms(opt, dest, doc):
+    """Fill in <p id="terms"></p> if present and terms defined."""
+    targets = doc.select("p#terms")
+    if len(targets) == 0:
+        return
+    if len(targets) > 1:
+        _warn(f"terms paragraph appears multiple times in {dest}")
+        return
+    target = targets[0]
+
+    keys = {node["href"].split(":")[-1] for node in doc.select("a[href]") if "/glossary/#" in node["href"]}
+    if not keys:
+        target.decompose()
+        return
+
+    entries = [(key, opt._glossary.get(key, "UNDEFINED")) for key in keys]
+    entries.sort(key=lambda item: item[1])
+    for key, term in entries:
+        tag = doc.new_tag("a", href=key)
+        tag.string = term
+        target.append(tag)
 
 
 def _do_markdown_links(opt, dest, doc):
@@ -170,6 +196,18 @@ def _load_config(filename):
     return config
 
 
+def _load_glossary(markdown_filenames):
+    """Get key:term pairs from glossary."""
+    paths = [p for p in markdown_filenames if "/glossary/index.md" in str(p)]
+    if len(paths) == 0:
+        return {}
+    elif len(paths) > 1:
+        _warn(f"multiple glossary files")
+        return {}
+    content = paths[0].read_text()
+    return {m[0]: m[1] for m in GLOSSARY_MD.findall(content)}
+
+
 def _make_output_path(opt, source):
     """Build output path."""
     source_str = str(source.name)
@@ -200,6 +238,7 @@ def _render_markdown(opt, env, source, dest):
     for func in [
         _do_bibliography_links,
         _do_glossary_links,
+        _do_glossary_terms,
         _do_markdown_links,
         _do_pre_code_classes,
         _do_root_links,
@@ -212,13 +251,8 @@ def _render_markdown(opt, env, source, dest):
 
 def _separate_files(files):
     """Divide files into categories."""
-    markdown = []
-    others = []
-    for path in files:
-        if path.suffix == ".md":
-            markdown.append(path)
-        else:
-            others.append(path)
+    markdown = [path for path in files if path.suffix == ".md"]
+    others = [path for path in files if path.suffix != ".md"]
     return markdown, others
 
 

@@ -5,7 +5,7 @@ import argparse
 from bs4 import BeautifulSoup
 import pytest
 
-from mccole.build import build, construct_parser
+from mccole.build import build, construct_parser, _load_glossary
 
 
 def test_build_construct_parser_with_default_values():
@@ -129,6 +129,40 @@ def test_build_glossary_links_correctly_adjusted(bare_fs, build_opt):
     assert 'href="./glossary/#key"' in expected.read_text()
 
 
+def test_build_glossary_keys_values_loaded(bare_fs, build_opt, glossary_path):
+    glossary = _load_glossary([glossary_path])
+    assert glossary == {"first": "first term", "second": "second term"}
+
+
+def test_build_defined_terms_added_to_page(bare_fs, build_opt, glossary_path):
+    lines = [
+        "# Title",
+        '<p id="terms"></p>',
+        "[one](g:first) [two](g:second)"
+    ]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    content = (bare_fs / build_opt.dst / "test.html").read_text()
+    doc = BeautifulSoup(content, "html.parser")
+    terms = doc.select("p#terms")[0]
+    refs = {node["href"] for node in terms.select("a[href]")}
+    assert refs == {"./glossary/#first", "./glossary/#second"}
+
+
+def test_build_defined_terms_paragraph_removed(bare_fs, build_opt):
+    lines = [
+        "# Title",
+        '<p id="terms"></p>',
+        "body"
+    ]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    expected = bare_fs / build_opt.dst / "test.html"
+    assert expected.is_file()
+    doc = BeautifulSoup(expected.read_text(), "html.parser")
+    assert not doc.select("p#terms")
+
+
 def test_build_backtick_code_block_class_applied_to_enclosing_pre(bare_fs, build_opt):
     (bare_fs / build_opt.src / "test.md").write_text("# Title\n```py\nx = 1\n```\n")
     build(build_opt)
@@ -185,7 +219,6 @@ def test_build_warn_badly_formatted_config_file(bare_fs, build_opt, capsys):
     config_file.write_text('[tool.missing]\nskips = ["extras", "uv.lock"]\n')
 
     build(build_opt)
-
     captured = capsys.readouterr()
     assert "does not have 'tool.mccole'" in captured.err
 
@@ -196,6 +229,29 @@ def test_build_warn_overlap_renames_and_skips(bare_fs, build_opt, capsys):
     (bare_fs / build_opt.src / "LICENSE.md").write_text("# License")
 
     build(build_opt)
-
     captured = capsys.readouterr()
     assert "overlap between skips and renames" in captured.err
+
+
+def test_build_warn_multiple_term_paragraphs_in_doc(bare_fs, build_opt, capsys):
+    lines = [
+        "# Terms",
+        '<p id="terms"></p>',
+        '<p id="terms"></p>',
+    ]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "terms paragraph appears multiple times" in captured.err
+
+
+def test_build_warn_multiple_glossary_files_found(bare_fs, build_opt, capsys):
+    (bare_fs / build_opt.src / "glossary").mkdir()
+    (bare_fs / build_opt.src / "glossary" / "index.md").write_text("# First")
+    (bare_fs / build_opt.src / "subdir").mkdir()
+    (bare_fs / build_opt.src / "subdir" / "glossary").mkdir()
+    (bare_fs / build_opt.src / "subdir" / "glossary" / "index.md").write_text("# Second")
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "multiple glossary files" in captured.err
