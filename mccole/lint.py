@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from bs4 import BeautifulSoup
+from html5validator.validator import Validator
 
 
 def lint(opt):
@@ -16,6 +17,7 @@ def lint(opt):
         _do_compare_template_readme,
         _do_exercise_titles,
         _do_glossary_redefinitions,
+        _do_html_validation,
         _do_single_h1,
         lambda o, p: _do_special_links(o, p, "bibliography"),
         lambda o, p: _do_special_links(o, p, "glossary"),
@@ -80,6 +82,12 @@ def _do_glossary_redefinitions(opt, pages):
             len(values) == 1,
             f"glossary entry '{key}' defined in {', '.join(sorted(str(v) for v in values))}",
         )
+
+
+def _do_html_validation(opt, pages):
+    """Validate generated HTML."""
+    validator = Validator()
+    errors = validator.validate(list(pages.keys()))
 
 
 def _do_single_h1(opt, pages):
