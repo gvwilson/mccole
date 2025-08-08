@@ -13,6 +13,7 @@ def lint(opt):
     filepaths = Path(opt.dst).glob("**/*.html")
     pages = {path: BeautifulSoup(path.read_text(), "html.parser") for path in filepaths}
     for func in [
+        _do_compare_template_readme,
         _do_exercise_titles,
         _do_glossary_redefinitions,
         _do_single_h1,
@@ -25,6 +26,29 @@ def lint(opt):
 def construct_parser(parser):
     """Parse command-line arguments."""
     parser.add_argument("--dst", type=Path, default="docs", help="output directory")
+
+
+def _do_compare_template_readme(opt, pages):
+    """Compare tables of contents in template and README.md"""
+    path = opt.dst / "index.html"
+    readme = pages[path]
+    for (kind, nav_selector, body_selector) in [
+        ("lessons", "span#nav-lessons", "div#syllabus"),
+        ("extras", "span#nav-extras", "div#appendices"),
+    ]:
+        nav = readme.select(nav_selector)
+        if not _require(len(nav) == 1, f"{path} missing or multiple {nav_selector}"):
+            continue
+        nav = nav[0]
+        body = readme.select(body_selector)
+        if not _require(len(body) == 1, f"{path} missing or multiple {body_selector}"):
+            continue
+        body = body[0]
+
+        nav_paths = {node["href"] for node in nav.select("a[href]")}
+        body_paths = {node["href"] for node in body.select("a[href]")}
+        difference = nav_paths ^ body_paths
+        _require(not difference, f"mis-match in README and nav paths: {', '.join(sorted(difference))}")
 
 
 def _do_exercise_titles(opt, pages):
@@ -71,8 +95,13 @@ def _do_special_links(opt, pages, stem):
     if not _require(source in pages, f"{source} not found"):
         return
 
+    main = pages[source].select("main")
+    if not _require(len(main) == 1, f"missing or multiple <main> in {source}"):
+        return
+
+    main = main[0]
     defined = {
-        node["id"] for node in pages[source].select("span") if node.has_attr("id")
+        node["id"] for node in main.select("span") if node.has_attr("id")
     }
 
     base = f"{stem}/#"
