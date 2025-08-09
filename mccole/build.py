@@ -21,7 +21,7 @@ GLOSSARY_MD = re.compile(r'^<span\s+id="(.+?)"\s*>(.+?)</span>', re.MULTILINE)
 MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
 
 
-def build(opt):
+def main(opt):
     """Main driver."""
     opt.settings = _load_config(opt.config)
     files = _find_files(opt)
@@ -73,7 +73,11 @@ def _do_glossary_terms(opt, dest, doc):
         return
     target = targets[0]
 
-    keys = {node["href"].split("#")[-1] for node in doc.select("a[href]") if "/glossary/#" in node["href"]}
+    keys = {
+        node["href"].split("#")[-1]
+        for node in doc.select("a[href]")
+        if "/glossary/#" in node["href"]
+    }
     if not keys:
         target.decompose()
         return
@@ -81,7 +85,7 @@ def _do_glossary_terms(opt, dest, doc):
     entries = [(key, opt._glossary.get(key, "UNDEFINED")) for key in keys]
     entries.sort(key=lambda item: item[1])
     target.append("Terms defined: ")
-    for (i, (key, term)) in enumerate(entries):
+    for i, (key, term) in enumerate(entries):
         tag = doc.new_tag("a", href=key)
         tag.string = term
         if i > 0:

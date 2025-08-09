@@ -62,7 +62,9 @@ def test_build_does_not_copy_destination_files(bare_fs, build_opt):
 
 def test_build_does_not_copy_explicitly_skipped_files(bare_fs, build_opt):
     config_file = bare_fs / build_opt.config
-    config_file.write_text('[tool.mccole]\nskips = ["*.text", "extras/**", "uv.lock"]\n')
+    config_file.write_text(
+        '[tool.mccole]\nskips = ["*.text", "extras/**", "uv.lock"]\n'
+    )
     (bare_fs / build_opt.src / "alpha.text").write_text("something")
     (bare_fs / build_opt.src / "uv.lock").write_text("version = 1")
     (bare_fs / build_opt.src / "extras").mkdir()
@@ -136,11 +138,7 @@ def test_build_glossary_keys_values_loaded(bare_fs, build_opt, glossary_path):
 
 
 def test_build_defined_terms_added_to_page(bare_fs, build_opt, glossary_path):
-    lines = [
-        "# Title",
-        '<p id="terms"></p>',
-        "[one](g:first) [two](g:second)"
-    ]
+    lines = ["# Title", '<p id="terms"></p>', "[one](g:first) [two](g:second)"]
     (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
     build(build_opt)
     content = (bare_fs / build_opt.dst / "test.html").read_text()
@@ -151,11 +149,7 @@ def test_build_defined_terms_added_to_page(bare_fs, build_opt, glossary_path):
 
 
 def test_build_defined_terms_paragraph_removed(bare_fs, build_opt):
-    lines = [
-        "# Title",
-        '<p id="terms"></p>',
-        "body"
-    ]
+    lines = ["# Title", '<p id="terms"></p>', "body"]
     (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
     build(build_opt)
     expected = bare_fs / build_opt.dst / "test.html"
@@ -252,7 +246,9 @@ def test_build_warn_multiple_glossary_files_found(bare_fs, build_opt, capsys):
     (bare_fs / build_opt.src / "glossary" / "index.md").write_text("# First")
     (bare_fs / build_opt.src / "subdir").mkdir()
     (bare_fs / build_opt.src / "subdir" / "glossary").mkdir()
-    (bare_fs / build_opt.src / "subdir" / "glossary" / "index.md").write_text("# Second")
+    (bare_fs / build_opt.src / "subdir" / "glossary" / "index.md").write_text(
+        "# Second"
+    )
     build(build_opt)
     captured = capsys.readouterr()
     assert "multiple glossary files" in captured.err

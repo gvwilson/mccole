@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 
-def init(opt):
+def main(opt):
     """Main driver."""
     src = importlib.resources.files(__name__.split(".")[0]) / "data"
     available = {
@@ -23,17 +23,22 @@ def init(opt):
 
     exists = {str(dst) for dst in available.values() if dst.exists()}
     if exists and (not opt.force):
-        print(f"not overwriting {', '.join(sorted(exists))} (use --force)", file=sys.stderr)
+        print(
+            f"not overwriting {', '.join(sorted(exists))} (use --force)",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     opt.dst.mkdir(parents=True, exist_ok=True)
     for src, dst in available.items():
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_bytes(src.read_bytes())
-    
+
 
 def construct_parser(parser):
     """Parse command-line arguments."""
     parser.add_argument("--dst", type=Path, default=".", help="destination directory")
     parser.add_argument("--force", action="store_true", help="force overwrite")
-    parser.add_argument("--only", type=Path, nargs="+", help="only install specific files")
+    parser.add_argument(
+        "--only", type=Path, nargs="+", help="only install specific files"
+    )

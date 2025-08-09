@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from html5validator.validator import Validator
 
 
-def lint(opt):
+def main(opt):
     """Main driver."""
     filepaths = Path(opt.dst).glob("**/*.html")
     pages = {path: BeautifulSoup(path.read_text(), "html.parser") for path in filepaths}
@@ -36,7 +36,7 @@ def _do_compare_template_readme(opt, pages):
     """Compare tables of contents in template and README.md"""
     path = opt.dst / "index.html"
     readme = pages[path]
-    for (kind, nav_selector, body_selector) in [
+    for kind, nav_selector, body_selector in [
         ("lessons", "span#nav-lessons", "div#syllabus"),
         ("extras", "span#nav-extras", "div#appendices"),
     ]:
@@ -52,7 +52,10 @@ def _do_compare_template_readme(opt, pages):
         nav_paths = {node["href"] for node in nav.select("a[href]")}
         body_paths = {node["href"] for node in body.select("a[href]")}
         difference = nav_paths ^ body_paths
-        _require(not difference, f"mis-match in README and nav paths: {', '.join(sorted(difference))}")
+        _require(
+            not difference,
+            f"mis-match in README and nav paths: {', '.join(sorted(difference))}",
+        )
 
 
 def _do_exercise_titles(opt, pages):
@@ -110,9 +113,7 @@ def _do_special_links(opt, pages, stem):
         return
 
     main = main[0]
-    defined = {
-        node["id"] for node in main.select("span") if node.has_attr("id")
-    }
+    defined = {node["id"] for node in main.select("span") if node.has_attr("id")}
 
     base = f"{stem}/#"
     used = set()

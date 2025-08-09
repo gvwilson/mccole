@@ -96,7 +96,7 @@ def test_special_key_unused(build_opt, lint_opt, lint_fs, capsys, kind):
 
 def test_multiple_main_in_special_file(build_opt, lint_opt, lint_fs, capsys):
     build(build_opt)
-    page = (build_opt.dst / "bibliography" / "index.html")
+    page = build_opt.dst / "bibliography" / "index.html"
     content = page.read_text()
     content = content.replace("<main>", "<main></main><main>")
     page.write_text(content)
@@ -191,7 +191,7 @@ def test_html_validation_with_valid_html(build_opt, lint_opt, lint_fs, capsys):
 
 def test_html_validation_with_invalid_html(build_opt, lint_opt, lint_fs, capsys):
     build(build_opt)
-    page = (build_opt.dst / "index.html")
+    page = build_opt.dst / "index.html"
     content = page.read_text()
     page.write_text(content.replace('<html lang="en">', ""))
 
@@ -201,15 +201,20 @@ def test_html_validation_with_invalid_html(build_opt, lint_opt, lint_fs, capsys)
     assert captured.out
 
 
-@pytest.mark.parametrize("target,replacement", [
-    [NAV_LESSONS, ""],
-    [NAV_LESSONS, f"{NAV_LESSONS}\n{NAV_LESSONS}"],
-    [DIV_APPENDICES, ""],
-    [DIV_APPENDICES, f"{DIV_APPENDICES}\n{DIV_APPENDICES}"],
-])
-def test_compare_template_readme_missing_nav(build_opt, lint_opt, lint_fs, capsys,target, replacement):
+@pytest.mark.parametrize(
+    "target,replacement",
+    [
+        [NAV_LESSONS, ""],
+        [NAV_LESSONS, f"{NAV_LESSONS}\n{NAV_LESSONS}"],
+        [DIV_APPENDICES, ""],
+        [DIV_APPENDICES, f"{DIV_APPENDICES}\n{DIV_APPENDICES}"],
+    ],
+)
+def test_compare_template_readme_missing_nav(
+    build_opt, lint_opt, lint_fs, capsys, target, replacement
+):
     build(build_opt)
-    page = (build_opt.dst / "index.html")
+    page = build_opt.dst / "index.html"
     content = page.read_text()
     content = content.replace(target, replacement)
     page.write_text(content)
