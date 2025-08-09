@@ -170,8 +170,11 @@ def _is_interesting_file(opt, path):
         return False
 
     skips = opt.settings["skips"]
-    if skips and any(relative.is_relative_to(s) for s in skips):
-        return False
+    for s in skips:
+        if s.endswith("/**") and relative.is_relative_to(s.replace("/**", "")):
+            return False
+        if path.match(s):
+            return False
 
     return True
 

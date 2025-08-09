@@ -62,10 +62,11 @@ def test_build_does_not_copy_destination_files(bare_fs, build_opt):
 
 def test_build_does_not_copy_explicitly_skipped_files(bare_fs, build_opt):
     config_file = bare_fs / build_opt.config
-    config_file.write_text('[tool.mccole]\nskips = ["extras", "uv.lock"]\n')
+    config_file.write_text('[tool.mccole]\nskips = ["*.text", "extras/**", "uv.lock"]\n')
+    (bare_fs / build_opt.src / "alpha.text").write_text("something")
+    (bare_fs / build_opt.src / "uv.lock").write_text("version = 1")
     (bare_fs / build_opt.src / "extras").mkdir()
     (bare_fs / build_opt.src / "extras" / "test.md").write_text("# test")
-    (bare_fs / build_opt.src / "uv.lock").write_text("version = 1")
 
     build(build_opt)
 
