@@ -73,16 +73,19 @@ def _do_glossary_terms(opt, dest, doc):
         return
     target = targets[0]
 
-    keys = {node["href"].split(":")[-1] for node in doc.select("a[href]") if "/glossary/#" in node["href"]}
+    keys = {node["href"].split("#")[-1] for node in doc.select("a[href]") if "/glossary/#" in node["href"]}
     if not keys:
         target.decompose()
         return
 
     entries = [(key, opt._glossary.get(key, "UNDEFINED")) for key in keys]
     entries.sort(key=lambda item: item[1])
-    for key, term in entries:
+    target.append("Terms defined: ")
+    for (i, (key, term)) in enumerate(entries):
         tag = doc.new_tag("a", href=key)
         tag.string = term
+        if i > 0:
+            target.append(", ")
         target.append(tag)
 
 
@@ -201,8 +204,9 @@ def _load_config(filename):
 
 def _load_glossary(markdown_filenames):
     """Get key:term pairs from glossary."""
-    paths = [p for p in markdown_filenames if "/glossary/index.md" in str(p)]
+    paths = [p for p in markdown_filenames if "glossary/index.md" in str(p)]
     if len(paths) == 0:
+        _warn(f"no glossary found")
         return {}
     elif len(paths) > 1:
         _warn(f"multiple glossary files")
