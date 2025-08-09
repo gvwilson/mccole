@@ -9,6 +9,8 @@ import pytest
 from mccole.build import build, construct_parser as build_parser
 from mccole.lint import lint, construct_parser as lint_parser
 
+DIV_APPENDICES = '<div id="appendices"></div>'
+NAV_LESSONS = '<span class="dropdown-content" id="nav-lessons"></span>'
 
 README = """\
 # README
@@ -92,6 +94,18 @@ def test_special_key_unused(build_opt, lint_opt, lint_fs, capsys, kind):
     assert re.search(f"unused {kind} keys: key", captured.err)
 
 
+def test_multiple_main_in_special_file(build_opt, lint_opt, lint_fs, capsys):
+    build(build_opt)
+    page = (build_opt.dst / "bibliography" / "index.html")
+    content = page.read_text()
+    content = content.replace("<main>", "<main></main><main>")
+    page.write_text(content)
+
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "missing or multiple" in captured.err
+
+
 def test_glossary_term_redefined(build_opt, lint_opt, lint_fs, capsys):
     a = [
         "# A",
@@ -158,10 +172,49 @@ def test_exercise_section_has_bad_headings(
         headings,
         "</section>",
     ]
-    (lint_fs / "test.md").write_text("\n".join(lines))
+    (lint_fs / build_opt.src / "test.md").write_text("\n".join(lines))
 
     build(build_opt)
     lint(lint_opt)
 
     captured = capsys.readouterr()
     assert msg in captured.err
+
+
+def test_html_validation_with_valid_html(build_opt, lint_opt, lint_fs, capsys):
+    build(build_opt)
+    lint_opt.html = True
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert not captured.err
+
+
+def test_html_validation_with_invalid_html(build_opt, lint_opt, lint_fs, capsys):
+    build(build_opt)
+    page = (build_opt.dst / "index.html")
+    content = page.read_text()
+    page.write_text(content.replace('<html lang="en">', ""))
+
+    lint_opt.html = True
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert captured.out
+
+
+@pytest.mark.parametrize("target,replacement", [
+    [NAV_LESSONS, ""],
+    [NAV_LESSONS, f"{NAV_LESSONS}\n{NAV_LESSONS}"],
+    [DIV_APPENDICES, ""],
+    [DIV_APPENDICES, f"{DIV_APPENDICES}\n{DIV_APPENDICES}"],
+])
+def test_compare_template_readme_missing_nav(build_opt, lint_opt, lint_fs, capsys,target, replacement):
+    build(build_opt)
+    page = (build_opt.dst / "index.html")
+    content = page.read_text()
+    content = content.replace(target, replacement)
+    page.write_text(content)
+
+    lint_opt.html = True
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "missing or multiple" in captured.err
