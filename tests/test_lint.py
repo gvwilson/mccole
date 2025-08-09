@@ -10,9 +10,16 @@ from mccole.build import build, construct_parser as build_parser
 from mccole.lint import lint, construct_parser as lint_parser
 
 
+README = """\
+# README
+<div id="syllabus"></div>
+<div id="appendices"></div>
+"""
+
+
 @pytest.fixture
 def lint_fs(build_opt, bare_fs):
-    (bare_fs / "README.md").write_text("# Project")
+    (bare_fs / "README.md").write_text(README)
     (bare_fs / "bibliography").mkdir()
     (bare_fs / "bibliography" / "index.md").write_text("# Bibliography")
     (bare_fs / "glossary").mkdir()
@@ -73,7 +80,9 @@ def test_special_key_unused(build_opt, lint_opt, lint_fs, capsys, kind):
 
     lines = [
         "# Title",
+        "<main>",
         '<span id="key">text</span>',
+        "</main>",
     ]
     (lint_fs / lint_opt.dst / kind / "index.html").write_text("\n".join(lines))
 
@@ -118,7 +127,9 @@ def test_glossary_key_unused(build_opt, lint_opt, lint_fs, capsys):
 
     g = [
         "# Glossary",
+        "<main>",
         '<span id="key">text</span>',
+        "</main>",
     ]
     (lint_fs / lint_opt.dst / "glossary" / "index.html").write_text("\n".join(g))
 

@@ -17,17 +17,19 @@ def lint(opt):
         _do_compare_template_readme,
         _do_exercise_titles,
         _do_glossary_redefinitions,
-        _do_html_validation,
         _do_single_h1,
         lambda o, p: _do_special_links(o, p, "bibliography"),
         lambda o, p: _do_special_links(o, p, "glossary"),
     ]:
         func(opt, pages)
+    if opt.html:
+        _do_html_validation(opt, pages)
 
 
 def construct_parser(parser):
     """Parse command-line arguments."""
     parser.add_argument("--dst", type=Path, default="docs", help="output directory")
+    parser.add_argument("--html", action="store_true", help="validate HTML")
 
 
 def _do_compare_template_readme(opt, pages):

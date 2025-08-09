@@ -23,7 +23,13 @@ TEMPLATE = """\
     <title></title>
   </head>
   <body>
+    <nav>
+      <span id="nav-lessons" class="dropdown-content"></span>
+      <span id="nav-extras" class="dropdown-content"></span>
+    </nav>
+    <main>
 {{content}}
+    </main>
   </body>
 </html>
 """
@@ -60,4 +66,5 @@ def glossary_path(bare_fs, build_opt):
 def lint_opt(build_opt):
     return argparse.Namespace(
         dst=build_opt.dst,
+        html=False,
     )
