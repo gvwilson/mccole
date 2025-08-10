@@ -24,6 +24,7 @@ MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "ta
 def main(opt):
     """Main driver."""
     opt.settings = _load_config(opt.config)
+    opt._links = opt.links.read_text() if opt.links else None
     files = _find_files(opt)
     markdown, others = _separate_files(files)
     opt._glossary = _load_glossary(markdown)
@@ -36,6 +37,7 @@ def construct_parser(parser):
     """Parse command-line arguments."""
     parser.add_argument("--config", default="pyproject.toml", help="configuration file")
     parser.add_argument("--dst", type=Path, default="docs", help="output directory")
+    parser.add_argument("--links", type=Path, default=None, help="links file")
     parser.add_argument("--src", type=Path, default=".", help="source directory")
     parser.add_argument(
         "--templates", type=Path, default="templates", help="templates directory"
@@ -241,6 +243,8 @@ def _make_root_prefix(opt, path):
 def _render_markdown(opt, env, source, dest):
     """Convert Markdown to HTML."""
     content = source.read_text()
+    if opt._links:
+        content += "\n" + opt._links
     template = env.get_template("page.html")
     raw_html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     rendered_html = template.render(content=raw_html)
