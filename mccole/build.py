@@ -75,20 +75,20 @@ def _do_glossary_terms(opt, dest, doc):
         return
     target = targets[0]
 
-    keys = {
-        node["href"].split("#")[-1]
+    found = {
+        node["href"].split("#")[-1]: node["href"]
         for node in doc.select("a[href]")
         if "/glossary/#" in node["href"]
     }
-    if not keys:
+    if not found:
         target.decompose()
         return
 
-    entries = [(key, opt._glossary.get(key, "UNDEFINED")) for key in keys]
+    entries = [(key, opt._glossary.get(key, "UNDEFINED")) for key in found.keys()]
     entries.sort(key=lambda item: item[1])
     target.append("Terms defined: ")
     for i, (key, term) in enumerate(entries):
-        tag = doc.new_tag("a", href=key)
+        tag = doc.new_tag("a", href=found[key])
         tag.string = term
         if i > 0:
             target.append(", ")

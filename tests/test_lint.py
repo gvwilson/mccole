@@ -6,11 +6,18 @@ import re
 from bs4 import BeautifulSoup
 import pytest
 
-from mccole.build import build, construct_parser as build_parser
-from mccole.lint import lint, construct_parser as lint_parser
+from mccole.build import main as build, construct_parser as build_parser
+from mccole.lint import main as lint, construct_parser as lint_parser
 
 DIV_APPENDICES = '<div id="appendices"></div>'
 NAV_LESSONS = '<span class="dropdown-content" id="nav-lessons"></span>'
+
+MINIMAL_GLOSSARY_REFS = """
+# Title
+
+[first](g:first)
+[second](g:second)
+"""
 
 README = """\
 # README
@@ -24,8 +31,6 @@ def lint_fs(build_opt, bare_fs):
     (bare_fs / "README.md").write_text(README)
     (bare_fs / "bibliography").mkdir()
     (bare_fs / "bibliography" / "index.md").write_text("# Bibliography")
-    (bare_fs / "glossary").mkdir()
-    (bare_fs / "glossary" / "index.md").write_text("# Glossary")
     return bare_fs
 
 
@@ -37,7 +42,9 @@ def test_lint_construct_parser_with_default_values():
 
 
 def test_lint_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
+    (lint_fs / build_opt.src / "test.md").write_text(MINIMAL_GLOSSARY_REFS)
     build(build_opt)
+    output_path = lint_fs / build_opt.dst / "test.html"
     lint(lint_opt)
     captured = capsys.readouterr()
     assert not captured.err
@@ -182,6 +189,7 @@ def test_exercise_section_has_bad_headings(
 
 
 def test_html_validation_with_valid_html(build_opt, lint_opt, lint_fs, capsys):
+    (lint_fs / build_opt.src / "test.md").write_text(MINIMAL_GLOSSARY_REFS)
     build(build_opt)
     lint_opt.html = True
     lint(lint_opt)

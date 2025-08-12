@@ -40,7 +40,12 @@ TEMPLATE = """\
 def bare_fs(tmp_path):
     (tmp_path / "templates").mkdir()
     (tmp_path / "templates" / "page.html").write_text(TEMPLATE)
+
     (tmp_path / "pyproject.toml").write_text(CONFIG)
+
+    (tmp_path / "glossary").mkdir()
+    (tmp_path / "glossary" / "index.md").write_text(GLOSSARY)
+
     return tmp_path
 
 
@@ -49,18 +54,28 @@ def build_opt(bare_fs):
     return argparse.Namespace(
         config=bare_fs / "pyproject.toml",
         dst=bare_fs / "docs",
+        links=None,
         src=bare_fs,
         templates=bare_fs / "templates",
     )
 
 
 @pytest.fixture
-def glossary_path(bare_fs, build_opt):
-    """Create glossary file and return its path."""
-    glossary_path = bare_fs / build_opt.src / "glossary" / "index.md"
-    glossary_path.parent.mkdir()
-    glossary_path.write_text(GLOSSARY)
-    return glossary_path
+def glossary_dst_dir(bare_fs, build_opt):
+    """Path to glossary output directory."""
+    return bare_fs / build_opt.dst / "glossary"
+
+
+@pytest.fixture
+def glossary_dst(glossary_dst_dir):
+    """Path to glossary output file."""
+    return glossary_dst_dir / "index.html"
+
+
+@pytest.fixture
+def glossary_src(bare_fs, build_opt):
+    """Path to glossary source file."""
+    return bare_fs / build_opt.src / "glossary" / "index.md"
 
 
 @pytest.fixture
