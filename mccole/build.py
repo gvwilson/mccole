@@ -276,7 +276,8 @@ def _render_markdown(opt, env, source, dest):
     content = source.read_text()
     if opt._links:
         content += "\n" + opt._links
-    template = env.get_template("page.html")
+    template_name = "slides.html" if source.name == "slides.md" else "page.html"
+    template = env.get_template(template_name)
     raw_html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
     rendered_html = template.render(content=raw_html)
 
