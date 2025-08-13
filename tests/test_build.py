@@ -201,6 +201,30 @@ def test_build_append_provided_links_file(bare_fs, build_opt):
     assert links[0]["href"] == test_url
 
 
+def test_build_labels_figures(bare_fs, build_opt):
+    lines = ["# Title", "<figure id='f:first'><figcaption>caption</figcaption></figure>"]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    doc = BeautifulSoup((bare_fs / build_opt.dst / "test.html").read_text(), "html.parser")
+    captions = doc.select("figcaption")
+    assert len(captions) == 1
+    assert captions[0].string == "Figure 1: caption"
+
+
+def test_build_cross_references_figures(bare_fs, build_opt):
+    lines = [
+        "# Title",
+        "<figure id='f:first'><figcaption>caption</figcaption></figure>",
+        "text [](#f:first)",
+    ]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    doc = BeautifulSoup((bare_fs / build_opt.dst / "test.html").read_text(), "html.parser")
+    links = [node for node in doc.select("a[href]") if node["href"].startswith("#f:")]
+    assert len(links) == 1
+    assert links[0].string == "Figure 1"
+
+
 def test_build_warn_unknown_markdown_links(bare_fs, build_opt, capsys):
     (bare_fs / build_opt.src / "test.md").write_text("# Title\n[text](link.md)\n")
     build(build_opt)
@@ -276,3 +300,47 @@ def test_build_warn_multiple_glossary_files_found(bare_fs, build_opt, glossary_d
     build(build_opt)
     captured = capsys.readouterr()
     assert "multiple glossary files" in captured.err
+
+
+def test_build_warn_figure_missing_id(bare_fs, build_opt, capsys):
+    lines = ["# Title", "<figure><figcaption>caption</figcaption></figure>"]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "has no ID" in captured.err
+
+
+def test_build_warn_figure_id_wrong_prefix(bare_fs, build_opt, capsys):
+    lines = ["# Title", "<figure id='something'><figcaption>caption</figcaption></figure>"]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "does not start with" in captured.err
+
+
+def test_build_warn_figure_multiple_captions(bare_fs, build_opt, capsys):
+    lines = ["# Title", "<figure id='f:fig'><figcaption>caption</figcaption><figcaption>another</figcaption></figure>"]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "has missing/too many captions" in captured.err
+
+
+def test_build_warn_figure_missing_caption(bare_fs, build_opt, capsys):
+    lines = ["# Title", "<figure id='f:fig'></figure>"]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "has missing/too many captions" in captured.err
+
+
+def test_build_warn_figure_reference_cannot_be_resolved(bare_fs, build_opt, capsys):
+    lines = [
+        "# Title",
+        "<figure id='f:fig'><figcaption>caption</figcaption></figure>",
+        "text [](#f:missing)",
+    ]
+    (bare_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "cannot resolve figure reference" in captured.err

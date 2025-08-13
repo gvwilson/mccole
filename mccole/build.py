@@ -55,6 +55,37 @@ def _do_bibliography_links(opt, dest, doc):
         node["href"] = _make_root_prefix(opt, dest) + f"bibliography/#{key}"
 
 
+def _do_figure_numbers(opt, dest, doc):
+    """Insert figure numbers."""
+    # Modify figures, building key-to-number lookup.
+    seen = {}
+    for i, figure in enumerate(doc.select("figure")):
+        fig_num = i + 1
+        if "id" not in figure.attrs:
+            _warn(f"figure {fig_num} in {dest} has no ID")
+            continue
+        if not figure["id"].startswith("f:"):
+            _warn(f"figure {fig_num} in {dest} does not start with 'f:'")
+            continue
+        captions = figure.select("figcaption")
+        if len(captions) != 1:
+            _warn(f"figure {fig_num} in {dest} has missing/too many captions")
+            continue
+        caption = captions[0]
+        seen[figure["id"]] = fig_num
+        caption.insert(0, f"Figure {fig_num}: ")
+
+    # Modify references.
+    for ref in doc.select("a[href]"):
+        if not ref["href"].startswith("#f:"):
+            continue
+        key = ref["href"][1:]
+        if key not in seen:
+            _warn(f"cannot resolve figure reference {ref['href']} in {dest}")
+            continue
+        ref.string = f"Figure {seen[key]}"
+
+
 def _do_glossary_links(opt, dest, doc):
     """Handle 'g:' glossary links."""
     for node in doc.select("a[href]"):
@@ -252,6 +283,7 @@ def _render_markdown(opt, env, source, dest):
     doc = BeautifulSoup(rendered_html, "html.parser")
     for func in [
         _do_bibliography_links,
+        _do_figure_numbers,
         _do_glossary_links,
         _do_glossary_terms,
         _do_markdown_links,
