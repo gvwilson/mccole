@@ -36,16 +36,20 @@ TEMPLATE = """\
 """
 
 
+def make_fs(spec):
+    """Build a directory tree and populate files."""
+    for filepath, content in spec.items():
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        filepath.write_text(content)
+
+
 @pytest.fixture
 def bare_fs(tmp_path):
-    (tmp_path / "templates").mkdir()
-    (tmp_path / "templates" / "page.html").write_text(TEMPLATE)
-
-    (tmp_path / "pyproject.toml").write_text(CONFIG)
-
-    (tmp_path / "glossary").mkdir()
-    (tmp_path / "glossary" / "index.md").write_text(GLOSSARY)
-
+    make_fs({
+        tmp_path / "templates" / "page.html": TEMPLATE,
+        tmp_path / "pyproject.toml": CONFIG,
+        tmp_path / "glossary" / "index.md": GLOSSARY,
+    })
     return tmp_path
 
 
@@ -67,13 +71,13 @@ def glossary_dst_dir(bare_fs, build_opt):
 
 
 @pytest.fixture
-def glossary_dst(glossary_dst_dir):
+def glossary_dst_file(glossary_dst_dir):
     """Path to glossary output file."""
     return glossary_dst_dir / "index.html"
 
 
 @pytest.fixture
-def glossary_src(bare_fs, build_opt):
+def glossary_src_file(bare_fs, build_opt):
     """Path to glossary source file."""
     return bare_fs / build_opt.src / "glossary" / "index.md"
 

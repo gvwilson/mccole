@@ -8,6 +8,7 @@ import pytest
 
 from mccole.build import main as build, construct_parser as build_parser
 from mccole.lint import main as lint, construct_parser as lint_parser
+from .conftest import make_fs
 
 DIV_APPENDICES = '<div id="appendices"></div>'
 NAV_LESSONS = '<span class="dropdown-content" id="nav-lessons"></span>'
@@ -28,9 +29,10 @@ README = """\
 
 @pytest.fixture
 def lint_fs(build_opt, bare_fs):
-    (bare_fs / "README.md").write_text(README)
-    (bare_fs / "bibliography").mkdir()
-    (bare_fs / "bibliography" / "index.md").write_text("# Bibliography")
+    make_fs({
+        bare_fs / "README.md": README,
+        bare_fs / "bibliography" / "index.md": "# Bibliography",
+    })
     return bare_fs
 
 
@@ -42,7 +44,9 @@ def test_lint_construct_parser_with_default_values():
 
 
 def test_lint_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
-    (lint_fs / build_opt.src / "test.md").write_text(MINIMAL_GLOSSARY_REFS)
+    make_fs({
+        lint_fs / build_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
+    })
     build(build_opt)
     output_path = lint_fs / build_opt.dst / "test.html"
     lint(lint_opt)
@@ -51,7 +55,9 @@ def test_lint_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_lint_multiple_h1_in_file(build_opt, lint_opt, lint_fs, capsys):
-    (lint_fs / "test.md").write_text("# First\n\n# Second\n")
+    make_fs({
+        lint_fs / "test.md": "# First\n\n# Second\n",
+    })
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -70,11 +76,13 @@ def test_special_file_not_found(build_opt, lint_opt, lint_fs, capsys, kind):
 
 @pytest.mark.parametrize("kind,key", [["bibliography", "b:key"], ["glossary", "g:key"]])
 def test_special_key_undefined(build_opt, lint_opt, lint_fs, capsys, kind, key):
-    lines = [
-        "# A",
-        f"[]({key})",
-    ]
-    (lint_fs / "a.md").write_text("\n".join(lines))
+    text = f"""\
+# A
+[]({key})
+"""
+    make_fs({
+        lint_fs / "a.md": text,
+    })
 
     build(build_opt)
     lint(lint_opt)
@@ -87,13 +95,15 @@ def test_special_key_undefined(build_opt, lint_opt, lint_fs, capsys, kind, key):
 def test_special_key_unused(build_opt, lint_opt, lint_fs, capsys, kind):
     build(build_opt)
 
-    lines = [
-        "# Title",
-        "<main>",
-        '<span id="key">text</span>',
-        "</main>",
-    ]
-    (lint_fs / lint_opt.dst / kind / "index.html").write_text("\n".join(lines))
+    text = """\
+# Title
+<main>
+<span id="key">text</span>
+</main>
+"""
+    make_fs({
+        lint_fs / lint_opt.dst / kind / "index.html": text,
+    })
 
     lint(lint_opt)
 
@@ -114,26 +124,26 @@ def test_multiple_main_in_special_file(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_glossary_term_redefined(build_opt, lint_opt, lint_fs, capsys):
-    a = [
-        "# A",
-        "[term 1](g:term_1)",
-        "[term 1 again](g:term_1)",
-        "[term 2](g:term_2)",
-    ]
-    (lint_fs / "a.md").write_text("\n".join(a))
-
-    b = [
-        "# B",
-        "[term 2](g:term_2)",
-    ]
-    (lint_fs / "b.md").write_text("\n".join(b))
-
-    g = [
-        "# Glossary",
-        '<span id="term_1">term 1</span>',
-        '<span id="term_2">term 2</span>',
-    ]
-    (lint_fs / "glossary" / "index.md").write_text("\n".join(g))
+    a = """\
+# A
+[term 1](g:term_1)
+[term 1 again](g:term_1)
+[term 2](g:term_2)
+"""
+    b = """\
+# B
+[term 2](g:term_2)
+"""
+    g = """\
+# Glossary
+<span id="term_1">term 1</span>
+<span id="term_2">term 2</span>
+"""
+    make_fs({
+        lint_fs / "a.md": a,
+        lint_fs / "b.md": b,
+        lint_fs / "glossary" / "index.md": g,
+    })
 
     build(build_opt)
     lint(lint_opt)
@@ -146,13 +156,15 @@ def test_glossary_term_redefined(build_opt, lint_opt, lint_fs, capsys):
 def test_glossary_key_unused(build_opt, lint_opt, lint_fs, capsys):
     build(build_opt)
 
-    g = [
-        "# Glossary",
-        "<main>",
-        '<span id="key">text</span>',
-        "</main>",
-    ]
-    (lint_fs / lint_opt.dst / "glossary" / "index.html").write_text("\n".join(g))
+    g = """\
+# Glossary
+<main>
+<span id="key">text</span>
+</main>
+"""
+    make_fs({
+        lint_fs / lint_opt.dst / "glossary" / "index.html": g,
+    })
 
     lint(lint_opt)
 
@@ -173,13 +185,15 @@ def test_glossary_key_unused(build_opt, lint_opt, lint_fs, capsys):
 def test_exercise_section_has_bad_headings(
     build_opt, lint_opt, lint_fs, capsys, headings, msg
 ):
-    lines = [
-        "# Title",
-        '<section class="exercise" markdown="1">',
-        headings,
-        "</section>",
-    ]
-    (lint_fs / build_opt.src / "test.md").write_text("\n".join(lines))
+    text = f"""\
+# Title
+<section class="exercise" markdown="1">
+{headings}
+</section>
+"""
+    make_fs({
+        lint_fs / build_opt.src / "test.md": text,
+    })
 
     build(build_opt)
     lint(lint_opt)
@@ -189,7 +203,9 @@ def test_exercise_section_has_bad_headings(
 
 
 def test_html_validation_with_valid_html(build_opt, lint_opt, lint_fs, capsys):
-    (lint_fs / build_opt.src / "test.md").write_text(MINIMAL_GLOSSARY_REFS)
+    make_fs({
+        lint_fs / build_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
+    })
     build(build_opt)
     lint_opt.html = True
     lint(lint_opt)
