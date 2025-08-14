@@ -19,9 +19,10 @@ def main(opt):
     for func in [
         _do_compare_template_readme,
         _do_exercise_titles,
-        _do_figure_captions,
+        _do_figure_structure,
         _do_glossary_redefinitions,
         _do_single_h1,
+        _do_table_structure,
         lambda o, p: _do_special_links(o, p, "bibliography"),
         lambda o, p: _do_special_links(o, p, "glossary"),
     ]:
@@ -78,18 +79,46 @@ def _do_exercise_titles(opt, pages):
                 )
 
 
-def _do_figure_captions(opt, pages):
+def _do_figure_structure(opt, pages):
     """Check that all figures have IDs and captions."""
     for path, doc in pages.items():
         for figure in doc.select("figure"):
             _require("id" in figure.attrs, f"figure missing 'id' in {path}")
             captions = figure.select("figcaption")
-            if not _require(len(captions) == 1, f"figure missing/extra caption in {path}"):
+            if not _require(
+                len(captions) == 1, f"figure missing/extra caption in {path}"
+            ):
                 continue
             text = captions[0].string
             _require(
                 RE_FIGURE_CAPTION.match(text),
-                f"badly-formatted figure caption '{text}' in {path}"
+                f"badly-formatted figure caption '{text}' in {path}",
+            )
+
+
+def _do_table_structure(opt, pages):
+    """Check that all tables have proper structure and IDs."""
+    for path, doc in pages.items():
+        table_divs = doc.select("div[data-table-id], div[data-table-caption]")
+        for div in table_divs:
+            if not _require(
+                "data-table-id" in div.attrs,
+                f"table div missing 'data-table-id' in {path}",
+            ):
+                continue
+            table_id = div["data-table-id"]
+            _require(
+                table_id.startswith("t:"),
+                f"table ID '{table_id}' does not start with 't:' in {path}",
+            )
+            _require(
+                "data-table-caption" in div.attrs,
+                f"table div missing 'data-table-caption' in {path}",
+            )
+            tables = div.select("table")
+            _require(
+                len(tables) == 1,
+                f"table div should contain exactly one table, found {len(tables)} in {path}",
             )
 
 

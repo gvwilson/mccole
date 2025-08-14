@@ -19,6 +19,10 @@ build:
 docs:
 	mkdocs build
 
+## format: reformat Python code
+format:
+	@ruff format mccole tests
+
 ## lint: check code and project
 lint:
 	@ruff check mccole tests

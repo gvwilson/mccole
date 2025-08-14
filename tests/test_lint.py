@@ -29,10 +29,12 @@ README = """\
 
 @pytest.fixture
 def lint_fs(build_opt, bare_fs):
-    make_fs({
-        bare_fs / "README.md": README,
-        bare_fs / "bibliography" / "index.md": "# Bibliography",
-    })
+    make_fs(
+        {
+            bare_fs / "README.md": README,
+            bare_fs / "bibliography" / "index.md": "# Bibliography",
+        }
+    )
     return bare_fs
 
 
@@ -44,9 +46,11 @@ def test_lint_construct_parser_with_default_values():
 
 
 def test_lint_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
-    make_fs({
-        lint_fs / build_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
-    })
+    make_fs(
+        {
+            lint_fs / build_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
+        }
+    )
     build(build_opt)
     output_path = lint_fs / build_opt.dst / "test.html"
     lint(lint_opt)
@@ -55,9 +59,11 @@ def test_lint_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_lint_multiple_h1_in_file(build_opt, lint_opt, lint_fs, capsys):
-    make_fs({
-        lint_fs / "test.md": "# First\n\n# Second\n",
-    })
+    make_fs(
+        {
+            lint_fs / "test.md": "# First\n\n# Second\n",
+        }
+    )
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -80,9 +86,11 @@ def test_special_key_undefined(build_opt, lint_opt, lint_fs, capsys, kind, key):
 # A
 []({key})
 """
-    make_fs({
-        lint_fs / "a.md": text,
-    })
+    make_fs(
+        {
+            lint_fs / "a.md": text,
+        }
+    )
 
     build(build_opt)
     lint(lint_opt)
@@ -101,9 +109,11 @@ def test_special_key_unused(build_opt, lint_opt, lint_fs, capsys, kind):
 <span id="key">text</span>
 </main>
 """
-    make_fs({
-        lint_fs / lint_opt.dst / kind / "index.html": text,
-    })
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / kind / "index.html": text,
+        }
+    )
 
     lint(lint_opt)
 
@@ -139,11 +149,13 @@ def test_glossary_term_redefined(build_opt, lint_opt, lint_fs, capsys):
 <span id="term_1">term 1</span>
 <span id="term_2">term 2</span>
 """
-    make_fs({
-        lint_fs / "a.md": a,
-        lint_fs / "b.md": b,
-        lint_fs / "glossary" / "index.md": g,
-    })
+    make_fs(
+        {
+            lint_fs / "a.md": a,
+            lint_fs / "b.md": b,
+            lint_fs / "glossary" / "index.md": g,
+        }
+    )
 
     build(build_opt)
     lint(lint_opt)
@@ -162,9 +174,11 @@ def test_glossary_key_unused(build_opt, lint_opt, lint_fs, capsys):
 <span id="key">text</span>
 </main>
 """
-    make_fs({
-        lint_fs / lint_opt.dst / "glossary" / "index.html": g,
-    })
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / "glossary" / "index.html": g,
+        }
+    )
 
     lint(lint_opt)
 
@@ -191,9 +205,11 @@ def test_exercise_section_has_bad_headings(
 {headings}
 </section>
 """
-    make_fs({
-        lint_fs / build_opt.src / "test.md": text,
-    })
+    make_fs(
+        {
+            lint_fs / build_opt.src / "test.md": text,
+        }
+    )
 
     build(build_opt)
     lint(lint_opt)
@@ -203,9 +219,11 @@ def test_exercise_section_has_bad_headings(
 
 
 def test_html_validation_with_valid_html(build_opt, lint_opt, lint_fs, capsys):
-    make_fs({
-        lint_fs / build_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
-    })
+    make_fs(
+        {
+            lint_fs / build_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
+        }
+    )
     build(build_opt)
     lint_opt.html = True
     lint(lint_opt)
@@ -250,16 +268,18 @@ def test_compare_template_readme_missing_nav(
 
 
 def test_figure_missing_id(build_opt, lint_opt, lint_fs, capsys):
-    """Test _do_figure_captions with figure missing id attribute."""
+    """Test figure missing id attribute."""
     text = """\
 # Title
 <figure>
 <figcaption>Figure 1: A caption</figcaption>
 </figure>
 """
-    make_fs({
-        lint_fs / build_opt.src / "test.md": text,
-    })
+    make_fs(
+        {
+            lint_fs / build_opt.src / "test.md": text,
+        }
+    )
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -267,15 +287,17 @@ def test_figure_missing_id(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_figure_missing_caption(build_opt, lint_opt, lint_fs, capsys):
-    """Test _do_figure_captions with figure missing caption."""
+    """Test figure missing caption."""
     text = """\
 # Title
 <figure id="f:test">
 </figure>
 """
-    make_fs({
-        lint_fs / build_opt.src / "test.md": text,
-    })
+    make_fs(
+        {
+            lint_fs / build_opt.src / "test.md": text,
+        }
+    )
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -283,7 +305,7 @@ def test_figure_missing_caption(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_figure_has_multiple_captions(build_opt, lint_opt, lint_fs, capsys):
-    """Test _do_figure_captions with figure having multiple captions."""
+    """Test figure having multiple captions."""
     text = """\
 # Title
 <figure id="f:test">
@@ -291,9 +313,11 @@ def test_figure_has_multiple_captions(build_opt, lint_opt, lint_fs, capsys):
 <figcaption>Figure 1: Second caption</figcaption>
 </figure>
 """
-    make_fs({
-        lint_fs / build_opt.src / "test.md": text,
-    })
+    make_fs(
+        {
+            lint_fs / build_opt.src / "test.md": text,
+        }
+    )
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -301,7 +325,7 @@ def test_figure_has_multiple_captions(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_figure_badly_formatted_caption(build_opt, lint_opt, lint_fs, capsys):
-    """Test _do_figure_captions with badly formatted caption text."""
+    """Test badly formatted caption text."""
     build(build_opt)
     html_content = """\
 <!DOCTYPE html>
@@ -316,9 +340,148 @@ def test_figure_badly_formatted_caption(build_opt, lint_opt, lint_fs, capsys):
 </body>
 </html>
 """
-    make_fs({
-        lint_fs / lint_opt.dst / "test.html": html_content,
-    })
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / "test.html": html_content,
+        }
+    )
     lint(lint_opt)
     captured = capsys.readouterr()
     assert "badly-formatted figure caption 'Bad caption format'" in captured.err
+
+
+def test_table_missing_id(build_opt, lint_opt, lint_fs, capsys):
+    """Test table div missing data-table-id."""
+    build(build_opt)
+    html_content = """\
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<main>
+<div data-table-caption="Table Title">
+<table>
+<tr><td>data</td></tr>
+</table>
+</div>
+</main>
+</body>
+</html>
+"""
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / "test.html": html_content,
+        }
+    )
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "table div missing 'data-table-id'" in captured.err
+
+
+def test_table_wrong_id_prefix(build_opt, lint_opt, lint_fs, capsys):
+    """Test table ID not starting with 't:'."""
+    build(build_opt)
+    html_content = """\
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<main>
+<div data-table-id="wrong:test" data-table-caption="Table Title">
+<table>
+<tr><td>data</td></tr>
+</table>
+</div>
+</main>
+</body>
+</html>
+"""
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / "test.html": html_content,
+        }
+    )
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "does not start with 't:'" in captured.err
+
+
+def test_table_missing_caption(build_opt, lint_opt, lint_fs, capsys):
+    """Test table div missing data-table-caption."""
+    build(build_opt)
+    html_content = """\
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<main>
+<div data-table-id="t:test">
+<table>
+<tr><td>data</td></tr>
+</table>
+</div>
+</main>
+</body>
+</html>
+"""
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / "test.html": html_content,
+        }
+    )
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "table div missing 'data-table-caption'" in captured.err
+
+
+def test_table_no_table_element(build_opt, lint_opt, lint_fs, capsys):
+    """Test div containing no table."""
+    build(build_opt)
+    html_content = """\
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<main>
+<div data-table-id="t:test" data-table-caption="Table Title">
+<p>Not a table</p>
+</div>
+</main>
+</body>
+</html>
+"""
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / "test.html": html_content,
+        }
+    )
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "table div should contain exactly one table, found 0" in captured.err
+
+
+def test_table_multiple_table_elements(build_opt, lint_opt, lint_fs, capsys):
+    """Test div containing multiple tables."""
+    build(build_opt)
+    html_content = """\
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<main>
+<div data-table-id="t:test" data-table-caption="Table Title">
+<table><tr><td>first</td></tr></table>
+<table><tr><td>second</td></tr></table>
+</div>
+</main>
+</body>
+</html>
+"""
+    make_fs(
+        {
+            lint_fs / lint_opt.dst / "test.html": html_content,
+        }
+    )
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "table div should contain exactly one table, found 2" in captured.err

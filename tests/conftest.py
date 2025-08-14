@@ -51,11 +51,13 @@ def read_doc(filepath):
 
 @pytest.fixture
 def bare_fs(tmp_path):
-    make_fs({
-        tmp_path / "templates" / "page.html": TEMPLATE,
-        tmp_path / "pyproject.toml": CONFIG,
-        tmp_path / "glossary" / "index.md": GLOSSARY,
-    })
+    make_fs(
+        {
+            tmp_path / "templates" / "page.html": TEMPLATE,
+            tmp_path / "pyproject.toml": CONFIG,
+            tmp_path / "glossary" / "index.md": GLOSSARY,
+        }
+    )
     return tmp_path
 
 
