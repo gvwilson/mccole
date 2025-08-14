@@ -20,14 +20,14 @@ TABLE_MD = """\
 """
 
 
-def test_build_construct_parser_with_default_values():
+def test_construct_parser_with_default_values():
     parser = argparse.ArgumentParser()
     construct_parser(parser)
     opt = parser.parse_args([])
     assert all(hasattr(opt, key) for key in ["config", "dst", "src", "templates"])
 
 
-def test_build_with_no_files_creates_only_glossary(
+def test_with_no_files_creates_only_glossary(
     bare_fs, build_opt, glossary_dst_dir, glossary_dst_file
 ):
     build(build_opt)
@@ -37,7 +37,7 @@ def test_build_with_no_files_creates_only_glossary(
     assert glossary_dst_file.is_file()
 
 
-def test_build_with_single_plain_markdown_file_creates_output_file(
+def test_with_single_plain_markdown_file_creates_output_file(
     bare_fs, build_opt
 ):
     make_fs({
@@ -54,7 +54,7 @@ def test_build_with_single_plain_markdown_file_creates_output_file(
     assert len(paragraphs) == 1 and paragraphs[0].string == "body"
 
 
-def test_build_does_not_copy_dot_files(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_dot_files(bare_fs, build_opt, glossary_dst_dir):
     make_fs({
         bare_fs / build_opt.src / ".gitignore": "content",
     })
@@ -62,19 +62,19 @@ def test_build_does_not_copy_dot_files(bare_fs, build_opt, glossary_dst_dir):
     assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
 
 
-def test_build_does_not_copy_dot_dirs(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_dot_dirs(bare_fs, build_opt, glossary_dst_dir):
     (bare_fs / build_opt.src / ".settings").mkdir()
     build(build_opt)
     assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
 
 
-def test_build_does_not_copy_symlinks(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_symlinks(bare_fs, build_opt, glossary_dst_dir):
     (bare_fs / build_opt.src / "link.lnk").symlink_to("/tmp")
     build(build_opt)
     assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
 
 
-def test_build_does_not_copy_destination_files(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_destination_files(bare_fs, build_opt, glossary_dst_dir):
     dst_path = bare_fs / build_opt.dst / "existing.html"
     make_fs({
         dst_path: "<html></html>",
@@ -83,7 +83,7 @@ def test_build_does_not_copy_destination_files(bare_fs, build_opt, glossary_dst_
     assert set((bare_fs / build_opt.dst).iterdir()) == {dst_path, glossary_dst_dir}
 
 
-def test_build_does_not_copy_explicitly_skipped_files(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_explicitly_skipped_files(bare_fs, build_opt, glossary_dst_dir):
     config_file = bare_fs / build_opt.config
     make_fs({
         config_file: '[tool.mccole]\nskips = ["*.text", "extras/**", "uv.lock"]\n',
@@ -95,7 +95,7 @@ def test_build_does_not_copy_explicitly_skipped_files(bare_fs, build_opt, glossa
     assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
 
 
-def test_build_boilerplate_files_correctly_renamed(bare_fs, build_opt):
+def test_boilerplate_files_correctly_renamed(bare_fs, build_opt):
     fixtures = (
         ("CODE_OF_CONDUCT.md", "Code of Conduct", "conduct"),
         ("CONTRIBUTING.md", "Contributing", "contrib"),
@@ -114,7 +114,7 @@ def test_build_boilerplate_files_correctly_renamed(bare_fs, build_opt):
         assert content in expected.read_text()
 
 
-def test_build_boilerplate_links_correctly_adjusted(bare_fs, build_opt):
+def test_boilerplate_links_correctly_adjusted(bare_fs, build_opt):
     text = """\
 # Title
 <section id="text" markdown="1">
@@ -137,7 +137,7 @@ def test_build_boilerplate_links_correctly_adjusted(bare_fs, build_opt):
     assert urls == {"./conduct/", "./contrib/", "./license/", "./"}
 
 
-def test_build_bibliography_links_correctly_adjusted(bare_fs, build_opt):
+def test_bibliography_links_correctly_adjusted(bare_fs, build_opt):
     make_fs({
         bare_fs / build_opt.src / "test.md": "# Title\n[](b:first)\n",
     })
@@ -147,7 +147,7 @@ def test_build_bibliography_links_correctly_adjusted(bare_fs, build_opt):
     assert 'href="./bibliography/#first"' in expected.read_text()
 
 
-def test_build_glossary_links_correctly_adjusted(bare_fs, build_opt):
+def test_glossary_links_correctly_adjusted(bare_fs, build_opt):
     make_fs({
         bare_fs / build_opt.src / "test.md": "# Title\n[term](g:key)\n",
     })
@@ -157,12 +157,12 @@ def test_build_glossary_links_correctly_adjusted(bare_fs, build_opt):
     assert 'href="./glossary/#key"' in expected.read_text()
 
 
-def test_build_glossary_keys_values_loaded(bare_fs, build_opt, glossary_src_file):
+def test_glossary_keys_values_loaded(bare_fs, build_opt, glossary_src_file):
     glossary = _load_glossary([glossary_src_file])
     assert glossary == {"first": "first term", "second": "second term"}
 
 
-def test_build_defined_terms_added_to_page(bare_fs, build_opt, glossary_dst_file):
+def test_defined_terms_added_to_page(bare_fs, build_opt, glossary_dst_file):
     text = """\
 # Title
 <p id="terms"></p>
@@ -178,7 +178,7 @@ def test_build_defined_terms_added_to_page(bare_fs, build_opt, glossary_dst_file
     assert refs == {"./glossary/#first", "./glossary/#second"}
 
 
-def test_build_defined_terms_paragraph_removed(bare_fs, build_opt):
+def test_defined_terms_paragraph_removed(bare_fs, build_opt):
     text = """\
 # Title
 <p id="terms"></p>
@@ -194,7 +194,7 @@ body
     assert not doc.select("p#terms")
 
 
-def test_build_backtick_code_block_class_applied_to_enclosing_pre(bare_fs, build_opt):
+def test_backtick_code_block_class_applied_to_enclosing_pre(bare_fs, build_opt):
     text = """\
 # Title
 ```py
@@ -214,7 +214,7 @@ x = 1
         assert nodes[0]["class"] == ["language-py"]
 
 
-def test_build_non_markdown_files_copied(bare_fs, build_opt):
+def test_non_markdown_files_copied(bare_fs, build_opt):
     make_fs({
         bare_fs / build_opt.src / "in_root.txt": "root text",
         bare_fs / build_opt.src / "subdir" / "in_subdir.txt": "subdir text",
@@ -230,7 +230,7 @@ def test_build_non_markdown_files_copied(bare_fs, build_opt):
     assert in_subdir.read_text() == "subdir text"
 
 
-def test_build_append_provided_links_file(bare_fs, build_opt):
+def test_append_provided_links_file(bare_fs, build_opt):
     text = """\
 # Title
 [link][url]
@@ -250,7 +250,7 @@ def test_build_append_provided_links_file(bare_fs, build_opt):
     assert links[0]["href"] == test_url
 
 
-def test_build_labels_figures(bare_fs, build_opt):
+def test_labels_figures(bare_fs, build_opt):
     text = """
 # Title
 <figure id='f:first'><figcaption>caption</figcaption></figure>
@@ -266,7 +266,7 @@ def test_build_labels_figures(bare_fs, build_opt):
     assert captions[0].string == "Figure 1: caption"
 
 
-def test_build_cross_references_figures(bare_fs, build_opt):
+def test_cross_references_figures(bare_fs, build_opt):
     text = """\
 # Title
 <figure id='f:first'><figcaption>caption</figcaption></figure>
@@ -283,7 +283,7 @@ text [](#f:first)
     assert links[0].string == "Figure 1"
 
 
-def test_build_create_table_correctly(bare_fs, build_opt):
+def test_create_table_correctly(bare_fs, build_opt):
     make_fs({
         bare_fs / build_opt.src / "test.md": TABLE_MD,
     })
@@ -310,7 +310,7 @@ def test_build_create_table_correctly(bare_fs, build_opt):
     assert set(n.string for n in nodes["tbody"].select("td")) == {"1", "2", "3", "4"}
 
 
-def test_build_table_cross_reference(bare_fs, build_opt):
+def test_table_cross_reference(bare_fs, build_opt):
     text = f"""\
 {TABLE_MD}
 text [](#t:tbl)
@@ -325,7 +325,7 @@ text [](#t:tbl)
     assert links[0].string == "Table 1"
         
 
-def test_build_warn_unknown_markdown_links(bare_fs, build_opt, capsys):
+def test_warn_unknown_markdown_links(bare_fs, build_opt, capsys):
     make_fs({
         bare_fs / build_opt.src / "test.md": "# Title\n[text](link.md)\n",
     })
@@ -334,7 +334,7 @@ def test_build_warn_unknown_markdown_links(bare_fs, build_opt, capsys):
     assert "unknown Markdown link" in captured.err
 
 
-def test_build_warn_missing_h1(bare_fs, build_opt, capsys):
+def test_warn_missing_h1(bare_fs, build_opt, capsys):
     make_fs({
         bare_fs / build_opt.src / "test.md": "text\n"
     })
@@ -343,7 +343,7 @@ def test_build_warn_missing_h1(bare_fs, build_opt, capsys):
     assert "lacks H1 heading" in captured.err
 
 
-def test_build_warn_missing_title(bare_fs, build_opt, capsys):
+def test_warn_missing_title(bare_fs, build_opt, capsys):
     template_path = bare_fs / build_opt.templates / "page.html"
     template = template_path.read_text()
     template = template.replace("<title></title>", "")
@@ -357,7 +357,7 @@ def test_build_warn_missing_title(bare_fs, build_opt, capsys):
     assert "does not have <title> element" in captured.err
 
 
-def test_build_warn_badly_formatted_config_file(bare_fs, build_opt, capsys):
+def test_warn_badly_formatted_config_file(bare_fs, build_opt, capsys):
     config_file = bare_fs / "pyproject.toml"
     make_fs({
         config_file: '[tool.missing]\nskips = ["extras", "uv.lock"]\n'
@@ -367,7 +367,7 @@ def test_build_warn_badly_formatted_config_file(bare_fs, build_opt, capsys):
     assert "does not have 'tool.mccole'" in captured.err
 
 
-def test_build_warn_overlap_renames_and_skips(bare_fs, build_opt, capsys):
+def test_warn_overlap_renames_and_skips(bare_fs, build_opt, capsys):
     config_file = bare_fs / "pyproject.toml"
     make_fs({
         config_file: '[tool.mccole]\nskips = ["LICENSE.md"]\n',
@@ -378,7 +378,7 @@ def test_build_warn_overlap_renames_and_skips(bare_fs, build_opt, capsys):
     assert "overlap between skips and renames" in captured.err
 
 
-def test_build_warn_multiple_term_paragraphs_in_doc(bare_fs, build_opt, capsys):
+def test_warn_multiple_term_paragraphs_in_doc(bare_fs, build_opt, capsys):
     text = """\
 # Terms
 <p id="terms"></p>
@@ -392,7 +392,7 @@ def test_build_warn_multiple_term_paragraphs_in_doc(bare_fs, build_opt, capsys):
     assert "terms paragraph appears multiple times" in captured.err
 
 
-def test_build_warn_no_glossary_file_found(bare_fs, build_opt, glossary_src_file, capsys):
+def test_warn_no_glossary_file_found(bare_fs, build_opt, glossary_src_file, capsys):
     glossary_src_file.unlink()
     glossary_src_file.parent.rmdir()
     build(build_opt)
@@ -400,7 +400,7 @@ def test_build_warn_no_glossary_file_found(bare_fs, build_opt, glossary_src_file
     assert "no glossary found" in captured.err
 
 
-def test_build_warn_multiple_glossary_files_found(bare_fs, build_opt, capsys):
+def test_warn_multiple_glossary_files_found(bare_fs, build_opt, capsys):
     make_fs({
         bare_fs / build_opt.src / "subdir" / "glossary" / "index.md": "# Second",
     })
@@ -409,7 +409,7 @@ def test_build_warn_multiple_glossary_files_found(bare_fs, build_opt, capsys):
     assert "multiple glossary files" in captured.err
 
 
-def test_build_warn_figure_missing_id(bare_fs, build_opt, capsys):
+def test_warn_figure_missing_id(bare_fs, build_opt, capsys):
     text = """\
 # Title
 <figure><figcaption>caption</figcaption></figure>
@@ -422,7 +422,7 @@ def test_build_warn_figure_missing_id(bare_fs, build_opt, capsys):
     assert "has no ID" in captured.err
 
 
-def test_build_warn_figure_id_wrong_prefix(bare_fs, build_opt, capsys):
+def test_warn_figure_id_wrong_prefix(bare_fs, build_opt, capsys):
     text = """\
 # Title
 <figure id='something'><figcaption>caption</figcaption></figure>
@@ -435,7 +435,7 @@ def test_build_warn_figure_id_wrong_prefix(bare_fs, build_opt, capsys):
     assert "does not start with" in captured.err
 
 
-def test_build_warn_figure_multiple_captions(bare_fs, build_opt, capsys):
+def test_warn_figure_multiple_captions(bare_fs, build_opt, capsys):
     text = """
 # Title
 <figure id='f:fig'><figcaption>caption</figcaption><figcaption>another</figcaption></figure>
@@ -448,7 +448,7 @@ def test_build_warn_figure_multiple_captions(bare_fs, build_opt, capsys):
     assert "has missing/too many captions" in captured.err
 
 
-def test_build_warn_figure_missing_caption(bare_fs, build_opt, capsys):
+def test_warn_figure_missing_caption(bare_fs, build_opt, capsys):
     text = """\
 # Title
 <figure id='f:fig'></figure>
@@ -461,7 +461,7 @@ def test_build_warn_figure_missing_caption(bare_fs, build_opt, capsys):
     assert "has missing/too many captions" in captured.err
 
 
-def test_build_warn_figure_reference_cannot_be_resolved(bare_fs, build_opt, capsys):
+def test_warn_figure_reference_cannot_be_resolved(bare_fs, build_opt, capsys):
     text = """\
 # Title
 <figure id='f:fig'><figcaption>caption</figcaption></figure>
@@ -475,7 +475,7 @@ text [](#f:missing)
     assert "cannot resolve figure reference" in captured.err
 
 
-def test_build_warn_table_id_wrong_prefix(bare_fs, build_opt, capsys):
+def test_warn_table_id_wrong_prefix(bare_fs, build_opt, capsys):
     text = TABLE_MD.replace("t:tbl", "something")
     make_fs({
         bare_fs / build_opt.src / "test.md": text,
@@ -485,7 +485,7 @@ def test_build_warn_table_id_wrong_prefix(bare_fs, build_opt, capsys):
     assert "does not start with 't:'" in captured.err
 
 
-def test_build_warn_table_missing_caption(bare_fs, build_opt, capsys):
+def test_warn_table_missing_caption(bare_fs, build_opt, capsys):
     text = TABLE_MD.replace("data-table-caption", "data-something")
     make_fs({
         bare_fs / build_opt.src / "test.md": text,
@@ -495,7 +495,7 @@ def test_build_warn_table_missing_caption(bare_fs, build_opt, capsys):
     assert "does not have data-table-caption" in captured.err
 
 
-def test_build_warn_table_no_table_element(bare_fs, build_opt, capsys):
+def test_warn_table_no_table_element(bare_fs, build_opt, capsys):
     text = """\
 # Title
 
@@ -511,7 +511,7 @@ def test_build_warn_table_no_table_element(bare_fs, build_opt, capsys):
     assert "does not contain table" in captured.err
 
 
-def test_build_warn_table_reference_cannot_be_resolved(bare_fs, build_opt, capsys):
+def test_warn_table_reference_cannot_be_resolved(bare_fs, build_opt, capsys):
     text = f"""\
 {TABLE_MD}
 text [](#t:missing)

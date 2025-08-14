@@ -247,3 +247,78 @@ def test_compare_template_readme_missing_nav(
     lint(lint_opt)
     captured = capsys.readouterr()
     assert "missing or multiple" in captured.err
+
+
+def test_figure_missing_id(build_opt, lint_opt, lint_fs, capsys):
+    """Test _do_figure_captions with figure missing id attribute."""
+    text = """\
+# Title
+<figure>
+<figcaption>Figure 1: A caption</figcaption>
+</figure>
+"""
+    make_fs({
+        lint_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "figure missing 'id'" in captured.err
+
+
+def test_figure_missing_caption(build_opt, lint_opt, lint_fs, capsys):
+    """Test _do_figure_captions with figure missing caption."""
+    text = """\
+# Title
+<figure id="f:test">
+</figure>
+"""
+    make_fs({
+        lint_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "figure missing/extra caption" in captured.err
+
+
+def test_figure_has_multiple_captions(build_opt, lint_opt, lint_fs, capsys):
+    """Test _do_figure_captions with figure having multiple captions."""
+    text = """\
+# Title
+<figure id="f:test">
+<figcaption>Figure 1: First caption</figcaption>
+<figcaption>Figure 1: Second caption</figcaption>
+</figure>
+"""
+    make_fs({
+        lint_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "figure missing/extra caption" in captured.err
+
+
+def test_figure_badly_formatted_caption(build_opt, lint_opt, lint_fs, capsys):
+    """Test _do_figure_captions with badly formatted caption text."""
+    build(build_opt)
+    html_content = """\
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<main>
+<figure id="f:test">
+<figcaption>Bad caption format</figcaption>
+</figure>
+</main>
+</body>
+</html>
+"""
+    make_fs({
+        lint_fs / lint_opt.dst / "test.html": html_content,
+    })
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "badly-formatted figure caption 'Bad caption format'" in captured.err

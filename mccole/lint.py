@@ -3,10 +3,13 @@
 import argparse
 from collections import defaultdict
 from pathlib import Path
+import re
 import sys
 
 from bs4 import BeautifulSoup
 from html5validator.validator import Validator
+
+RE_FIGURE_CAPTION = re.compile(r"^Figure\s+\d+:")
 
 
 def main(opt):
@@ -16,6 +19,7 @@ def main(opt):
     for func in [
         _do_compare_template_readme,
         _do_exercise_titles,
+        _do_figure_captions,
         _do_glossary_redefinitions,
         _do_single_h1,
         lambda o, p: _do_special_links(o, p, "bibliography"),
@@ -72,6 +76,21 @@ def _do_exercise_titles(opt, pages):
                     headings[0].name.lower() == "h3",
                     f"exercise in {path} has {headings[0].name} instead of h3",
                 )
+
+
+def _do_figure_captions(opt, pages):
+    """Check that all figures have IDs and captions."""
+    for path, doc in pages.items():
+        for figure in doc.select("figure"):
+            _require("id" in figure.attrs, f"figure missing 'id' in {path}")
+            captions = figure.select("figcaption")
+            if not _require(len(captions) == 1, f"figure missing/extra caption in {path}"):
+                continue
+            text = captions[0].string
+            _require(
+                RE_FIGURE_CAPTION.match(text),
+                f"badly-formatted figure caption '{text}' in {path}"
+            )
 
 
 def _do_glossary_redefinitions(opt, pages):
