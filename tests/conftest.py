@@ -2,6 +2,7 @@
 
 import argparse
 
+from bs4 import BeautifulSoup
 import pytest
 
 CONFIG = """\
@@ -41,6 +42,11 @@ def make_fs(spec):
     for filepath, content in spec.items():
         filepath.parent.mkdir(parents=True, exist_ok=True)
         filepath.write_text(content)
+
+
+def read_doc(filepath):
+    """Read HTML as DOM."""
+    return BeautifulSoup(filepath.read_text(), "html.parser")
 
 
 @pytest.fixture

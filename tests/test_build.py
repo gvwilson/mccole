@@ -2,11 +2,22 @@
 
 import argparse
 
-from bs4 import BeautifulSoup
 import pytest
 
 from mccole.build import main as build, construct_parser, _load_glossary
-from .conftest import make_fs
+from .conftest import make_fs, read_doc
+
+
+TABLE_MD = """\
+# Title
+
+<div markdown="1" data-table-id="t:tbl" data-table-caption="Table Title">
+| left | right |
+| ---- | ----- |
+| 1    | 2     |
+| 3    | 4     |
+</div>
+"""
 
 
 def test_build_construct_parser_with_default_values():
@@ -37,7 +48,7 @@ def test_build_with_single_plain_markdown_file_creates_output_file(
     expected = bare_fs / build_opt.dst / "test.html"
     assert expected.is_file()
 
-    doc = BeautifulSoup(expected.read_text(), "html.parser")
+    doc = read_doc(expected)
     assert doc.title.string == "Title"
     paragraphs = doc.find_all("p")
     assert len(paragraphs) == 1 and paragraphs[0].string == "body"
@@ -120,7 +131,7 @@ def test_build_boilerplate_links_correctly_adjusted(bare_fs, build_opt):
 
     expected = bare_fs / build_opt.dst / "test.html"
     assert expected.is_file()
-    doc = BeautifulSoup(expected.read_text(), "html.parser")
+    doc = read_doc(expected)
     section = doc.select("section[id='text']")[0]
     urls = {node["href"] for node in section.select("a")}
     assert urls == {"./conduct/", "./contrib/", "./license/", "./"}
@@ -161,8 +172,7 @@ def test_build_defined_terms_added_to_page(bare_fs, build_opt, glossary_dst_file
         bare_fs / build_opt.src / "test.md": text,
     })
     build(build_opt)
-    content = (bare_fs / build_opt.dst / "test.html").read_text()
-    doc = BeautifulSoup(content, "html.parser")
+    doc = read_doc(bare_fs / build_opt.dst / "test.html")
     terms = doc.select("p#terms")[0]
     refs = {node["href"] for node in terms.select("a[href]")}
     assert refs == {"./glossary/#first", "./glossary/#second"}
@@ -180,7 +190,7 @@ body
     build(build_opt)
     expected = bare_fs / build_opt.dst / "test.html"
     assert expected.is_file()
-    doc = BeautifulSoup(expected.read_text(), "html.parser")
+    doc = read_doc(expected)
     assert not doc.select("p#terms")
 
 
@@ -197,7 +207,7 @@ x = 1
     build(build_opt)
     expected = bare_fs / build_opt.dst / "test.html"
     assert expected.is_file()
-    doc = BeautifulSoup(expected.read_text(), "html.parser")
+    doc = read_doc(expected)
     for tag in ["pre", "code"]:
         nodes = doc.find_all(tag)
         assert len(nodes) == 1
@@ -234,7 +244,7 @@ def test_build_append_provided_links_file(bare_fs, build_opt):
     build_opt.links = links_path
     build(build_opt)
 
-    doc = BeautifulSoup((bare_fs / build_opt.dst / "test.html").read_text(), "html.parser")
+    doc = read_doc(bare_fs / build_opt.dst / "test.html")
     links = doc.main.select("a")
     assert len(links) == 1
     assert links[0]["href"] == test_url
@@ -250,7 +260,7 @@ def test_build_labels_figures(bare_fs, build_opt):
     })
     build(build_opt)
 
-    doc = BeautifulSoup((bare_fs / build_opt.dst / "test.html").read_text(), "html.parser")
+    doc = read_doc(bare_fs / build_opt.dst / "test.html")
     captions = doc.select("figcaption")
     assert len(captions) == 1
     assert captions[0].string == "Figure 1: caption"
@@ -267,11 +277,53 @@ text [](#f:first)
     })
     build(build_opt)
 
-    doc = BeautifulSoup((bare_fs / build_opt.dst / "test.html").read_text(), "html.parser")
+    doc = read_doc(bare_fs / build_opt.dst / "test.html")
     links = [node for node in doc.select("a[href]") if node["href"].startswith("#f:")]
     assert len(links) == 1
     assert links[0].string == "Figure 1"
 
+
+def test_build_create_table_correctly(bare_fs, build_opt):
+    make_fs({
+        bare_fs / build_opt.src / "test.md": TABLE_MD,
+    })
+    build(build_opt)
+
+    doc = read_doc(bare_fs / build_opt.dst / "test.html")
+    nodes = {}
+    for selector in ["table", "thead", "tbody", "caption"]:
+        found = doc.select(selector)
+        assert len(found) == 1
+        nodes[selector] = found[0]
+
+    assert nodes["table"]["id"] == "t:tbl"
+    assert nodes["caption"].string == "Table Title"
+
+    assert len(nodes["thead"].select("tr")) == 1
+    assert len(nodes["thead"].select("th")) == 2
+    assert len(nodes["thead"].select("td")) == 0
+    assert set(n.string for n in nodes["thead"].select("th")) == {"left", "right"}
+
+    assert len(nodes["tbody"].select("tr")) == 2
+    assert len(nodes["tbody"].select("th")) == 0
+    assert len(nodes["tbody"].select("td")) == 4
+    assert set(n.string for n in nodes["tbody"].select("td")) == {"1", "2", "3", "4"}
+
+
+def test_build_table_cross_reference(bare_fs, build_opt):
+    text = f"""\
+{TABLE_MD}
+text [](#t:tbl)
+"""
+    make_fs({
+        bare_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    doc = read_doc(bare_fs / build_opt.dst / "test.html")
+    links = [node for node in doc.select("a[href]") if node["href"].startswith("#t:")]
+    assert len(links) == 1
+    assert links[0].string == "Table 1"
+        
 
 def test_build_warn_unknown_markdown_links(bare_fs, build_opt, capsys):
     make_fs({
@@ -421,3 +473,52 @@ text [](#f:missing)
     build(build_opt)
     captured = capsys.readouterr()
     assert "cannot resolve figure reference" in captured.err
+
+
+def test_build_warn_table_id_wrong_prefix(bare_fs, build_opt, capsys):
+    text = TABLE_MD.replace("t:tbl", "something")
+    make_fs({
+        bare_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "does not start with 't:'" in captured.err
+
+
+def test_build_warn_table_missing_caption(bare_fs, build_opt, capsys):
+    text = TABLE_MD.replace("data-table-caption", "data-something")
+    make_fs({
+        bare_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "does not have data-table-caption" in captured.err
+
+
+def test_build_warn_table_no_table_element(bare_fs, build_opt, capsys):
+    text = """\
+# Title
+
+<div markdown="1" data-table-id="t:tbl" data-table-caption="Table Title">
+<p>Not a table</p>
+</div>
+"""
+    make_fs({
+        bare_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "does not contain table" in captured.err
+
+
+def test_build_warn_table_reference_cannot_be_resolved(bare_fs, build_opt, capsys):
+    text = f"""\
+{TABLE_MD}
+text [](#t:missing)
+"""
+    make_fs({
+        bare_fs / build_opt.src / "test.md": text,
+    })
+    build(build_opt)
+    captured = capsys.readouterr()
+    assert "cannot resolve table reference" in captured.err

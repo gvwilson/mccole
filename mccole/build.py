@@ -44,20 +44,8 @@ def construct_parser(parser):
     )
 
 
-def _do_bibliography_links(opt, dest, doc):
-    """Handle 'b:' bibliography links."""
-    for node in doc.select("a[href]"):
-        if not node["href"].startswith("b:"):
-            continue
-        assert node["href"].count(":") == 1
-        key = node["href"].split(":")[1]
-        node.string = key
-        node["href"] = _make_root_prefix(opt, dest) + f"bibliography/#{key}"
-
-
-def _do_figure_numbers(opt, dest, doc):
-    """Insert figure numbers."""
-    # Modify figures, building key-to-number lookup.
+def _create_figure_numbers(dest, doc):
+    """Modify figures, building key-to-number lookup."""
     seen = {}
     for i, figure in enumerate(doc.select("figure")):
         fig_num = i + 1
@@ -74,16 +62,54 @@ def _do_figure_numbers(opt, dest, doc):
         caption = captions[0]
         seen[figure["id"]] = fig_num
         caption.insert(0, f"Figure {fig_num}: ")
+    return seen
 
-    # Modify references.
-    for ref in doc.select("a[href]"):
-        if not ref["href"].startswith("#f:"):
+
+def _create_table_numbers(dest, doc):
+    """Modify tables, building key-to-number lookup."""
+    seen = {}
+    for i, div in enumerate(doc.select("div[data-table-id]")):
+        tbl_num = i + 1
+        if not div["data-table-id"].startswith("t:"):
+            _warn(f"table {tbl_num} in {dest} does not start with 't:'")
             continue
-        key = ref["href"][1:]
-        if key not in seen:
-            _warn(f"cannot resolve figure reference {ref['href']} in {dest}")
+
+        if "data-table-caption" not in div.attrs:
+            _warn(f"table {tbl_num} in {dest} does not have data-table-caption")
             continue
-        ref.string = f"Figure {seen[key]}"
+        caption = div["data-table-caption"]
+
+        tables = div.select("table")
+        if len(tables) != 1:
+            _warn(f"table {tbl_num} in {dest} does not contain table")
+            continue
+
+        table = tables[0]
+        table["id"] = div["data-table-id"]
+        caption_node = doc.new_tag("caption")
+        caption_node.string = caption
+        table.append(caption_node)
+
+        seen[div["data-table-id"]] = tbl_num
+
+    return seen
+
+
+def _do_bibliography_links(opt, dest, doc):
+    """Handle 'b:' bibliography links."""
+    for node in doc.select("a[href]"):
+        if not node["href"].startswith("b:"):
+            continue
+        assert node["href"].count(":") == 1
+        key = node["href"].split(":")[1]
+        node.string = key
+        node["href"] = _make_root_prefix(opt, dest) + f"bibliography/#{key}"
+
+
+def _do_figures(opt, dest, doc):
+    """Insert figure numbers."""
+    seen = _create_figure_numbers(dest, doc)
+    _update_cross_references(dest, doc, seen, "figure", "#f:", "Figure")
 
 
 def _do_glossary_links(opt, dest, doc):
@@ -158,6 +184,12 @@ def _do_root_links(opt, dest, doc):
         for node in doc.select(selector):
             if node[attr].startswith("@/"):
                 node[attr] = node[attr].replace("@/", prefix)
+
+
+def _do_tables(opt, dest, doc):
+    """Insert figure numbers."""
+    seen = _create_table_numbers(dest, doc)
+    _update_cross_references(dest, doc, seen, "table", "#t:", "Table")
 
 
 def _do_title(opt, dest, doc):
@@ -284,12 +316,13 @@ def _render_markdown(opt, env, source, dest):
     doc = BeautifulSoup(rendered_html, "html.parser")
     for func in [
         _do_bibliography_links,
-        _do_figure_numbers,
+        _do_figures,
         _do_glossary_links,
         _do_glossary_terms,
         _do_markdown_links,
         _do_pre_code_classes,
         _do_root_links,
+        _do_tables,
         _do_title,
     ]:
         func(opt, dest, doc)
@@ -302,6 +335,18 @@ def _separate_files(files):
     markdown = [path for path in files if path.suffix == ".md"]
     others = [path for path in files if path.suffix != ".md"]
     return markdown, others
+
+
+def _update_cross_references(dest, doc, seen, kind, prefix, caption):
+    """Modify cross-references to figures."""
+    for ref in doc.select("a[href]"):
+        if not ref["href"].startswith(prefix):
+            continue
+        key = ref["href"][1:]
+        if key not in seen:
+            _warn(f"cannot resolve {kind} reference {ref['href']} in {dest}")
+            continue
+        ref.string = f"{caption} {seen[key]}"
 
 
 def _warn(msg):
