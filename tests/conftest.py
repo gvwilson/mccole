@@ -94,5 +94,7 @@ def glossary_src_file(bare_fs, build_opt):
 def lint_opt(build_opt):
     return argparse.Namespace(
         dst=build_opt.dst,
+        src=build_opt.src,
         html=False,
+        links=None,
     )

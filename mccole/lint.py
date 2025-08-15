@@ -10,12 +10,33 @@ from bs4 import BeautifulSoup
 from html5validator.validator import Validator
 
 RE_FIGURE_CAPTION = re.compile(r"^Figure\s+\d+:")
+RE_MD_CODE_PATTERNS = [
+    re.compile(r"^```.+?^```", re.DOTALL + re.MULTILINE),
+    re.compile(r"`.+?`", re.DOTALL + re.MULTILINE),
+]
+RE_MD_LINK_DEF = re.compile(r"^\[(.+?)\]:\s+.+?\s*$", re.MULTILINE)
+RE_MD_LINK_REF = re.compile(r"\[.+?\]\[(.+?)\]", re.DOTALL | re.MULTILINE)
 
 
 def main(opt):
     """Main driver."""
-    filepaths = Path(opt.dst).glob("**/*.html")
-    pages = {path: BeautifulSoup(path.read_text(), "html.parser") for path in filepaths}
+    opt._links = opt.links.read_text() if opt.links else None
+    _check_markdown(opt)
+    _check_html(opt)
+
+
+def construct_parser(parser):
+    """Parse command-line arguments."""
+    parser.add_argument("--dst", type=Path, default="docs", help="output directory")
+    parser.add_argument("--html", action="store_true", help="validate HTML")
+    parser.add_argument("--links", type=Path, default=None, help="links file")
+    parser.add_argument("--src", type=Path, default=".", help="source directory")
+
+
+def _check_html(opt):
+    """Check generated HTML."""
+    html_paths = opt.dst.glob("**/*.html")
+    html_pages = {path: BeautifulSoup(path.read_text(), "html.parser") for path in html_paths}
     for func in [
         _do_compare_template_readme,
         _do_exercise_titles,
@@ -26,21 +47,24 @@ def main(opt):
         lambda o, p: _do_special_links(o, p, "bibliography"),
         lambda o, p: _do_special_links(o, p, "glossary"),
     ]:
-        func(opt, pages)
+        func(opt, html_pages)
     if opt.html:
-        _do_html_validation(opt, pages)
+        _do_html_validation(opt, html_pages)
 
 
-def construct_parser(parser):
-    """Parse command-line arguments."""
-    parser.add_argument("--dst", type=Path, default="docs", help="output directory")
-    parser.add_argument("--html", action="store_true", help="validate HTML")
+def _check_markdown(opt):
+    """Check source Markdown pages."""
+    markdown_pages = {path: path.read_text() for path in opt.src.glob("*.md")} | {path: path.read_text() for path in opt.src.glob("*/*.md")}
+    for func in [
+            _do_unresolved_markdown_links,
+    ]:
+        func(opt, markdown_pages)
 
 
-def _do_compare_template_readme(opt, pages):
+def _do_compare_template_readme(opt, html_pages):
     """Compare tables of contents in template and README.md"""
     path = opt.dst / "index.html"
-    readme = pages[path]
+    readme = html_pages[path]
     for kind, nav_selector, body_selector in [
         ("lessons", "span#nav-lessons", "div#syllabus"),
         ("extras", "span#nav-extras", "div#appendices"),
@@ -63,9 +87,9 @@ def _do_compare_template_readme(opt, pages):
         )
 
 
-def _do_exercise_titles(opt, pages):
+def _do_exercise_titles(opt, html_pages):
     """Check that exercise sections have one <h3> heading."""
-    for path, doc in pages.items():
+    for path, doc in html_pages.items():
         for section in doc.select("section.exercise"):
             headings = section.select("h1, h2, h3, h4, h5, h6")
             _require(
@@ -79,9 +103,9 @@ def _do_exercise_titles(opt, pages):
                 )
 
 
-def _do_figure_structure(opt, pages):
+def _do_figure_structure(opt, html_pages):
     """Check that all figures have IDs and captions."""
-    for path, doc in pages.items():
+    for path, doc in html_pages.items():
         for figure in doc.select("figure"):
             _require("id" in figure.attrs, f"figure missing 'id' in {path}")
             captions = figure.select("figcaption")
@@ -96,9 +120,69 @@ def _do_figure_structure(opt, pages):
             )
 
 
-def _do_table_structure(opt, pages):
+def _do_glossary_redefinitions(opt, html_pages):
+    """Check for glossary terms that are defined more than once."""
+    seen = defaultdict(list)
+    for path, doc in html_pages.items():
+        for node in doc.select("a[href]"):
+            if "/glossary/#" in node["href"]:
+                key = node["href"].split("#")[-1]
+                seen[key].append(path)
+    for key, values in seen.items():
+        _require(
+            len(values) == 1,
+            f"glossary entry '{key}' defined in {', '.join(sorted(str(v) for v in values))}",
+        )
+
+
+def _do_html_validation(opt, html_pages):
+    """Validate generated HTML."""
+    validator = Validator()
+    errors = validator.validate(list(html_pages.keys()))
+
+
+def _do_single_h1(opt, html_pages):
+    """Check that each page has exactly one <h1>."""
+    for path, doc in html_pages.items():
+        titles = doc.find_all("h1")
+        _require(len(titles) == 1, f"{len(titles)} H1 elements found in {path}")
+
+
+def _do_special_links(opt, html_pages, stem):
+    """Check specially-formatted links."""
+    source = opt.dst / stem / "index.html"
+    if not _require(source in html_pages, f"{source} not found"):
+        return
+
+    main = html_pages[source].select("main")
+    if not _require(len(main) == 1, f"missing or multiple <main> in {source}"):
+        return
+
+    main = main[0]
+    defined = {node["id"] for node in main.select("span") if node.has_attr("id")}
+
+    base = f"{stem}/#"
+    used = set()
+    for path, doc in html_pages.items():
+        here = {
+            node["href"].split("#")[-1]
+            for node in doc.select("a[href]")
+            if base in node["href"]
+        }
+        used |= here
+        unknown = here - defined
+        _require(
+            len(unknown) == 0,
+            f"unknown {stem} keys in {path}: {', '.join(sorted(unknown))}",
+        )
+
+    unused = defined - used
+    _require(len(unused) == 0, f"unused {stem} keys: {', '.join(sorted(unused))}")
+
+
+def _do_table_structure(opt, html_pages):
     """Check that all tables have proper structure and IDs."""
-    for path, doc in pages.items():
+    for path, doc in html_pages.items():
         table_divs = doc.select("div[data-table-id], div[data-table-caption]")
         for div in table_divs:
             if not _require(
@@ -122,64 +206,26 @@ def _do_table_structure(opt, pages):
             )
 
 
-def _do_glossary_redefinitions(opt, pages):
-    """Check for glossary terms that are defined more than once."""
-    seen = defaultdict(list)
-    for path, doc in pages.items():
-        for node in doc.select("a[href]"):
-            if "/glossary/#" in node["href"]:
-                key = node["href"].split("#")[-1]
-                seen[key].append(path)
-    for key, values in seen.items():
-        _require(
-            len(values) == 1,
-            f"glossary entry '{key}' defined in {', '.join(sorted(str(v) for v in values))}",
-        )
+def _do_unresolved_markdown_links(opt, markdown_pages):
+    """Check for [text][key] that doesn't resolve and for unused link definitions."""
+    general = set() if opt._links is None else set(m for m in RE_MD_LINK_DEF.findall(opt._links))
+    seen = set()
+    for path, md in markdown_pages.items():
+        for pat in RE_MD_CODE_PATTERNS:
+            md = pat.sub("", md)
+        referenced = set(m for m in RE_MD_LINK_REF.findall(md))
+        in_page = set(m for m in RE_MD_LINK_DEF.findall(md))
 
+        unknown = (referenced - in_page) - general
+        _require(not unknown, f"undefined link reference(s) in {path}: {', '.join(sorted(unknown))}")
 
-def _do_html_validation(opt, pages):
-    """Validate generated HTML."""
-    validator = Validator()
-    errors = validator.validate(list(pages.keys()))
+        unused = in_page - referenced
+        _require(not unused, f"unused link definition(s) in {path}: {', '.join(sorted(unused))}")
 
+        seen |= referenced & general
 
-def _do_single_h1(opt, pages):
-    """Check that each page has exactly one <h1>."""
-    for path, doc in pages.items():
-        titles = doc.find_all("h1")
-        _require(len(titles) == 1, f"{len(titles)} H1 elements found in {path}")
-
-
-def _do_special_links(opt, pages, stem):
-    """Check specially-formatted links."""
-    source = opt.dst / stem / "index.html"
-    if not _require(source in pages, f"{source} not found"):
-        return
-
-    main = pages[source].select("main")
-    if not _require(len(main) == 1, f"missing or multiple <main> in {source}"):
-        return
-
-    main = main[0]
-    defined = {node["id"] for node in main.select("span") if node.has_attr("id")}
-
-    base = f"{stem}/#"
-    used = set()
-    for path, doc in pages.items():
-        here = {
-            node["href"].split("#")[-1]
-            for node in doc.select("a[href]")
-            if base in node["href"]
-        }
-        used |= here
-        unknown = here - defined
-        _require(
-            len(unknown) == 0,
-            f"unknown {stem} keys in {path}: {', '.join(sorted(unknown))}",
-        )
-
-    unused = defined - used
-    _require(len(unused) == 0, f"unused {stem} keys: {', '.join(sorted(unused))}")
+    unused = general - seen
+    _require(not unused, f"unused global link definition(s): {', '.join(sorted(unused))}")
 
 
 def _require(cond, msg):
