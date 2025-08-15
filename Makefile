@@ -37,3 +37,4 @@ clean:
 	@find . -type d -name __pycache__ | xargs rm -r
 	@find . -type d -name .pytest_cache | xargs rm -r
 	@find . -type d -name .ruff_cache | xargs rm -r
+	@rm -rf dist mccole.egg-info
