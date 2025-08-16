@@ -78,12 +78,19 @@ def _do_compare_template_readme(opt, html_pages):
             continue
         body = body[0]
 
-        nav_paths = {node["href"] for node in nav.select("a[href]")}
-        body_paths = {node["href"] for node in body.select("a[href]")}
-        difference = nav_paths ^ body_paths
+        nav_entries = {node["href"]: node.string for node in nav.select("a[href]")}
+        body_entries = {node["href"]: node.string for node in body.select("a[href]")}
+        difference = set(nav_entries.keys()) ^ set(body_entries.keys())
         _require(
             not difference,
             f"mis-match in README and nav paths: {', '.join(sorted(difference))}",
+        )
+
+        common = set(nav_entries.keys()) & set(body_entries.keys())
+        difference = [key for key in common if nav_entries[key] != body_entries[key]]
+        _require(
+            not difference,
+            f"mis-match in README and nav paths text: {' '.join(sorted(difference))}",
         )
 
 

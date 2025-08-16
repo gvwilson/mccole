@@ -261,10 +261,28 @@ def test_compare_template_readme_missing_nav(
     content = content.replace(target, replacement)
     page.write_text(content)
 
-    lint_opt.html = True
     lint(lint_opt)
     captured = capsys.readouterr()
     assert "missing or multiple" in captured.err
+
+
+def test_compare_template_readme_mismatch_titles(build_opt, lint_opt, lint_fs, capsys):
+    build(build_opt)
+    page = build_opt.dst / "index.html"
+    content = page.read_text()
+    content = content.replace(
+        '<span id="nav-lessons" class="dropdown-content"></span>',
+        '<span id="nav-lessons" class="dropdown-content"><a href="./01_intro/">Introduction</a></span>',
+    )
+    content = content.replace(
+        '<div id="syllabus"></div>',
+        '<div id="syllabus"><li><a href="./01_intro/">Not Introduction</a></li></div>'
+    )
+    page.write_text(content)
+
+    lint(lint_opt)
+    captured = capsys.readouterr()
+    assert "mis-match in README and nav paths" in captured.err
 
 
 def test_figure_missing_id(build_opt, lint_opt, lint_fs, capsys):
