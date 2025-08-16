@@ -276,7 +276,7 @@ def test_compare_template_readme_mismatch_titles(build_opt, lint_opt, lint_fs, c
     )
     content = content.replace(
         '<div id="syllabus"></div>',
-        '<div id="syllabus"><li><a href="./01_intro/">Not Introduction</a></li></div>'
+        '<div id="syllabus"><li><a href="./01_intro/">Not Introduction</a></li></div>',
     )
     page.write_text(content)
 
@@ -497,15 +497,20 @@ def test_table_multiple_table_elements(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_link_in_page_body_resolves(build_opt, lint_opt, lint_fs, capsys):
-    markdown_content = MINIMAL_GLOSSARY_REFS + """\
+    markdown_content = (
+        MINIMAL_GLOSSARY_REFS
+        + """\
 
 [text][url]
 
 [url]: http://something
 """
-    make_fs({
-        lint_fs / lint_opt.src / "test.md": markdown_content,
-    })
+    )
+    make_fs(
+        {
+            lint_fs / lint_opt.src / "test.md": markdown_content,
+        }
+    )
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -513,13 +518,18 @@ def test_link_in_page_body_resolves(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_unresolved_link_in_page_body(build_opt, lint_opt, lint_fs, capsys):
-    markdown_content = MINIMAL_GLOSSARY_REFS + """\
+    markdown_content = (
+        MINIMAL_GLOSSARY_REFS
+        + """\
 
 [text][url]
 """
-    make_fs({
-        lint_fs / lint_opt.src / "test.md": markdown_content,
-    })
+    )
+    make_fs(
+        {
+            lint_fs / lint_opt.src / "test.md": markdown_content,
+        }
+    )
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -527,18 +537,23 @@ def test_unresolved_link_in_page_body(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_link_in_external_links(build_opt, lint_opt, lint_fs, capsys):
-    markdown_content = MINIMAL_GLOSSARY_REFS + """\
+    markdown_content = (
+        MINIMAL_GLOSSARY_REFS
+        + """\
 
 [text][url]
 """
+    )
     links_content = """\
 [url]: http://something
 """
     links_path = lint_fs / lint_opt.src / "links.txt"
-    make_fs({
-        lint_fs / lint_opt.src / "test.md": markdown_content,
-        links_path: links_content,
-    })
+    make_fs(
+        {
+            lint_fs / lint_opt.src / "test.md": markdown_content,
+            links_path: links_content,
+        }
+    )
     build(build_opt)
     lint_opt.links = links_path
     lint(lint_opt)
@@ -547,13 +562,18 @@ def test_link_in_external_links(build_opt, lint_opt, lint_fs, capsys):
 
 
 def test_unused_internal_link_definition(build_opt, lint_opt, lint_fs, capsys):
-    markdown_content = MINIMAL_GLOSSARY_REFS + """\
+    markdown_content = (
+        MINIMAL_GLOSSARY_REFS
+        + """\
 
 [url]: http://something
 """
-    make_fs({
-        lint_fs / lint_opt.src / "test.md": markdown_content,
-    })
+    )
+    make_fs(
+        {
+            lint_fs / lint_opt.src / "test.md": markdown_content,
+        }
+    )
     build(build_opt)
     lint(lint_opt)
     captured = capsys.readouterr()
@@ -565,10 +585,12 @@ def test_unused_global_link_definition(build_opt, lint_opt, lint_fs, capsys):
 [url]: http://something
 """
     links_path = lint_fs / lint_opt.src / "links.txt"
-    make_fs({
-        lint_fs / lint_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
-        links_path: links_content,
-    })
+    make_fs(
+        {
+            lint_fs / lint_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
+            links_path: links_content,
+        }
+    )
     build(build_opt)
     lint_opt.links = links_path
     lint(lint_opt)

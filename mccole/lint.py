@@ -36,8 +36,11 @@ def construct_parser(parser):
 def _check_html(opt):
     """Check generated HTML."""
     html_paths = opt.dst.glob("**/*.html")
-    html_pages = {path: BeautifulSoup(path.read_text(), "html.parser") for path in html_paths}
+    html_pages = {
+        path: BeautifulSoup(path.read_text(), "html.parser") for path in html_paths
+    }
     for func in [
+        _do_compare_readme_section_titles,
         _do_compare_template_readme,
         _do_exercise_titles,
         _do_figure_structure,
@@ -54,11 +57,37 @@ def _check_html(opt):
 
 def _check_markdown(opt):
     """Check source Markdown pages."""
-    markdown_pages = {path: path.read_text() for path in opt.src.glob("*.md")} | {path: path.read_text() for path in opt.src.glob("*/*.md")}
+    top_level = {path: path.read_text() for path in opt.src.glob("*.md")}
+    sub_level = {path: path.read_text() for path in opt.src.glob("*/*.md")}
+    markdown_pages =  top_level | sub_level
     for func in [
-            _do_unresolved_markdown_links,
+        _do_unresolved_markdown_links,
     ]:
         func(opt, markdown_pages)
+
+
+def _do_compare_readme_section_titles(opt, html_pages):
+    """Make sure section titles in main page match those in sub-pages."""
+    readme_path = opt.dst / "index.html"
+    readme = BeautifulSoup(readme_path.read_text(), "html.parser")
+    for kind, nav_selector in [
+        ("lessons", "span#nav-lessons"),
+        ("extras", "span#nav-extras"),
+    ]:
+        nav = readme.select(nav_selector)
+        if not _require(len(nav) == 1, f"{readme_path} missing or multiple {nav_selector}"):
+            continue
+        nav = nav[0]
+        for node in nav.select("a"):
+            expected = node.get_text()
+            sub_path = opt.dst / node["href"] / "index.html"
+            if not _require(sub_path in html_pages, f"README sub-path {sub_path} not found"):
+                continue
+            actual = html_pages[sub_path].select("h1")
+            if not _require(len(actual) == 1, f"missing/multiple H1 in {sub_path}"):
+                continue
+            actual = actual[0].get_text()
+            _require(expected == actual, f"title mis-match between README {repr(expected)} and {sub_path} {repr(actual)}")
 
 
 def _do_compare_template_readme(opt, html_pages):
@@ -215,7 +244,11 @@ def _do_table_structure(opt, html_pages):
 
 def _do_unresolved_markdown_links(opt, markdown_pages):
     """Check for [text][key] that doesn't resolve and for unused link definitions."""
-    general = set() if opt._links is None else set(m for m in RE_MD_LINK_DEF.findall(opt._links))
+    general = (
+        set()
+        if opt._links is None
+        else set(m for m in RE_MD_LINK_DEF.findall(opt._links))
+    )
     seen = set()
     for path, md in markdown_pages.items():
         for pat in RE_MD_CODE_PATTERNS:
@@ -224,15 +257,23 @@ def _do_unresolved_markdown_links(opt, markdown_pages):
         in_page = set(m for m in RE_MD_LINK_DEF.findall(md))
 
         unknown = (referenced - in_page) - general
-        _require(not unknown, f"undefined link reference(s) in {path}: {', '.join(sorted(unknown))}")
+        _require(
+            not unknown,
+            f"undefined link reference(s) in {path}: {', '.join(sorted(unknown))}",
+        )
 
         unused = in_page - referenced
-        _require(not unused, f"unused link definition(s) in {path}: {', '.join(sorted(unused))}")
+        _require(
+            not unused,
+            f"unused link definition(s) in {path}: {', '.join(sorted(unused))}",
+        )
 
         seen |= referenced & general
 
     unused = general - seen
-    _require(not unused, f"unused global link definition(s): {', '.join(sorted(unused))}")
+    _require(
+        not unused, f"unused global link definition(s): {', '.join(sorted(unused))}"
+    )
 
 
 def _require(cond, msg):
