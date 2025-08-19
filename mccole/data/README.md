@@ -26,6 +26,8 @@ FIXME
 
 </div>
 
+## Acknowledgments {: #acknowledgments}
+
 <p class="center">
   <em>
     start where you are
