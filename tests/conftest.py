@@ -10,12 +10,23 @@ CONFIG = """\
 skips = []
 """
 
-GLOSSARY = """`
+GLOSSARY = """
 # Glossary
 <span id="first">first term</span>
 :   body
 <span id="second">second term</span>
 :   body
+"""
+
+README = """
+# Tutorial
+
+<div id="lessons" markdown="1"></div>
+<div id="appendices" markdown="1">
+
+1.  [Glossary](./glossary/)
+
+</div>
 """
 
 TEMPLATE = """\
@@ -26,8 +37,12 @@ TEMPLATE = """\
   </head>
   <body>
     <nav>
-      <span id="nav-lessons" class="dropdown-content"></span>
-      <span id="nav-extras" class="dropdown-content"></span>
+      <span id="nav-lessons" class="dropdown-content">
+{% for key in lessons %}<a href="{{key}}">{{lessons[key]}}</a>{% endfor %}
+      </span>
+      <span id="nav-extras" class="dropdown-content">
+{% for key in appendices %}<a href="{{key}}">{{appendices[key]}}</a>{% endfor %}
+      </span>
     </nav>
     <main>
 {{content}}
@@ -53,6 +68,7 @@ def read_doc(filepath):
 def bare_fs(tmp_path):
     make_fs(
         {
+            tmp_path / "README.md": README,
             tmp_path / "templates" / "page.html": TEMPLATE,
             tmp_path / "pyproject.toml": CONFIG,
             tmp_path / "glossary" / "index.md": GLOSSARY,
@@ -88,6 +104,18 @@ def glossary_dst_file(glossary_dst_dir):
 def glossary_src_file(bare_fs, build_opt):
     """Path to glossary source file."""
     return bare_fs / build_opt.src / "glossary" / "index.md"
+
+
+@pytest.fixture
+def readme_dst_file(build_opt):
+    """Path to output index.html file constructed from README.md"""
+    return build_opt.dst / "index.html"
+
+
+@pytest.fixture
+def minimal_dst_top_level(glossary_dst_dir, readme_dst_file):
+    """Minimal expected contents of output directory."""
+    return {glossary_dst_dir, readme_dst_file}
 
 
 @pytest.fixture

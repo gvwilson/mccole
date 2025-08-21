@@ -5,7 +5,7 @@ import argparse
 import pytest
 
 from mccole.build import main as build, construct_parser, _load_glossary
-from .conftest import make_fs, read_doc
+from .conftest import README, make_fs, read_doc
 
 
 TABLE_MD = """\
@@ -27,14 +27,11 @@ def test_construct_parser_with_default_values():
     assert all(hasattr(opt, key) for key in ["config", "dst", "src", "templates"])
 
 
-def test_with_no_files_creates_only_glossary(
-    bare_fs, build_opt, glossary_dst_dir, glossary_dst_file
-):
+def test_with_minimal_files(bare_fs, build_opt, minimal_dst_top_level):
     build(build_opt)
     dst = bare_fs / build_opt.dst
     assert dst.is_dir()
-    assert set(dst.iterdir()) == {glossary_dst_dir}
-    assert glossary_dst_file.is_file()
+    assert set(dst.iterdir()) == minimal_dst_top_level
 
 
 def test_with_single_plain_markdown_file_creates_output_file(bare_fs, build_opt):
@@ -50,29 +47,29 @@ def test_with_single_plain_markdown_file_creates_output_file(bare_fs, build_opt)
     assert len(paragraphs) == 1 and paragraphs[0].string == "body"
 
 
-def test_does_not_copy_dot_files(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_dot_files(bare_fs, build_opt, minimal_dst_top_level):
     make_fs(
         {
             bare_fs / build_opt.src / ".gitignore": "content",
         }
     )
     build(build_opt)
-    assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
+    assert set((bare_fs / build_opt.dst).iterdir()) == minimal_dst_top_level
 
 
-def test_does_not_copy_dot_dirs(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_dot_dirs(bare_fs, build_opt, minimal_dst_top_level):
     (bare_fs / build_opt.src / ".settings").mkdir()
     build(build_opt)
-    assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
+    assert set((bare_fs / build_opt.dst).iterdir()) == minimal_dst_top_level
 
 
-def test_does_not_copy_symlinks(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_symlinks(bare_fs, build_opt, minimal_dst_top_level):
     (bare_fs / build_opt.src / "link.lnk").symlink_to("/tmp")
     build(build_opt)
-    assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
+    assert set((bare_fs / build_opt.dst).iterdir()) == minimal_dst_top_level
 
 
-def test_does_not_copy_destination_files(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_destination_files(bare_fs, build_opt, minimal_dst_top_level):
     dst_path = bare_fs / build_opt.dst / "existing.html"
     make_fs(
         {
@@ -80,10 +77,13 @@ def test_does_not_copy_destination_files(bare_fs, build_opt, glossary_dst_dir):
         }
     )
     build(build_opt)
-    assert set((bare_fs / build_opt.dst).iterdir()) == {dst_path, glossary_dst_dir}
+    expected = minimal_dst_top_level | {dst_path}
+    assert set((bare_fs / build_opt.dst).iterdir()) == expected
 
 
-def test_does_not_copy_explicitly_skipped_files(bare_fs, build_opt, glossary_dst_dir):
+def test_does_not_copy_explicitly_skipped_files(
+    bare_fs, build_opt, minimal_dst_top_level
+):
     config_file = bare_fs / build_opt.config
     make_fs(
         {
@@ -94,7 +94,7 @@ def test_does_not_copy_explicitly_skipped_files(bare_fs, build_opt, glossary_dst
         }
     )
     build(build_opt)
-    assert set((bare_fs / build_opt.dst).iterdir()) == {glossary_dst_dir}
+    assert set((bare_fs / build_opt.dst).iterdir()) == minimal_dst_top_level
 
 
 def test_boilerplate_files_correctly_renamed(bare_fs, build_opt):
@@ -102,7 +102,6 @@ def test_boilerplate_files_correctly_renamed(bare_fs, build_opt):
         ("CODE_OF_CONDUCT.md", "Code of Conduct", "conduct"),
         ("CONTRIBUTING.md", "Contributing", "contrib"),
         ("LICENSE.md", "License", "license"),
-        ("README.md", "Project", ""),
     )
     for filename, content, _ in fixtures:
         x = bare_fs / build_opt.src / filename
@@ -345,6 +344,15 @@ text [](#t:tbl)
     links = [node for node in doc.select("a[href]") if node["href"].startswith("#t:")]
     assert len(links) == 1
     assert links[0].string == "Table 1"
+
+
+def test_fail_badly_formatted_internal_readme_link(bare_fs, build_opt):
+    readme = build_opt.src / "README.md"
+    content = readme.read_text()
+    content = content.replace('(./', '(../')
+    readme.write_text(content)
+    with pytest.raises(AssertionError):
+        build(build_opt)
 
 
 def test_warn_unknown_markdown_links(bare_fs, build_opt, capsys):

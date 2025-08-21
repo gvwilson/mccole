@@ -10,8 +10,8 @@ from mccole.build import main as build, construct_parser as build_parser
 from mccole.lint import main as lint, construct_parser as lint_parser
 from .conftest import make_fs
 
-DIV_APPENDICES = '<div id="appendices"></div>'
-NAV_LESSONS = '<span class="dropdown-content" id="nav-lessons"></span>'
+DIV_APPENDICES = re.compile(r'<div id="appendices">.+?</div>', re.DOTALL)
+NAV_LESSONS = re.compile('<span class="dropdown-content" id="nav-lessons">.+?</span>', re.DOTALL)
 
 MINIMAL_GLOSSARY_REFS = """
 # Title
@@ -20,18 +20,11 @@ MINIMAL_GLOSSARY_REFS = """
 [second](g:second)
 """
 
-README = """\
-# README
-<div id="syllabus"></div>
-<div id="appendices"></div>
-"""
-
 
 @pytest.fixture
 def lint_fs(build_opt, bare_fs):
     make_fs(
         {
-            bare_fs / "README.md": README,
             bare_fs / "bibliography" / "index.md": "# Bibliography",
         }
     )
@@ -244,21 +237,19 @@ def test_html_validation_with_invalid_html(build_opt, lint_opt, lint_fs, capsys)
 
 
 @pytest.mark.parametrize(
-    "target,replacement",
+    "pattern,replacement",
     [
         [NAV_LESSONS, ""],
-        [NAV_LESSONS, f"{NAV_LESSONS}\n{NAV_LESSONS}"],
         [DIV_APPENDICES, ""],
-        [DIV_APPENDICES, f"{DIV_APPENDICES}\n{DIV_APPENDICES}"],
     ],
 )
 def test_compare_template_readme_missing_nav(
-    build_opt, lint_opt, lint_fs, capsys, target, replacement
+    build_opt, lint_opt, lint_fs, capsys, pattern, replacement
 ):
     build(build_opt)
     page = build_opt.dst / "index.html"
     content = page.read_text()
-    content = content.replace(target, replacement)
+    content = pattern.sub(replacement, content)
     page.write_text(content)
 
     lint(lint_opt)
@@ -275,8 +266,8 @@ def test_compare_template_readme_mismatch_titles(build_opt, lint_opt, lint_fs, c
         '<span id="nav-lessons" class="dropdown-content"><a href="./01_intro/">Introduction</a></span>',
     )
     content = content.replace(
-        '<div id="syllabus"></div>',
-        '<div id="syllabus"><li><a href="./01_intro/">Not Introduction</a></li></div>',
+        '<div id="lessons"></div>',
+        '<div id="lessons"><li><a href="./01_intro/">Not Introduction</a></li></div>',
     )
     page.write_text(content)
 

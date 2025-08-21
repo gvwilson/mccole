@@ -29,16 +29,23 @@ def main(opt):
     markdown, others = _separate_files(files)
     opt._glossary = _load_glossary(markdown)
     opt.dst.mkdir(parents=True, exist_ok=True)
-    _handle_markdown(opt, markdown)
+
+    env = Environment(loader=FileSystemLoader(opt.templates))
+    nav = _get_nav_from_readme(opt)
+    _handle_markdown(opt, env, nav, markdown)
     _handle_others(opt, others)
 
 
 def construct_parser(parser):
     """Parse command-line arguments."""
-    parser.add_argument("--config", default="pyproject.toml", help="configuration file")
-    parser.add_argument("--dst", type=Path, default="docs", help="output directory")
+    parser.add_argument(
+        "--config", default=Path("pyproject.toml"), help="configuration file"
+    )
+    parser.add_argument(
+        "--dst", type=Path, default=Path("docs"), help="output directory"
+    )
     parser.add_argument("--links", type=Path, default=None, help="links file")
-    parser.add_argument("--src", type=Path, default=".", help="source directory")
+    parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
     parser.add_argument(
         "--templates", type=Path, default="templates", help="templates directory"
     )
@@ -205,17 +212,38 @@ def _do_title(opt, dest, doc):
 
 def _find_files(opt):
     """Collect all interesting files."""
-    return [
-        path for path in Path(opt.src).glob("**/*.*") if _is_interesting_file(opt, path)
-    ]
+    return [path for path in opt.src.glob("**/*.*") if _is_interesting_file(opt, path)]
 
 
-def _handle_markdown(opt, files):
+def _get_nav_from_readme(opt):
+    """Build Jinja template for pages from README.md"""
+
+    def fix_url(url):
+        assert url.startswith("./"), f"bad README internal url {url}"
+        return url.replace("./", "@/", 1)
+
+    md = (opt.src / "README.md").read_text()
+    html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
+    doc = BeautifulSoup(html, "html.parser")
+    lessons = {
+        fix_url(node["href"]): node.decode_contents()
+        for node in doc.select("div#lessons")[0].select("a[href]")
+    }
+    appendices = {
+        fix_url(node["href"]): node.decode_contents()
+        for node in doc.select("div#appendices")[0].select("a[href]")
+    }
+    return {
+        "lessons": lessons,
+        "appendices": appendices,
+    }
+
+
+def _handle_markdown(opt, env, nav, files):
     """Handle Markdown files."""
-    env = Environment(loader=FileSystemLoader(opt.templates))
     for source in files:
         dest = _make_output_path(opt, source)
-        html = _render_markdown(opt, env, source, dest)
+        html = _render_markdown(opt, env, nav, source, dest)
         dest.write_text(html)
 
 
@@ -251,12 +279,12 @@ def _is_interesting_file(opt, path):
     return True
 
 
-def _load_config(filename):
+def _load_config(filepath):
     """Read configuration data."""
-    config = tomli.loads(Path(filename).read_text())
+    config = tomli.loads(filepath.read_text())
 
     if ("tool" not in config) or ("mccole" not in config["tool"]):
-        _warn(f"configuration file {filename} does not have 'tool.mccole'")
+        _warn(f"configuration file {filepath} does not have 'tool.mccole'")
         return {"skips": set()}
 
     config = config["tool"]["mccole"]
@@ -265,7 +293,7 @@ def _load_config(filename):
     overlap = set(BOILERPLATE.keys()) & config["skips"]
     if overlap:
         _warn(
-            f"overlap between skips and renames in config {filename}: {', '.join(sorted(overlap))}"
+            f"overlap between skips and renames in config {filepath}: {', '.join(sorted(overlap))}"
         )
 
     return config
@@ -303,7 +331,7 @@ def _make_root_prefix(opt, path):
     return "./" if (depth == 0) else "../" * depth
 
 
-def _render_markdown(opt, env, source, dest):
+def _render_markdown(opt, env, nav, source, dest):
     """Convert Markdown to HTML."""
     content = source.read_text()
     if opt._links:
@@ -311,7 +339,9 @@ def _render_markdown(opt, env, source, dest):
     template_name = "slides.html" if source.name == "slides.md" else "page.html"
     template = env.get_template(template_name)
     raw_html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
-    rendered_html = template.render(content=raw_html)
+    rendered_html = template.render(
+        content=raw_html, lessons=nav["lessons"], appendices=nav["appendices"]
+    )
 
     doc = BeautifulSoup(rendered_html, "html.parser")
     for func in [

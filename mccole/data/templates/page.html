@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-  <head lang="en">
+<html lang="en">
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
@@ -13,19 +13,19 @@
       &middot;
       <span class="dropdown">
 	<a href="#">Lessons</a>
-	<span class="dropdown-content">
-          <a href="@/01_intro/">Introduction</a>
+	<span id="nav-lessons" class="dropdown-content">
+{% for key in lessons %}
+          <a href="{{key}}">{{lessons[key]}}</a>
+{% endfor %}
 	</span>
       </span>
       &middot;
       <span class="dropdown">
         <a href="#">Extras</a>
-        <span class="dropdown-content">
-	  <a href="@/license/">License</a>
-	  <a href="@/conduct/">Code of Conduct</a>
-	  <a href="@/contrib/">Contributing</a>
-	  <a href="@/bibliography/">Bibliography</a>
-	  <a href="@/glossary/">Glossary</a>
+        <span id="nav-extras" class="dropdown-content">
+{% for key in appendices %}
+          <a href="{{key}}">{{appendices[key]}}</a>
+{% endfor %}
         </span>
       </span>
     </nav>
@@ -33,7 +33,7 @@
 {{content}}
     </main>
     <footer>
-      <a href="@/">McCole Template</a>
+      <a href="@/">Organizational Change for Open Science</a>
       copyright &copy; 2025
       <a href="@/#acknowledgments">the authors</a>
     </footer>
