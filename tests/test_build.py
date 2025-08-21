@@ -97,6 +97,17 @@ def test_does_not_copy_explicitly_skipped_files(
     assert set((bare_fs / build_opt.dst).iterdir()) == minimal_dst_top_level
 
 
+def test_footer_title_filled_in_correctly(bare_fs, build_opt, readme_dst_file):
+    build(build_opt)
+    doc = read_doc(readme_dst_file)
+    footer = doc.select_one("footer")
+    assert footer is not None
+    links = {node["href"]: node.get_text() for node in footer.select("a[href]")}
+    assert "./" in links
+    assert links["./"] == "Tutorial"
+    assert "./#acknowledgments" in links
+
+
 def test_boilerplate_files_correctly_renamed(bare_fs, build_opt):
     fixtures = (
         ("CODE_OF_CONDUCT.md", "Code of Conduct", "conduct"),

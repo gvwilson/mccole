@@ -31,8 +31,8 @@ def main(opt):
     opt.dst.mkdir(parents=True, exist_ok=True)
 
     env = Environment(loader=FileSystemLoader(opt.templates))
-    nav = _get_nav_from_readme(opt)
-    _handle_markdown(opt, env, nav, markdown)
+    context = _get_context_from_readme(opt)
+    _handle_markdown(opt, env, context, markdown)
     _handle_others(opt, others)
 
 
@@ -215,8 +215,8 @@ def _find_files(opt):
     return [path for path in opt.src.glob("**/*.*") if _is_interesting_file(opt, path)]
 
 
-def _get_nav_from_readme(opt):
-    """Build Jinja template for pages from README.md"""
+def _get_context_from_readme(opt):
+    """Get values for template expansion from README.md"""
 
     def fix_url(url):
         assert url.startswith("./"), f"bad README internal url {url}"
@@ -225,6 +225,7 @@ def _get_nav_from_readme(opt):
     md = (opt.src / "README.md").read_text()
     html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
     doc = BeautifulSoup(html, "html.parser")
+    title = doc.select_one("h1").decode_contents()
     lessons = {
         fix_url(node["href"]): node.decode_contents()
         for node in doc.select("div#lessons")[0].select("a[href]")
@@ -234,16 +235,17 @@ def _get_nav_from_readme(opt):
         for node in doc.select("div#appendices")[0].select("a[href]")
     }
     return {
+        "title": title,
         "lessons": lessons,
         "appendices": appendices,
     }
 
 
-def _handle_markdown(opt, env, nav, files):
+def _handle_markdown(opt, env, context, files):
     """Handle Markdown files."""
     for source in files:
         dest = _make_output_path(opt, source)
-        html = _render_markdown(opt, env, nav, source, dest)
+        html = _render_markdown(opt, env, context, source, dest)
         dest.write_text(html)
 
 
@@ -331,7 +333,7 @@ def _make_root_prefix(opt, path):
     return "./" if (depth == 0) else "../" * depth
 
 
-def _render_markdown(opt, env, nav, source, dest):
+def _render_markdown(opt, env, context, source, dest):
     """Convert Markdown to HTML."""
     content = source.read_text()
     if opt._links:
@@ -339,9 +341,7 @@ def _render_markdown(opt, env, nav, source, dest):
     template_name = "slides.html" if source.name == "slides.md" else "page.html"
     template = env.get_template(template_name)
     raw_html = markdown(content, extensions=MARKDOWN_EXTENSIONS)
-    rendered_html = template.render(
-        content=raw_html, lessons=nav["lessons"], appendices=nav["appendices"]
-    )
+    rendered_html = template.render(content=raw_html, **context)
 
     doc = BeautifulSoup(rendered_html, "html.parser")
     for func in [

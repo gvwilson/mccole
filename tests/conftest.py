@@ -47,6 +47,11 @@ TEMPLATE = """\
     <main>
 {{content}}
     </main>
+    <footer>
+      <a href="@/">{{title}}</a>
+      copyright &copy; 2025
+      <a href="@/#acknowledgments">the authors</a>
+    </footer>
   </body>
 </html>
 """

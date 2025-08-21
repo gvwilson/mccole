@@ -31,14 +31,14 @@ def lint_fs(build_opt, bare_fs):
     return bare_fs
 
 
-def test_lint_construct_parser_with_default_values():
+def test_construct_parser_with_default_values():
     parser = argparse.ArgumentParser()
     lint_parser(parser)
     opt = parser.parse_args([])
     assert hasattr(opt, "dst")
 
 
-def test_lint_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
+def test_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
     make_fs(
         {
             lint_fs / build_opt.src / "test.md": MINIMAL_GLOSSARY_REFS,
@@ -51,7 +51,7 @@ def test_lint_no_problems_to_report(build_opt, lint_opt, lint_fs, capsys):
     assert not captured.err
 
 
-def test_lint_multiple_h1_in_file(build_opt, lint_opt, lint_fs, capsys):
+def test_multiple_h1_in_file(build_opt, lint_opt, lint_fs, capsys):
     make_fs(
         {
             lint_fs / "test.md": "# First\n\n# Second\n",
