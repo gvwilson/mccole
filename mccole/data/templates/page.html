@@ -6,9 +6,7 @@
     <title></title>
     <link rel="icon" type="image/x-icon" href="@/static/favicon.ico">
     <link rel="stylesheet" href="@/static/page.css" type="text/css">
-    {% if mathjax %}
-    <script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    {% endif %}
+    {% include "extras.html" ignore missing %}
   </head>
   <body>
     <nav>
