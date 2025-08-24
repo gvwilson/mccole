@@ -6,6 +6,9 @@
     <title></title>
     <link rel="icon" type="image/x-icon" href="@/static/favicon.ico">
     <link rel="stylesheet" href="@/static/page.css" type="text/css">
+    {% if mathjax %}
+    <script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    {% endif %}
   </head>
   <body>
     <nav>
@@ -21,7 +24,7 @@
       </span>
       &middot;
       <span class="dropdown">
-        <a href="#">Extras</a>
+        <a href="#">Appendices</a>
         <span id="nav-extras" class="dropdown-content">
 {% for key in appendices %}
           <a href="{{key}}">{{appendices[key]}}</a>
@@ -33,7 +36,7 @@
 {{content}}
     </main>
     <footer>
-      <a href="@/">Organizational Change for Open Science</a>
+      <a href="@/">{{title}}</a>
       copyright &copy; 2025
       <a href="@/#acknowledgments">the authors</a>
     </footer>

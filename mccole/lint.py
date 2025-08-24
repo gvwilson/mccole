@@ -16,6 +16,10 @@ RE_MD_CODE_PATTERNS = [
 ]
 RE_MD_LINK_DEF = re.compile(r"^\[(.+?)\]:\s+.+?\s*$", re.MULTILINE)
 RE_MD_LINK_REF = re.compile(r"\[.+?\]\[(.+?)\]", re.DOTALL | re.MULTILINE)
+SECTIONS = [
+    ("lessons", "span#nav-lessons", "div#lessons"),
+    ("extras", "span#nav-appendices", "div#appendices"),
+]
 
 
 def main(opt):
@@ -70,10 +74,7 @@ def _do_compare_readme_section_titles(opt, html_pages):
     """Make sure section titles in main page match those in sub-pages."""
     readme_path = opt.dst / "index.html"
     readme = BeautifulSoup(readme_path.read_text(), "html.parser")
-    for kind, nav_selector in [
-        ("lessons", "span#nav-lessons"),
-        ("extras", "span#nav-extras"),
-    ]:
+    for kind, nav_selector, _ in SECTIONS:
         nav = readme.select(nav_selector)
         if not _require(
             len(nav) == 1, f"{readme_path} missing or multiple {nav_selector}"
@@ -101,10 +102,7 @@ def _do_compare_template_readme(opt, html_pages):
     """Compare tables of contents in template and README.md"""
     path = opt.dst / "index.html"
     readme = html_pages[path]
-    for kind, nav_selector, body_selector in [
-        ("lessons", "span#nav-lessons", "div#lessons"),
-        ("extras", "span#nav-extras", "div#appendices"),
-    ]:
+    for kind, nav_selector, body_selector in SECTIONS:
         nav = readme.select(nav_selector)
         if not _require(len(nav) == 1, f"{path} missing or multiple {nav_selector}"):
             continue
