@@ -5,6 +5,7 @@ import importlib.metadata
 import sys
 
 from .build import main as build, construct_parser as build_parser
+from .epub import main as epub, construct_parser as epub_parser
 from .init import main as init, construct_parser as init_parser
 from .lint import main as lint, construct_parser as lint_parser
 from .refresh import main as refresh, construct_parser as refresh_parser
@@ -12,6 +13,7 @@ from .refresh import main as refresh, construct_parser as refresh_parser
 
 COMMANDS = {
     "build": (build, build_parser, "build site"),
+    "epub": (epub, epub_parser, "create epub"),
     "init": (init, init_parser, "(re-)initialize site"),
     "lint": (lint, lint_parser, "check site"),
     "refresh": (refresh, refresh_parser, "refresh inclusions"),

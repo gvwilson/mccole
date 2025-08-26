@@ -28,6 +28,7 @@ classifiers = [
 ]
 dependencies = [
     "beautifulsoup4",
+    "ebooklib",
     "html5validator",
     "jinja2",
     "markdown",
