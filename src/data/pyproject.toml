@@ -1,0 +1,6 @@
+[project]
+name = "sample"
+description = "sample McCole project"
+
+[tool.mccole]
+skips = ["*~"]
