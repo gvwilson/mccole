@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["src"]
 
+[tool.setuptools.package-data]
+"*" = ["data/**/*"]
+
 [project]
 name = "mccole"
 version = "1.0.0"
