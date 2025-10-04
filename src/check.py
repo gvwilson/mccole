@@ -26,7 +26,12 @@ def check(options):
     for func in [_check_all_html, _check_glossary_redefinitions]:
         func(pages)
 
-    for func in [_check_figure_structure, _check_single_h1, _check_table_structure]:
+    for func in [
+        _check_figure_structure,
+        _check_single_h1,
+        _check_table_structure,
+        _check_unknown_links,
+    ]:
         for path, doc in pages.items():
             func(options, path, doc)
 
@@ -40,10 +45,10 @@ def _check_all_html(pages):
 def _check_figure_structure(options, filepath, doc):
     """Check that all figures have IDs and captions."""
     for figure in doc.select("figure"):
-        _require(filepath, "id" in figure.attrs, f"figure missing 'id'")
+        _require(filepath, "id" in figure.attrs, "figure missing 'id'")
         captions = figure.select("figcaption")
         if not _require(
-            filepath, len(captions) == 1, f"missing/extra figure caption(s)"
+            filepath, len(captions) == 1, "missing/extra figure caption(s)"
         ):
             return
         text = captions[0].string
@@ -81,17 +86,26 @@ def _check_single_h1(options, filepath, doc):
 def _check_table_structure(options, filepath, doc):
     """Check that all tables have proper structure and IDs."""
     for table in doc.select("table"):
-        _require(filepath, "id" in table.attrs, f"table missing 'id'")
+        _require(filepath, "id" in table.attrs, "table missing 'id'")
         captions = table.select("caption")
-        if not _require(
-            filepath, len(captions) == 1, f"missing/extra table caption(s)"
-        ):
+        if not _require(filepath, len(captions) == 1, "missing/extra table caption(s)"):
             return
         text = captions[0].string
         _require(
             filepath,
             RE_TABLE_CAPTION.match(text),
             f"badly-formatted table caption '{text}'",
+        )
+
+
+def _check_unknown_links(options, filepath, doc):
+    """Look for unresolved Markdown links."""
+    unwanted = {"code", "pre"}
+    for text in doc.find_all(string=lambda s: s and "][" in s):
+        _require(
+            filepath,
+            any(p.name in unwanted for p in text.parents),
+            f"possible unresolved Markdown link '{text}'",
         )
 
 

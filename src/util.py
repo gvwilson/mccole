@@ -14,11 +14,5 @@ def load_links(src_path):
     return links_path.read_text() if links_path.is_file() else ""
 
 
-def log(config, level, message):
-    """Simple-minded logging."""
-    if config["verbose"] >= level:
-        print(message)
-
-
 def warn(message):
     print(message, file=sys.stderr)

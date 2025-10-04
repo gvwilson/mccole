@@ -9,6 +9,7 @@ First paragraph
 -   [glossary entry](g:glossref) and [another glossary entry](g:another)
 -   [](#f:figure)
 -   [](#t:table)
+-   [unresolved link][unresolved_link]
 
 <figure id="f:figure">
   <figcaption>caption</figcaption>

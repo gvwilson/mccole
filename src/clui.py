@@ -7,6 +7,7 @@ import sys
 
 from .build import build
 from .check import check
+from .create import create
 
 
 def main():
@@ -14,6 +15,7 @@ def main():
     commands = {
         "build": (build, _make_build_parser, "build site"),
         "check": (check, _make_check_parser, "check site"),
+        "create": (create, _make_create_parser, "create site"),
     }
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", type=int, default=0, help="logging level")
@@ -54,3 +56,12 @@ def _make_check_parser(parser):
     )
     parser.add_argument("--html", action="store_true", help="validate HTML")
     parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
+
+
+def _make_create_parser(parser):
+    """Parse command-line arguments for creating or refreshing files."""
+    parser.add_argument("--dst", type=Path, default=".", help="destination directory")
+    parser.add_argument("--force", action="store_true", help="force overwrite")
+    parser.add_argument(
+        "--only", type=Path, nargs="+", help="only install specific files"
+    )
