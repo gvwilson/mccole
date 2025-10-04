@@ -14,6 +14,10 @@ commands:
 build:
 	${PYTHON} -m build
 
+## check: check code and project
+check:
+	@ruff check src tests
+
 ## docs: rebuild documentation
 .PHONY: docs
 docs:
@@ -21,11 +25,7 @@ docs:
 
 ## format: reformat Python code
 format:
-	@ruff format mccole tests
-
-## lint: check code and project
-lint:
-	@ruff check mccole tests
+	@ruff format src tests
 
 ## test: run tests with coverage
 test:

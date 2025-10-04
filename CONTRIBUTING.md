@@ -9,8 +9,9 @@ but must abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
     -   `uv venv` (once)
     -   `source .venv/bin/activate`
     -   `uv sync --extra dev`
--   Check package: `make lint`
--   Build package: `make build` or `python -m build`
+-   Check package: `make check`
+-   Build package: `make build`
 -   Publish package: `twine upload --verbose -u __token__ -p your-pypi-access-token dist/*`
+-   Build documentation: `make docs`
 
 [repo]: https://github.com/gvwilson/mccole

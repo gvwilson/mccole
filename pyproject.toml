@@ -3,14 +3,11 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["mccole"]
-
-[tool.setuptools.package-data]
-"*" = ["data/**/*"]
+packages = ["src"]
 
 [project]
 name = "mccole"
-version = "0.9.3"
+version = "1.0.0"
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
@@ -18,7 +15,7 @@ authors = [
 maintainers = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
 ]
-description = "Simple static site generator for tutorials"
+description = "A simple static site generator for tutorials"
 keywords = ["open source", "static site generator"]
 readme = "README.md"
 classifiers = [
@@ -28,24 +25,22 @@ classifiers = [
 ]
 dependencies = [
     "beautifulsoup4",
-    "ebooklib",
     "html5validator",
     "jinja2",
     "markdown",
+    "mkdocs",
+    "mkdocstrings[python]",
     "tomli"
 ]
 
 [project.optional-dependencies]
 dev = [
     "build",
-    "coverage",
     "markdown-include",
-    "mkdocs",
-    "mkdocstrings[python]",
     "pytest",
     "ruff",
     "twine"
 ]
 
 [project.scripts]
-mccole = "mccole:clui.main"
+mccole = "src:clui.main"

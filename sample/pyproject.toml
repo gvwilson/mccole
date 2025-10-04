@@ -1,12 +1,6 @@
 [project]
 name = "sample"
 description = "sample McCole project"
-version = "0.1.0"
-requires-python = ">=3.12"
-dependencies = [
-    "linkchecker",
-    "mccole"
-]
 
 [tool.mccole]
-skips = ["*~", "extras/**", "uv.lock"]
+skips = ["*~"]

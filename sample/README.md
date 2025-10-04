@@ -1,13 +1,37 @@
 # Sample McCole Project
 
-For testing
+First paragraph
+
+<p id="terms"></p>
+
+-   [link text][link_key]
+-   [bibliography entry](b:bibref)
+-   [glossary entry](g:glossref) and [another glossary entry](g:another)
+-   [](#f:figure)
+-   [](#t:table)
+
+<figure id="f:figure">
+  <figcaption>caption</figcaption>
+</figure>
+
+<table id="t:table">
+  <caption>caption</caption>
+</table>
+
+```python
+name = "python"
+```
+
+```bash
+shell command
+```
 
 ## Lessons
 
 <div id="lessons" markdown="1">
 
-1.  [Introduction](./intro/)
-1.  [Conclusion](./finale/)
+1.  [Introduction](@/intro/)
+1.  [Conclusion](@/finale/)
 
 </div>
 
@@ -15,18 +39,16 @@ For testing
 
 <div id="appendices" markdown="1">
 
-1.  [License](./LICENSE.md)
-1.  [Code of Conduct](./CODE_OF_CONDUCT.md)
-1.  [Contributing](./CONTRIBUTING.md)
-1.  [Bibliography](./bibliography/)
-1.  [Glossary](./glossary/)
+1.  [License](@/license/)
+1.  [Code of Conduct](@/conduct/)
+1.  [Contributing](@/contributing/)
+1.  [Bibliography](@/bibliography/)
+1.  [Glossary](@/glossary/)
 
 </div>
 
 ## Acknowledgments {: #acknowledgments}
 
 -   *[Greg Wilson][wilson-greg]* is a programmer, author, and educator based in Toronto, Canada.
-    He was the co-founder and first Executive Director of Software Carpentry
-    and received ACM SIGSOFT's Influential Educator Award in 2020.
 
 [wilson-greg]: https://third-bit.com/
