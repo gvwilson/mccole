@@ -76,6 +76,69 @@ def _build_other(config, src_path):
     dst_path.write_bytes(src_path.read_bytes())
 
 
+def _collect_figure_numbers(dst_path, doc):
+    """Number figures and return IDs."""
+    prefix = "f:"
+    known = {}
+    for i, node in enumerate(doc.select("figure")):
+        num = i + 1
+
+        if "id" not in node.attrs:
+            util.warn(f"figure {num} in {dst_path} has no ID")
+            continue
+
+        if not node["id"].startswith(prefix):
+            util.warn(
+                f"figure {num} ID {node['id']} in {dst_path} does not start with '{prefix}'"
+            )
+            continue
+
+        all_captions = node.select("figcaption")
+        if len(all_captions) != 1:
+            util.warn(
+                f"figure {num} ID {node['id']} in {dst_path} has missing/too many figcaption"
+            )
+            continue
+
+        known[node["id"]] = num
+        caption = all_captions[0]
+        caption.insert(0, f"Figure {num}: ")
+
+    return known
+
+
+def _collect_table_numbers(dst_path, doc):
+    """Number tables and return IDs."""
+    prefix = "t:"
+    known = {}
+    for i, node in enumerate(doc.select("div")):
+        num = i + 1
+
+        if ("id" not in node.attrs) or (not node["id"].startswith(prefix)):
+            continue
+
+        if "data-caption" not in node.attrs:
+            util.warn(
+                f"table div {num} ID {node['id']} in {dst_path} has no data-caption"
+            )
+            continue
+
+        all_tables = node.select("table")
+        if len(all_tables) != 1:
+            util.warn(
+                f"table div {num} ID {node['id']} in {dst_path} has missing/too many tables"
+            )
+            continue
+
+        table = all_tables[0]
+        caption = doc.new_tag("caption")
+        caption.string = f"Table {num}: {node['data-caption']}"
+        table.insert(0, caption)
+        known[node["id"]] = num
+
+    return known
+
+
 def _fill_element_numbers(dst_path, doc, prefix, known, text):
     """Fill in cross-reference numbers."""
     for node in doc.select("a[href]"):
@@ -240,36 +303,6 @@ def _make_context(config, slug):
     return {"prev": (prev_link, prev_title), "next": (next_link, next_title), **context}
 
 
-def _make_element_numbers(config, dst_path, doc, outer_tag, inner_tag, prefix, text):
-    """Build element numbers, inserting along the way."""
-    known = {}
-    for i, node in enumerate(doc.select(outer_tag)):
-        num = i + 1
-
-        if "id" not in node.attrs:
-            util.warn(f"{outer_tag} {num} in {dst_path} has no ID")
-            continue
-
-        if not node["id"].startswith(prefix):
-            util.warn(
-                f"{outer_tag} {num} ID {node['id']} in {dst_path} does not start with '{prefix}'"
-            )
-            continue
-
-        all_inner = node.select(inner_tag)
-        if len(all_inner) != 1:
-            util.warn(
-                f"{outer_tag} {num} ID {node['id']} in {dst_path} has missing/too many {inner_tag}"
-            )
-            continue
-
-        inner = all_inner[0]
-        known[node["id"]] = num
-        inner.insert(0, f"{text} {num}: ")
-
-    return known
-
-
 def _make_output_path(config, src_path, suffix=None):
     """Generate output file path."""
     if src_path.name in STANDARD_FILES:
@@ -297,9 +330,7 @@ def _patch_bibliography_links(config, dst_path, doc):
 
 def _patch_figure_numbers(config, dst_path, doc):
     """Insert figure numbers."""
-    known = _make_element_numbers(
-        config, dst_path, doc, "figure", "figcaption", "f:", "Figure"
-    )
+    known = _collect_figure_numbers(dst_path, doc)
     _fill_element_numbers(dst_path, doc, "#f:", known, "Figure")
 
 
@@ -344,9 +375,7 @@ def _patch_special_link(config, dst_path, doc, prefix, stem, change_text):
 
 def _patch_table_numbers(config, dst_path, doc):
     """Insert figure numbers."""
-    known = _make_element_numbers(
-        config, dst_path, doc, "table", "caption", "t:", "Table"
-    )
+    known = _collect_table_numbers(dst_path, doc)
     _fill_element_numbers(dst_path, doc, "#t:", known, "Table")
 
 

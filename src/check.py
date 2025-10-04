@@ -85,9 +85,9 @@ def _check_single_h1(options, filepath, doc):
 
 def _check_table_structure(options, filepath, doc):
     """Check that all tables have proper structure and IDs."""
-    for table in doc.select("table"):
-        _require(filepath, "id" in table.attrs, "table missing 'id'")
-        captions = table.select("caption")
+    for div in doc.select("div[data-caption]"):
+        _require(filepath, "id" in div.attrs, "table missing 'id'")
+        captions = div.select("caption")
         if not _require(filepath, len(captions) == 1, "missing/extra table caption(s)"):
             return
         text = captions[0].string

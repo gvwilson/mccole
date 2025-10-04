@@ -12,12 +12,14 @@ First paragraph
 -   [unresolved link][unresolved_link]
 
 <figure id="f:figure">
-  <figcaption>caption</figcaption>
+  <figcaption>figure caption</figcaption>
 </figure>
 
-<table id="t:table">
-  <caption>caption</caption>
-</table>
+<div id="t:table" data-caption="table caption" markdown="1">
+| left | right |
+| :--- | ----: |
+| name |   123 |
+</div>
 
 ```python
 name = "python"
