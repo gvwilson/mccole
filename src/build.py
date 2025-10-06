@@ -33,7 +33,7 @@ def build(options):
     env = Environment(loader=FileSystemLoader(config["templates"]))
     section_slugs, slides, others = _find_files(config)
 
-    _build_page(config, env, None, config["src"] / HOME_PAGE)
+    _build_page(config, env, None, config["src"] / config["home_page"])
     for slug in section_slugs:
         _build_page(config, env, slug, config["order"][slug]["filepath"])
     for filepath in slides:
@@ -160,7 +160,7 @@ def _find_files(config):
 
     slides = {f for f in config["src"].glob("*/slides.md")}
 
-    excludes = {config["src"] / HOME_PAGE}
+    excludes = {config["src"] / config["home_page"]}
     excludes |= {value["filepath"] for value in config["order"].values()}
     excludes |= slides
 
@@ -215,13 +215,15 @@ def _load_configuration(options):
     links = util.load_links(options.src)
     glossary = _load_glossary(options.src)
 
-    order = _load_order(options.src)
+    home_page = options.root
+    order = _load_order(options.src, home_page)
 
     return {
         "config": config_path,
         "dst": options.dst,
         "extras": options.src / util.EXTRAS_DIR,
         "glossary": glossary,
+        "home_page": home_page,
         "links": links,
         "order": order,
         "src": options.src,
@@ -239,9 +241,9 @@ def _load_glossary(src_path):
     return {node["id"]: node.decode_contents() for node in doc.select("span[id]")}
 
 
-def _load_order(src_path):
-    """Determine section order from README.md."""
-    md = (src_path / HOME_PAGE).read_text()
+def _load_order(src_path, home_page):
+    """Determine section order from home page file."""
+    md = (src_path / home_page).read_text()
     html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
     doc = BeautifulSoup(html, "html.parser")
     lessons = _load_order_section(doc, "lessons", lambda i: str(i + 1))
@@ -307,6 +309,8 @@ def _make_output_path(config, src_path, suffix=None):
     """Generate output file path."""
     if src_path.name in STANDARD_FILES:
         dst_path = config["dst"] / STANDARD_FILES[src_path.name] / "index.md"
+    elif src_path.name == config["home_page"].name:
+        dst_path = config["dst"] / "index.md"
     else:
         dst_path = config["dst"] / src_path.relative_to(config["src"])
     if suffix is not None:

@@ -43,6 +43,9 @@ def _make_build_parser(parser):
     parser.add_argument(
         "--dst", type=Path, default=Path("docs"), help="destination directory"
     )
+    parser.add_argument(
+        "--root", type=Path, default=Path("README.md"), help="root page file"
+    )
     parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
 
 
