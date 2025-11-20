@@ -11,6 +11,7 @@ from html5validator.validator import Validator
 from . import util
 
 
+GLOBAL = "<global>"
 RE_FIGURE_CAPTION = re.compile(r"^Figure\s+\d+:")
 RE_TABLE_CAPTION = re.compile(r"^Table\s+\d+:")
 
@@ -23,8 +24,11 @@ def check(options):
     paths = [dst_dir / "index.html"] + list(dst_dir.glob("*/index.html"))
     pages = {fp: BeautifulSoup(fp.read_text(), "html.parser") for fp in paths}
 
-    for func in [_check_all_html, _check_glossary_redefinitions]:
+    for func in [_check_all_html, _check_glossary_redefinitions,]:
         func(pages)
+
+    for kind in ["bibliography", "glossary"]:
+        _check_cross_references(options, pages, kind)
 
     for func in [
         _check_figure_structure,
@@ -40,6 +44,18 @@ def _check_all_html(pages):
     """Validate generated HTML."""
     validator = Validator()
     validator.validate(list(pages.keys()))
+
+
+def _check_cross_references(options, pages, kind):
+    """Check that all cross-references match entries."""
+    known = _get_crossref_definitions(options, pages, kind)
+    prefix = f"/{kind}/#"
+    for path, doc in pages.items():
+        for node in doc.select("a[href]"):
+            if prefix not in node["href"]:
+                continue
+            key = node["href"].split("#")[-1]
+            _require(path, key in known, f"unknown {kind} key {key}")
 
 
 def _check_figure_structure(options, filepath, doc):
@@ -71,7 +87,7 @@ def _check_glossary_redefinitions(pages):
                 seen[key].append(path)
     for key, values in seen.items():
         _require(
-            "<global>",
+            GLOBAL,
             len(values) == 1,
             f"glossary entry '{key}' defined in {', '.join(sorted(str(v) for v in values))}",
         )
@@ -107,6 +123,19 @@ def _check_unknown_links(options, filepath, doc):
             any(p.name in unwanted for p in text.parents),
             f"possible unresolved Markdown link '{text}'",
         )
+
+
+def _get_crossref_definitions(options, pages, kind):
+    """Get set of known cross-reference keys."""
+    path = Path(options.dst, kind, "index.html")
+    if not _require(GLOBAL, path in pages, f"{kind} {path} not found"):
+        return
+    doc = pages[path]
+    result = set()
+    for outer in doc.find_all("dt"):
+        inner = outer.find("span")
+        result.add(inner.attrs["id"])
+    return result
 
 
 def _require(filepath, condition, message):
