@@ -111,9 +111,8 @@ def _collect_table_numbers(dst_path, doc):
     """Number tables and return IDs."""
     prefix = "t:"
     known = {}
-    for i, node in enumerate(doc.select("div")):
-        num = i + 1
-
+    num = 1
+    for node in doc.select("div"):
         if ("id" not in node.attrs) or (not node["id"].startswith(prefix)):
             continue
 
@@ -135,6 +134,7 @@ def _collect_table_numbers(dst_path, doc):
         caption.string = f"Table {num}: {node['data-caption']}"
         table.insert(0, caption)
         known[node["id"]] = num
+        num += 1
 
     return known
 
