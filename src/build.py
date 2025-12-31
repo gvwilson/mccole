@@ -5,6 +5,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
+import sys
 import tomli
 
 from . import util
@@ -63,11 +64,16 @@ def _build_page(config, env, slug, src_path):
         _patch_pre_code_classes,
         _patch_table_numbers,
         _patch_title,
-        _patch_root_links,  # must be last
+        _patch_markdown_attribute,  # must be at the end
+        _patch_root_links,  # must be at the end
     ]:
         func(config, dst_path, doc)
 
-    dst_path.write_text(str(doc))
+    try:
+        dst_path.write_text(str(doc))
+    except Exception as exc:
+        print(f"unable to write {dst_path} because {exc}")
+        sys.exit(1)
 
 
 def _build_other(config, src_path):
@@ -341,6 +347,12 @@ def _patch_figure_numbers(config, dst_path, doc):
 def _patch_glossary_links(config, dst_path, doc):
     """Convert g: glossary links."""
     _patch_special_link(config, dst_path, doc, "g:", "glossary", False)
+
+
+def _patch_markdown_attribute(config, dst_path, doc):
+    """Remove markdown='1' attribute."""
+    for node in doc.select("[markdown]"):
+        del node["markdown"]
 
 
 def _patch_pre_code_classes(config, dst_path, doc):
