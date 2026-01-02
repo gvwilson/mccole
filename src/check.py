@@ -22,7 +22,7 @@ def check(options):
     dst_dir = Path(options.dst)
 
     paths = [dst_dir / "index.html"] + list(dst_dir.glob("*/index.html"))
-    pages = {fp: BeautifulSoup(fp.read_text(), "html.parser") for fp in paths}
+    pages = {fp: BeautifulSoup(fp.read_text(encoding='utf-8'), "html.parser") for fp in paths}
 
     for func in [_check_all_html, _check_glossary_redefinitions,]:
         func(pages)

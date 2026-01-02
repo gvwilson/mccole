@@ -45,7 +45,7 @@ def build(options):
 
 def _build_page(config, env, slug, src_path):
     """Handle a Markdown file."""
-    content = src_path.read_text()
+    content = src_path.read_text(encoding='utf-8')
     with_links = f"{content}\n\n{config['links']}"
     raw_html = markdown(with_links, extensions=MARKDOWN_EXTENSIONS)
 
@@ -70,7 +70,7 @@ def _build_page(config, env, slug, src_path):
         func(config, dst_path, doc)
 
     try:
-        dst_path.write_text(str(doc))
+        dst_path.write_text(str(doc), encoding='utf-8')
     except Exception as exc:
         print(f"unable to write {dst_path} because {exc}")
         sys.exit(1)
@@ -216,7 +216,7 @@ def _is_interesting_file(config, excludes, filepath):
 def _load_configuration(options):
     """Load configuration and combine with options."""
     config_path = options.src / options.config
-    config = tomli.loads(config_path.read_text())
+    config = tomli.loads(config_path.read_text(encoding='utf-8'))
 
     links = util.load_links(options.src)
     glossary = _load_glossary(options.src)
@@ -241,7 +241,7 @@ def _load_configuration(options):
 
 def _load_glossary(src_path):
     """Load glossary keys and terms."""
-    md = (src_path / GLOSSARY_PATH).read_text()
+    md = (src_path / GLOSSARY_PATH).read_text(encoding='utf-8')
     html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
     doc = BeautifulSoup(html, "html.parser")
     return {node["id"]: node.decode_contents() for node in doc.select("span[id]")}
@@ -249,7 +249,7 @@ def _load_glossary(src_path):
 
 def _load_order(src_path, home_page):
     """Determine section order from home page file."""
-    md = (src_path / home_page).read_text()
+    md = (src_path / home_page).read_text(encoding='utf-8')
     html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
     doc = BeautifulSoup(html, "html.parser")
     lessons = _load_order_section(doc, "lessons", lambda i: str(i + 1))
