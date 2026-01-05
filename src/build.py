@@ -25,7 +25,7 @@ STANDARD_FILES = {
 }
 REVERSE_FILES = {value: key for key, value in STANDARD_FILES.items() if value != ""}
 
-MARKDOWN_EXTENSIONS = ["attr_list", "def_list", "fenced_code", "md_in_html", "tables"]
+MARKDOWN_EXTENSIONS = ["attr_list", "codehilite", "def_list", "fenced_code", "md_in_html", "tables"]
 
 
 def build(options):
