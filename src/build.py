@@ -413,7 +413,7 @@ def _patch_terms_defined(config, dst_path, doc):
         return
 
     keys = {k[2:] for k in keys}
-    entries = [(key, config["glossary"].get(key, "UNDEFINED")) for key in keys]
+    entries = [(f"../glossary/#{key}", config["glossary"].get(key, "UNDEFINED")) for key in keys]
     entries.sort(key=lambda item: item[1])
     para.append("Terms defined: ")
     for i, (key, term) in enumerate(entries):
