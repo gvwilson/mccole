@@ -417,7 +417,7 @@ def _patch_terms_defined(config, dst_path, doc):
     entries.sort(key=lambda item: item[1])
     para.append("Terms defined: ")
     for i, (key, term) in enumerate(entries):
-        tag = doc.new_tag("a", attrs={"class": "term-defined"}, href=key)
+        tag = doc.new_tag("a", attrs={"class": "term-defined"}, href=f"@/glossary/#key")
         tag.string = term
         if i > 0:
             para.append(", ")
