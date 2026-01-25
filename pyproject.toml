@@ -12,7 +12,7 @@ include = [
 
 [project]
 name = "mccole"
-version = "1.4.0"
+version = "1.4.1"
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
@@ -51,7 +51,7 @@ dev = [
 ]
 
 [project.scripts]
-mccole = "src:clui.main"
+mccole = "mccole.clui:main"
 
 [tool.taskipy.tasks]
 build = {help = "build package", cmd = "python -m build"}
