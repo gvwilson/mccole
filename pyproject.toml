@@ -45,6 +45,10 @@ dev = [
 [project.scripts]
 mccole = "mccole.clui:main"
 
+[project.urls]
+Repository = "https://github.com/gvwilson/mccole"
+Documentation = "https://mccole.readthedocs.org"
+
 [tool.taskipy.tasks]
 build = {help = "build package", cmd = "python -m build"}
 check = {help = "check code issues", cmd = "ruff check ."}
@@ -57,7 +61,8 @@ find . -path './.venv' -prune -o -type d -name '.coverage' -exec rm {} +
 """}
 docs = {help = "build documentation", cmd = """
 mkdocs build &&
-touch docs/.nojekyll
+touch docs/.nojekyll &&
+cp docs-requirements.txt docs/requirements.txt
 """}
 fix = {help = "fix code issues", cmd = "ruff check --fix ."}
 format = {help = "format code", cmd = "ruff format ."}
