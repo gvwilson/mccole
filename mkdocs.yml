@@ -6,10 +6,12 @@ plugins:
 - mkdocstrings:
     handlers:
       python:
-        paths: [./src]
         options:
           members_order: source
           filters: []
+
+theme:
+  name: "material"
 
 markdown_extensions:
 - markdown_include.include:

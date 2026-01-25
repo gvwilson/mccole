@@ -1,138 +1,649 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../build/">
+      
+      
+      
         
-        
-        
-        <link rel="shortcut icon" href="../img/favicon.ico">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
         <title>Check - McCole</title>
-        <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/fontawesome.min.css" rel="stylesheet">
-        <link href="../css/brands.min.css" rel="stylesheet">
-        <link href="../css/solid.min.css" rel="stylesheet">
-        <link href="../css/v4-font-face.min.css" rel="stylesheet">
-        <link href="../css/base.css" rel="stylesheet">
-        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
-        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
-        <link href="../assets/_mkdocstrings.css" rel="stylesheet">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-        <script>hljs.highlightAll();</script> 
-    </head>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
 
-    <body>
-        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="..">McCole</a>
-                <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Expanded navigation -->
-                <div id="navbar-collapse" class="navbar-collapse collapse">
-                        <!-- Main navigation -->
-                        <ul class="nav navbar-nav">
-                            <li class="nav-item">
-                                <a href=".." class="nav-link">McCole</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../CODE_OF_CONDUCT/" class="nav-link">Code of Conduct</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../CONTRIBUTING/" class="nav-link">Contributing</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../LICENSE/" class="nav-link">MIT License</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../build/" class="nav-link">Build</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="./" class="nav-link active" aria-current="page">Check</a>
-                            </li>
-                        </ul>
-
-                    <ul class="nav navbar-nav ms-md-auto">
-                            <li class="nav-item">
-                                <a rel="prev" href="../build/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" class="nav-link disabled">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
-            <span class="fa fa-angle-down"></span>
-        </button>
-    </div>
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
-        <ul class="nav flex-column">
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check" class="nav-link">check</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check.check" class="nav-link">check</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check._check_all_html" class="nav-link">_check_all_html</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check._check_figure_structure" class="nav-link">_check_figure_structure</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check._check_glossary_redefinitions" class="nav-link">_check_glossary_redefinitions</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check._check_single_h1" class="nav-link">_check_single_h1</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check._check_table_structure" class="nav-link">_check_table_structure</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
-            <li class="nav-item" data-bs-level="2"><a href="#src.check._require" class="nav-link">_require</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-        </ul>
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mccole.check" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
-</div></div>
-                    <div class="col-md-9" role="main">
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="McCole" class="md-header__button md-logo" aria-label="McCole" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            McCole
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Check
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="McCole" class="md-nav__button md-logo" aria-label="McCole" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    McCole
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    McCole
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code of Conduct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LICENSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIT License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Check
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check.check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_all_html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_all_html
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_cross_references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_cross_references
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_figure_structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_figure_structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_glossary_redefinitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_glossary_redefinitions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_single_h1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_single_h1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_table_structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_table_structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_unknown_links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_unknown_links
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._get_crossref_definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _get_crossref_definitions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._require" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _require
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check.check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_all_html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_all_html
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_cross_references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_cross_references
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_figure_structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_figure_structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_glossary_redefinitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_glossary_redefinitions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_single_h1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_single_h1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_table_structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_table_structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._check_unknown_links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _check_unknown_links
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._get_crossref_definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _get_crossref_definitions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mccole.check._require" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _require
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Check</h1>
 
 <div class="doc doc-object doc-module">
 
 
 
-<a id="src.check"></a>
+<a id="mccole.check"></a>
     <div class="doc doc-contents first">
 
         <p>Check site.</p>
@@ -146,7 +657,7 @@
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -160,7 +671,7 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="src.check.check" class="doc doc-heading">
+<h2 id="mccole.check.check" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">check</span><span class="p">(</span><span class="n">options</span><span class="p">)</span></code>
 
 </h2>
@@ -171,9 +682,10 @@
         <p>Check the site.</p>
 
 
-            <details class="quote">
-              <summary>Source code in <code>src/check.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+<span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -186,18 +698,41 @@
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
-<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the site.&quot;&quot;&quot;</span>
-    <span class="n">links</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">load_links</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
     <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
 
     <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">dst_dir</span> <span class="o">/</span> <span class="s2">&quot;index.html&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">dst_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*/index.html&quot;</span><span class="p">))</span>
-    <span class="n">pages</span> <span class="o">=</span> <span class="p">{</span><span class="n">fp</span><span class="p">:</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read_text</span><span class="p">(),</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">}</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">fp</span><span class="p">:</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">paths</span>
+    <span class="p">}</span>
 
-    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_check_all_html</span><span class="p">,</span> <span class="n">_check_glossary_redefinitions</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="n">_check_all_html</span><span class="p">,</span>
+        <span class="n">_check_glossary_redefinitions</span><span class="p">,</span>
+    <span class="p">]:</span>
         <span class="n">func</span><span class="p">(</span><span class="n">pages</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_check_figure_structure</span><span class="p">,</span> <span class="n">_check_single_h1</span><span class="p">,</span> <span class="n">_check_table_structure</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;bibliography&quot;</span><span class="p">,</span> <span class="s2">&quot;glossary&quot;</span><span class="p">]:</span>
+        <span class="n">_check_cross_references</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="n">_check_figure_structure</span><span class="p">,</span>
+        <span class="n">_check_single_h1</span><span class="p">,</span>
+        <span class="n">_check_table_structure</span><span class="p">,</span>
+        <span class="n">_check_unknown_links</span><span class="p">,</span>
+    <span class="p">]:</span>
         <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">pages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">func</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -209,7 +744,7 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="src.check._check_all_html" class="doc doc-heading">
+<h2 id="mccole.check._check_all_html" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">_check_all_html</span><span class="p">(</span><span class="n">pages</span><span class="p">)</span></code>
 
 </h2>
@@ -220,12 +755,12 @@
         <p>Validate generated HTML.</p>
 
 
-            <details class="quote">
-              <summary>Source code in <code>src/check.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_all_html</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_all_html</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate generated HTML.&quot;&quot;&quot;</span>
     <span class="n">validator</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">()</span>
     <span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pages</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
@@ -238,7 +773,48 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="src.check._check_figure_structure" class="doc doc-heading">
+<h2 id="mccole.check._check_cross_references" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_check_cross_references</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Check that all cross-references match entries.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_cross_references</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that all cross-references match entries.&quot;&quot;&quot;</span>
+    <span class="n">known</span> <span class="o">=</span> <span class="n">_get_crossref_definitions</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">/#&quot;</span>
+    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">pages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">_require</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">known</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;unknown </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.check._check_figure_structure" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">_check_figure_structure</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span></code>
 
 </h2>
@@ -249,29 +825,29 @@
         <p>Check that all figures have IDs and captions.</p>
 
 
-            <details class="quote">
-              <summary>Source code in <code>src/check.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_figure_structure</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_figure_structure</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that all figures have IDs and captions.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">figure</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;figure&quot;</span><span class="p">):</span>
-        <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">figure</span><span class="o">.</span><span class="n">attrs</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;figure missing &#39;id&#39;&quot;</span><span class="p">)</span>
+        <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">figure</span><span class="o">.</span><span class="n">attrs</span><span class="p">,</span> <span class="s2">&quot;figure missing &#39;id&#39;&quot;</span><span class="p">)</span>
         <span class="n">captions</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;figcaption&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_require</span><span class="p">(</span>
-            <span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">captions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;missing/extra figure caption(s)&quot;</span>
+            <span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">captions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;missing/extra figure caption(s)&quot;</span>
         <span class="p">):</span>
             <span class="k">return</span>
         <span class="n">text</span> <span class="o">=</span> <span class="n">captions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">string</span>
@@ -289,7 +865,7 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="src.check._check_glossary_redefinitions" class="doc doc-heading">
+<h2 id="mccole.check._check_glossary_redefinitions" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">_check_glossary_redefinitions</span><span class="p">(</span><span class="n">pages</span><span class="p">)</span></code>
 
 </h2>
@@ -300,91 +876,10 @@
         <p>Check for glossary terms that are defined more than once.</p>
 
 
-            <details class="quote">
-              <summary>Source code in <code>src/check.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_glossary_redefinitions</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for glossary terms that are defined more than once.&quot;&quot;&quot;</span>
-    <span class="n">seen</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">pages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/glossary/#&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span>
-                <span class="s2">&quot;term-defined&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="p">[])</span>
-            <span class="p">):</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">seen</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">seen</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">_require</span><span class="p">(</span>
-            <span class="s2">&quot;&lt;global&gt;&quot;</span><span class="p">,</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;glossary entry &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; defined in </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">values</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="src.check._check_single_h1" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_check_single_h1</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Check that all pages have a single H1.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/check.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_single_h1</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that all pages have a single H1.&quot;&quot;&quot;</span>
-    <span class="n">titles</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">)</span>
-    <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2"> has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span><span class="si">}</span><span class="s2"> H1 elements&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="src.check._check_table_structure" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_check_table_structure</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Check that all tables have proper structure and IDs.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/check.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">81</span>
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">80</span>
+<span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
@@ -398,14 +893,91 @@
 <span class="normal">92</span>
 <span class="normal">93</span>
 <span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_table_structure</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_glossary_redefinitions</span><span class="p">(</span><span class="n">pages</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for glossary terms that are defined more than once.&quot;&quot;&quot;</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">pages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;a[href]&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/glossary/#&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s2">&quot;term-defined&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">seen</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">seen</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">_require</span><span class="p">(</span>
+            <span class="n">GLOBAL</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;glossary entry &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; defined in </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">values</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.check._check_single_h1" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_check_single_h1</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Check that all pages have a single H1.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_single_h1</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that all pages have a single H1.&quot;&quot;&quot;</span>
+    <span class="n">titles</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2"> has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span><span class="si">}</span><span class="s2"> H1 elements&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.check._check_table_structure" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_check_table_structure</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Check that all tables have proper structure and IDs.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_table_structure</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that all tables have proper structure and IDs.&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">):</span>
-        <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">attrs</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;table missing &#39;id&#39;&quot;</span><span class="p">)</span>
-        <span class="n">captions</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;caption&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_require</span><span class="p">(</span>
-            <span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">captions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;missing/extra table caption(s)&quot;</span>
-        <span class="p">):</span>
+    <span class="k">for</span> <span class="n">div</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div[data-caption]&quot;</span><span class="p">):</span>
+        <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">div</span><span class="o">.</span><span class="n">attrs</span><span class="p">,</span> <span class="s2">&quot;table missing &#39;id&#39;&quot;</span><span class="p">)</span>
+        <span class="n">captions</span> <span class="o">=</span> <span class="n">div</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;caption&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">captions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;missing/extra table caption(s)&quot;</span><span class="p">):</span>
             <span class="k">return</span>
         <span class="n">text</span> <span class="o">=</span> <span class="n">captions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">string</span>
         <span class="n">_require</span><span class="p">(</span>
@@ -422,7 +994,89 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="src.check._require" class="doc doc-heading">
+<h2 id="mccole.check._check_unknown_links" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_check_unknown_links</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Look for unresolved Markdown links.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_check_unknown_links</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look for unresolved Markdown links.&quot;&quot;&quot;</span>
+    <span class="n">unwanted</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="s2">&quot;pre&quot;</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">string</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">and</span> <span class="s2">&quot;][&quot;</span> <span class="ow">in</span> <span class="n">s</span><span class="p">):</span>
+        <span class="n">_require</span><span class="p">(</span>
+            <span class="n">filepath</span><span class="p">,</span>
+            <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">unwanted</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">parents</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;possible unresolved Markdown link &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.check._get_crossref_definitions" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_get_crossref_definitions</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get set of known cross-reference keys.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_get_crossref_definitions</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">pages</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get set of known cross-reference keys.&quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="s2">&quot;index.html&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_require</span><span class="p">(</span><span class="n">GLOBAL</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">pages</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">outer</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">):</span>
+        <span class="n">inner</span> <span class="o">=</span> <span class="n">outer</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">inner</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="mccole.check._require" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></code>
 
 </h2>
@@ -433,13 +1087,13 @@
         <p>Manage warning messages.</p>
 
 
-            <details class="quote">
-              <summary>Source code in <code>src/check.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/mccole/check.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Manage warning messages.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">condition</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
@@ -456,61 +1110,61 @@
 
     </div>
 
-</div></div>
-            </div>
-        </div>
-
-        <footer class="col-md-12">
-            <hr>
-            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script src="../js/bootstrap.bundle.min.js"></script>
-        <script>
-            var base_url = "..",
-                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
-        </script>
-        <script src="../js/base.js"></script>
-
-        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
 </div>
 
-    </body>
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
 </html>
