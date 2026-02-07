@@ -8,6 +8,7 @@ from markdown import markdown
 import sys
 import tomli
 
+from .inclusions import patch_inclusions
 from . import util
 
 
@@ -68,13 +69,14 @@ def _build_page(config, env, slug, src_path):
         _patch_bibliography_links,
         _patch_figure_numbers,
         _patch_glossary_links,
+        patch_inclusions,
         _patch_pre_code_classes,
         _patch_table_numbers,
         _patch_title,
         _patch_markdown_attribute,  # must be at the end
         _patch_root_links,  # must be at the end
     ]:
-        func(config, dst_path, doc)
+        func(config, src_path, dst_path, doc)
 
     try:
         dst_path.write_text(str(doc), encoding="utf-8")
@@ -340,36 +342,36 @@ def _make_root_prefix(config, path):
     return "./" if (depth == 0) else "../" * depth
 
 
-def _patch_bibliography_links(config, dst_path, doc):
+def _patch_bibliography_links(config, src_path, dst_path, doc):
     """Convert b: bibliography links."""
-    _patch_special_link(config, dst_path, doc, "b:", "bibliography", True)
+    _patch_special_link(config, src_path, dst_path, doc, "b:", "bibliography", True)
 
 
-def _patch_figure_numbers(config, dst_path, doc):
+def _patch_figure_numbers(config, src_path, dst_path, doc):
     """Insert figure numbers."""
     known = _collect_figure_numbers(dst_path, doc)
     _fill_element_numbers(dst_path, doc, "#f:", known, "Figure")
 
 
-def _patch_glossary_links(config, dst_path, doc):
+def _patch_glossary_links(config, src_path, dst_path, doc):
     """Convert g: glossary links."""
-    _patch_special_link(config, dst_path, doc, "g:", "glossary", False)
+    _patch_special_link(config, src_path, dst_path, doc, "g:", "glossary", False)
 
 
-def _patch_markdown_attribute(config, dst_path, doc):
+def _patch_markdown_attribute(config, src_path, dst_path, doc):
     """Remove markdown='1' attribute."""
     for node in doc.select("[markdown]"):
         del node["markdown"]
 
 
-def _patch_pre_code_classes(config, dst_path, doc):
+def _patch_pre_code_classes(config, src_path, dst_path, doc):
     """Add language classes to <pre> elements."""
     for node in doc.select("pre>code"):
         cls = node.get("class", [])
         node.parent["class"] = node.parent.get("class", []) + cls
 
 
-def _patch_root_links(config, dst_path, doc):
+def _patch_root_links(config, src_path, dst_path, doc):
     """Convert @ links to relative path to root."""
     prefix = _make_root_prefix(config, dst_path)
     targets = (
@@ -384,7 +386,7 @@ def _patch_root_links(config, dst_path, doc):
                 node[attr] = node[attr].replace("@/", prefix)
 
 
-def _patch_special_link(config, dst_path, doc, prefix, stem, change_text):
+def _patch_special_link(config, src_path, dst_path, doc, prefix, stem, change_text):
     """Patch specially-prefixed links."""
     for node in doc.select("a[href]"):
         if not node["href"].startswith(prefix):
@@ -396,13 +398,13 @@ def _patch_special_link(config, dst_path, doc, prefix, stem, change_text):
         node["href"] = _make_root_prefix(config, dst_path) + f"{stem}/#{key}"
 
 
-def _patch_table_numbers(config, dst_path, doc):
+def _patch_table_numbers(config, src_path, dst_path, doc):
     """Insert figure numbers."""
     known = _collect_table_numbers(dst_path, doc)
     _fill_element_numbers(dst_path, doc, "#t:", known, "Table")
 
 
-def _patch_terms_defined(config, dst_path, doc):
+def _patch_terms_defined(config, src_path, dst_path, doc):
     """Insert terms defined where requested."""
     paragraphs = doc.select("p#terms")
     if not paragraphs:
@@ -433,7 +435,7 @@ def _patch_terms_defined(config, dst_path, doc):
         para.append(tag)
 
 
-def _patch_title(config, dst_path, doc):
+def _patch_title(config, src_path, dst_path, doc):
     """Make sure the HTML title element is set."""
     if doc.title is None:
         util.warn(f"{dst_path} does not have <title> element")
