@@ -2,6 +2,11 @@
 
 import re
 from pathlib import Path
+from bs4 import BeautifulSoup
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_for_filename, get_lexer_by_name
+from pygments.util import ClassNotFound
 
 from . import util
 
@@ -33,13 +38,23 @@ def patch_inclusions(config, src_path, dst_path, doc):
         filters = node.get("data-filter", "")
         try:
             content = _include_file(config, src_path, inc_file, filters)
-            pre = doc.new_tag("pre")
-            code = doc.new_tag("code")
-            code.string = content
-            pre.append(code)
-            node.append(pre)
+            highlighted = _colorize_code(content, inc_file)
+            soup = BeautifulSoup(highlighted, "html.parser")
+            node.clear()
+            node.append(soup)
         except Exception as exc:
             util.warn(f"unable to include {inc_file} in {dst_path}: {exc}")
+
+
+def _colorize_code(content, filepath):
+    """Colorize code using pygments based on file type."""
+    try:
+        lexer = get_lexer_for_filename(str(filepath))
+    except ClassNotFound:
+        lexer = get_lexer_by_name("text")
+    
+    formatter = HtmlFormatter(cssclass="codehilite", wrapcode=True,)
+    return highlight(content, lexer, formatter)
 
 
 def _include_file(config, src_path, inc_file, filters):
