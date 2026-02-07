@@ -72,10 +72,32 @@ def _include_file(config, src_path, inc_file, filters):
 
 def _apply_filters(filepath, lines, filter_spec):
     """Apply a series of filters to the lines."""
-    filters = [f.strip() for f in filter_spec.split(";") if f.strip()]
-    for filter_str in filters:
-        lines = _apply_single_filter(filepath, lines, filter_str)
-    return lines
+
+    # Split on '+' to get separate filter chains
+    chains = [chain.strip() for chain in filter_spec.split("+") if chain.strip()]
+    if not chains:
+        return lines
+    
+    # Process each chain separately
+    results = []
+    for chain in chains:
+        # Split on '|' for pipeline within this chain
+        filters = [f.strip() for f in chain.split("|") if f.strip()]
+        chain_result = lines
+        for filter_str in filters:
+            chain_result = _apply_single_filter(filepath, chain_result, filter_str)
+        results.append(chain_result)
+    
+    # Join results with separator if multiple chains
+    if len(results) == 1:
+        return results[0]
+    else:
+        combined = []
+        for i, result in enumerate(results):
+            if i > 0:
+                combined.append("...more...")
+            combined.extend(result)
+        return combined
 
 
 def _apply_single_filter(filepath, lines, filter_str):
