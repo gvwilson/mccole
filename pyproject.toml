@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mccole"
-version = "1.5.3"
+version = "1.5.4"
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
@@ -47,7 +47,7 @@ mccole = "mccole.clui:main"
 
 [project.urls]
 Repository = "https://github.com/gvwilson/mccole"
-Documentation = "https://mccole.readthedocs.org"
+Documentation = "https://mccole.readthedocs.io"
 
 [tool.taskipy.tasks]
 build = {help = "build package", cmd = "python -m build"}
