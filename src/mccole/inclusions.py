@@ -19,6 +19,7 @@ COMMENT_FORMATS = {
     ".html": "<!--",
     ".java": "//",
     ".js": "//",
+    ".json": None,
     ".lua": "--",
     ".py": "#",
     ".r": "#",
@@ -36,8 +37,14 @@ def patch_inclusions(config, src_path, dst_path, doc):
     for node in doc.select("div[data-inc]"):
         inc_file = node["data-inc"]
         filters = node.get("data-filter", "")
+        omit = node.get("data-omit", "")
         try:
+            filepath = src_path.parent / inc_file
             content = _include_file(config, src_path, inc_file, filters)
+            # Apply data-omit AFTER the main filter
+            if omit:
+                lines = _filter_exclude(filepath, content.splitlines(), omit)
+                content = "\n".join(lines).strip()
             highlighted = _colorize_code(content, inc_file)
             soup = BeautifulSoup(highlighted, "html.parser")
             node.clear()
@@ -139,12 +146,15 @@ def _filter_tail(lines, n_str):
 
 def _filter_include(filepath, lines, marker):
     """Keep lines between mccole:marker comments."""
-    if not re.match(r"^\w+$", marker):
+    if not re.match(r"^[\w-]+$", marker):
         raise ValueError(
-            f"invalid marker (must be letters, digits, underscore): {marker}"
+            f"invalid marker (must be letters, digits, underscore, hyphen): {marker}"
         )
 
     comment_prefix = _get_comment_prefix(filepath)
+    if comment_prefix is None:
+        return lines[:]
+
     start_pattern = re.compile(
         rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*{re.escape(marker)}\s*$"
     )
@@ -162,14 +172,20 @@ def _filter_include(filepath, lines, marker):
         elif inside:
             result.append(line)
 
+    # Strip leading and trailing blank lines
+    while result and not result[0].strip():
+        result.pop(0)
+    while result and not result[-1].strip():
+        result.pop()
+
     return result
 
 
 def _filter_exclude(filepath, lines, marker):
     """Exclude lines between mccole:marker comments."""
-    if not re.match(r"^\w+$", marker):
+    if not re.match(r"^[\w-]+$", marker):
         raise ValueError(
-            f"invalid marker (must be letters, digits, underscore): {marker}"
+            f"invalid marker (must be letters, digits, underscore, hyphen): {marker}"
         )
 
     comment_prefix = _get_comment_prefix(filepath)
@@ -185,6 +201,12 @@ def _filter_exclude(filepath, lines, marker):
             inside = not inside
         elif not inside:
             result.append(line)
+
+    # Strip leading and trailing blank lines
+    while result and not result[0].strip():
+        result.pop(0)
+    while result and not result[-1].strip():
+        result.pop()
 
     return result
 

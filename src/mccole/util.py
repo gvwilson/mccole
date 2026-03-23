@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 
-EXTRAS_DIR = Path("extras")
+EXTRAS_DIR = Path("_extras")
 LINKS_PATH = EXTRAS_DIR / "links.md"
 
 

@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -850,7 +850,7 @@
             <span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">captions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;missing/extra figure caption(s)&quot;</span>
         <span class="p">):</span>
             <span class="k">return</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">captions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">string</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">captions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
         <span class="n">_require</span><span class="p">(</span>
             <span class="n">filepath</span><span class="p">,</span>
             <span class="n">RE_FIGURE_CAPTION</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">text</span><span class="p">),</span>
@@ -979,7 +979,7 @@
         <span class="n">captions</span> <span class="o">=</span> <span class="n">div</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;caption&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_require</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">captions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;missing/extra table caption(s)&quot;</span><span class="p">):</span>
             <span class="k">return</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">captions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">string</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">captions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
         <span class="n">_require</span><span class="p">(</span>
             <span class="n">filepath</span><span class="p">,</span>
             <span class="n">RE_TABLE_CAPTION</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">text</span><span class="p">),</span>

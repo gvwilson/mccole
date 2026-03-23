@@ -3,18 +3,23 @@
 from pathlib import Path
 
 from bs4 import BeautifulSoup
+import frontmatter as fm
 from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 import sys
 import tomli
 
 from .inclusions import patch_inclusions
+from .shortcodes import process_shortcodes
+from .index_build import build_index_page
 from . import util
 
 
 HOME_PAGE = Path("README.md")
 GLOSSARY_PATH = Path("glossary") / "index.md"
-TEMPLATE_DIR = "templates"
+BIBLIOGRAPHY_PATH = Path("bibliography") / "index.md"
+INDEX_PATH = Path("index") / "index.md"
+TEMPLATE_DIR = "_templates"
 TEMPLATE_PAGE = "page.html"
 TEMPLATE_SLIDES = "slides.html"
 
@@ -42,24 +47,52 @@ def build(options):
     env = Environment(loader=FileSystemLoader(config["templates"]))
     section_slugs, slides, others = _find_files(config)
 
-    _build_page(config, env, None, config["src"] / config["home_page"])
+    ix_entries = []
+
+    # Build home page
+    _build_page(config, env, None, config["src"] / config["home_page"], ix_entries)
+
+    # Build all section pages EXCEPT the index page (build it last)
     for slug in section_slugs:
-        _build_page(config, env, slug, config["order"][slug]["filepath"])
+        if slug == "index":
+            continue
+        _build_page(config, env, slug, config["order"][slug]["filepath"], ix_entries)
+
+    # Build slides and other files
     for filepath in slides:
-        _build_page(config, env, None, filepath)
+        _build_page(config, env, None, filepath, ix_entries)
     for filepath in others:
         _build_other(config, filepath)
 
+    # Build index page last so all ix_entries from other pages are available
+    if "index" in section_slugs and ix_entries:
+        _build_index_page(config, env, ix_entries)
+    elif "index" in section_slugs:
+        _build_page(config, env, "index", config["order"]["index"]["filepath"], ix_entries)
 
-def _build_page(config, env, slug, src_path):
+
+def _build_page(config, env, slug, src_path, ix_entries=None):
     """Handle a Markdown file."""
+    if ix_entries is None:
+        ix_entries = []
+
     content = src_path.read_text(encoding="utf-8")
-    with_links = f"{content}\n\n{config['links']}"
-    raw_html = markdown(with_links, extensions=MARKDOWN_EXTENSIONS)
+
+    # Parse frontmatter
+    post = fm.loads(content)
+    metadata = {k: v for k, v in post.metadata.items() if k != "version"}
+    body = post.content
+
+    # Process shortcodes BEFORE markdown conversion
+    body_with_links = f"{body}\n\n{config['links']}"
+    processed = process_shortcodes(body_with_links, config, src_path, ix_entries)
+
+    # Convert processed text to HTML
+    raw_html = markdown(processed, extensions=MARKDOWN_EXTENSIONS)
 
     template_name = TEMPLATE_SLIDES if src_path.name == "slides.md" else TEMPLATE_PAGE
     template = env.get_template(template_name)
-    context = _make_context(config, slug)
+    context = _make_context(config, slug, metadata)
     rendered_html = template.render(content=raw_html, **context)
 
     doc = BeautifulSoup(rendered_html, "html.parser")
@@ -75,6 +108,51 @@ def _build_page(config, env, slug, src_path):
         _patch_title,
         _patch_markdown_attribute,  # must be at the end
         _patch_root_links,  # must be at the end
+    ]:
+        func(config, src_path, dst_path, doc)
+
+    try:
+        dst_path.write_text(str(doc), encoding="utf-8")
+    except Exception as exc:
+        print(f"unable to write {dst_path} because {exc}")
+        sys.exit(1)
+
+
+def _build_index_page(config, env, ix_entries):
+    """Build the index page from collected ix_entries."""
+    slug = "index"
+    src_path = config["order"][slug]["filepath"]
+
+    # Generate index Markdown content from collected entries
+    index_content = build_index_page(ix_entries, config)
+
+    # Read frontmatter from existing index file if it exists
+    if src_path.exists():
+        post = fm.loads(src_path.read_text(encoding="utf-8"))
+        metadata = {k: v for k, v in post.metadata.items() if k != "version"}
+    else:
+        metadata = {"title": "Index"}
+
+    template = env.get_template(TEMPLATE_PAGE)
+    context = _make_context(config, slug, metadata)
+
+    raw_html = markdown(index_content, extensions=MARKDOWN_EXTENSIONS)
+    rendered_html = template.render(content=raw_html, **context)
+
+    doc = BeautifulSoup(rendered_html, "html.parser")
+    dst_path = _make_output_path(config, src_path, suffix=".html")
+
+    for func in [
+        _patch_terms_defined,
+        _patch_bibliography_links,
+        _patch_figure_numbers,
+        _patch_glossary_links,
+        patch_inclusions,
+        _patch_pre_code_classes,
+        _patch_table_numbers,
+        _patch_title,
+        _patch_markdown_attribute,
+        _patch_root_links,
     ]:
         func(config, src_path, dst_path, doc)
 
@@ -206,11 +284,7 @@ def _is_interesting_file(config, excludes, filepath):
         return False
     if filepath.samefile(config["config"]):
         return False
-    if filepath.is_relative_to(config["dst"]):
-        return False
-    if filepath.is_relative_to(config["extras"]):
-        return False
-    if filepath.is_relative_to(config["templates"]):
+    if any(filepath.is_relative_to(x) for x in [config["dst"], config["extras"], config["templates"]]):
         return False
 
     for s in config["skips"]:
@@ -233,7 +307,11 @@ def _load_configuration(options):
     home_page = options.root
     order = _load_order(options.src, home_page)
 
+    mccole_config = config.get("tool", {}).get("mccole", {})
+    book_title = mccole_config.get("title", _load_book_title(options.src, home_page))
+
     return {
+        "book_title": book_title,
         "config": config_path,
         "dst": options.dst,
         "extras": options.src / util.EXTRAS_DIR,
@@ -244,8 +322,21 @@ def _load_configuration(options):
         "src": options.src,
         "templates": options.src / TEMPLATE_DIR,
         "verbose": options.verbose,
-        **config.get("tool", {}).get("mccole", {}),
+        **mccole_config,
     }
+
+
+def _load_book_title(src_path, home_page):
+    """Extract the H1 title from the home page as the book title."""
+    try:
+        md = (src_path / home_page).read_text(encoding="utf-8")
+        post = fm.loads(md)
+        html = markdown(post.content, extensions=MARKDOWN_EXTENSIONS)
+        doc = BeautifulSoup(html, "html.parser")
+        h1 = doc.find("h1")
+        return h1.get_text() if h1 else ""
+    except Exception:
+        return ""
 
 
 def _load_glossary(src_path):
@@ -289,18 +380,21 @@ def _load_order_section(doc, selector, labeller):
     }
 
 
-def _make_context(config, slug):
+def _make_context(config, slug, metadata=None):
     """Make rendering context for a particular file."""
+    if metadata is None:
+        metadata = {}
     order = config["order"]
+    # Use a local variable name to avoid shadowing the parameter 'slug'
     context = {
         "lessons": [
-            (slug, entry["title"])
-            for slug, entry in order.items()
+            (s, entry["title"])
+            for s, entry in order.items()
             if entry["kind"] == "lessons"
         ],
         "appendices": [
-            (slug, entry["title"])
-            for slug, entry in order.items()
+            (s, entry["title"])
+            for s, entry in order.items()
             if entry["kind"] == "appendices"
         ],
     }
@@ -310,12 +404,22 @@ def _make_context(config, slug):
         prev_title = None
         next_link = None
         next_title = None
+        context["chapter_number"] = None
+        context["chapter_kind"] = None
     else:
         entry = order[slug]
         prev_link = entry["previous"]
         prev_title = None if prev_link is None else order[prev_link]["title"]
         next_link = entry["next"]
         next_title = None if next_link is None else order[next_link]["title"]
+        context["chapter_number"] = entry["number"]
+        context["chapter_kind"] = entry["kind"]
+
+    # Merge frontmatter metadata into context (page-level title, syllabus, etc.)
+    context.update(metadata)
+
+    # Always expose book_title (site-wide title from config)
+    context.setdefault("book_title", config.get("book_title", ""))
 
     return {"prev": (prev_link, prev_title), "next": (next_link, next_title), **context}
 
@@ -440,7 +544,8 @@ def _patch_title(config, src_path, dst_path, doc):
     if doc.title is None:
         util.warn(f"{dst_path} does not have <title> element")
         return
-    try:
-        doc.title.string = doc.h1.get_text()
-    except Exception:
+    h1 = doc.find("h1")
+    if h1:
+        doc.title.string = h1.get_text()
+    else:
         util.warn(f"{dst_path} lacks H1 heading")

@@ -69,7 +69,7 @@ def _check_figure_structure(options, filepath, doc):
             filepath, len(captions) == 1, "missing/extra figure caption(s)"
         ):
             return
-        text = captions[0].string
+        text = captions[0].get_text()
         _require(
             filepath,
             RE_FIGURE_CAPTION.match(text),
@@ -108,7 +108,7 @@ def _check_table_structure(options, filepath, doc):
         captions = div.select("caption")
         if not _require(filepath, len(captions) == 1, "missing/extra table caption(s)"):
             return
-        text = captions[0].string
+        text = captions[0].get_text()
         _require(
             filepath,
             RE_TABLE_CAPTION.match(text),
