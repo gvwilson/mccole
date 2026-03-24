@@ -104,7 +104,10 @@ def _build_page(config, env, slug, src_path, ix_entries=None):
         _patch_glossary_links,
         patch_inclusions,
         _patch_pre_code_classes,
+        _patch_pre_accessibility,
+        _patch_exercise_labels,
         _patch_table_numbers,
+        _patch_th_scope,
         _patch_title,
         _patch_markdown_attribute,  # must be at the end
         _patch_root_links,  # must be at the end
@@ -149,7 +152,10 @@ def _build_index_page(config, env, ix_entries):
         _patch_glossary_links,
         patch_inclusions,
         _patch_pre_code_classes,
+        _patch_pre_accessibility,
+        _patch_exercise_labels,
         _patch_table_numbers,
+        _patch_th_scope,
         _patch_title,
         _patch_markdown_attribute,
         _patch_root_links,
@@ -421,6 +427,15 @@ def _make_context(config, slug, metadata=None):
     # Always expose book_title (site-wide title from config)
     context.setdefault("book_title", config.get("book_title", ""))
 
+    # Expose language code so the <html lang="..."> attribute can be set per book
+    context.setdefault("lang", config.get("lang", "en"))
+
+    # description falls back to book_title if not set in page frontmatter
+    context.setdefault("description", config.get("description", context.get("book_title", "")))
+
+    # Expose current slug so the nav template can mark the active page
+    context["current_slug"] = slug
+
     return {"prev": (prev_link, prev_title), "next": (next_link, next_title), **context}
 
 
@@ -468,11 +483,40 @@ def _patch_markdown_attribute(config, src_path, dst_path, doc):
         del node["markdown"]
 
 
+def _patch_exercise_labels(config, src_path, dst_path, doc):
+    """Add aria-label to exercise sections so screen reader landmark navigation works."""
+    for node in doc.select("section.exercises"):
+        if not node.get("aria-label"):
+            node["aria-label"] = "Exercises"
+
+
+def _patch_pre_accessibility(config, src_path, dst_path, doc):
+    """Make scrollable <pre> blocks keyboard-focusable and label them with their language."""
+    for node in doc.select("pre"):
+        node["tabindex"] = "0"
+        # Extract language from class like "language-python" → "python"
+        classes = node.get("class", [])
+        for cls in classes:
+            if cls.startswith("language-"):
+                node["data-lang"] = cls[len("language-"):]
+                break
+
+
 def _patch_pre_code_classes(config, src_path, dst_path, doc):
     """Add language classes to <pre> elements."""
     for node in doc.select("pre>code"):
         cls = node.get("class", [])
         node.parent["class"] = node.parent.get("class", []) + cls
+
+
+def _patch_th_scope(config, src_path, dst_path, doc):
+    """Add scope attributes to <th> elements for screen reader table navigation."""
+    for node in doc.select("thead th"):
+        if not node.get("scope"):
+            node["scope"] = "col"
+    for node in doc.select("tbody th"):
+        if not node.get("scope"):
+            node["scope"] = "row"
 
 
 def _patch_root_links(config, src_path, dst_path, doc):

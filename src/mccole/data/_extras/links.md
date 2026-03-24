@@ -1,1 +1,0 @@
-[mccole]: https://github.com/gvwilson/mccole
