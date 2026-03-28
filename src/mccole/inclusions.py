@@ -36,15 +36,24 @@ def patch_inclusions(config, src_path, dst_path, doc):
     """Replace div elements with included file content."""
     for node in doc.select("div[data-inc]"):
         inc_file = node["data-inc"]
-        filters = node.get("data-filter", "")
+        mark = node.get("data-mark", "")
         omit = node.get("data-omit", "")
+        head = node.get("data-head", "")
+        scrub = node.get("data-scrub", "")
         try:
             filepath = src_path.parent / inc_file
-            content = _include_file(config, src_path, inc_file, filters)
-            # Apply data-omit AFTER the main filter
+            if not filepath.exists():
+                raise FileNotFoundError(f"file {inc_file} not found")
+            lines = filepath.read_text(encoding="utf-8").splitlines()
+            if mark:
+                lines = _filter_include(filepath, lines, mark)
             if omit:
-                lines = _filter_exclude(filepath, content.splitlines(), omit)
-                content = "\n".join(lines).strip()
+                lines = _filter_exclude(filepath, lines, omit)
+            if head:
+                lines = _filter_head(lines, head)
+            if scrub:
+                lines = _filter_scrub(lines, scrub)
+            content = "\n".join(lines)
             highlighted = _colorize_code(content, inc_file)
             soup = BeautifulSoup(highlighted, "html.parser")
             node.clear()
@@ -64,68 +73,6 @@ def _colorize_code(content, filepath):
     return highlight(content, lexer, formatter)
 
 
-def _include_file(config, src_path, inc_file, filters):
-    """Load and filter a file."""
-    filepath = src_path.parent / inc_file
-    if not filepath.exists():
-        raise FileNotFoundError(f"file {inc_file} not found")
-
-    content = filepath.read_text(encoding="utf-8")
-    lines = content.splitlines()
-    if filters:
-        lines = _apply_filters(filepath, lines, filters)
-    return "\n".join(lines)
-
-
-def _apply_filters(filepath, lines, filter_spec):
-    """Apply a series of filters to the lines."""
-
-    # Split on '+' to get separate filter chains
-    chains = [chain.strip() for chain in filter_spec.split("+") if chain.strip()]
-    if not chains:
-        return lines
-    
-    # Process each chain separately
-    results = []
-    for chain in chains:
-        # Split on '|' for pipeline within this chain
-        filters = [f.strip() for f in chain.split("|") if f.strip()]
-        chain_result = lines
-        for filter_str in filters:
-            chain_result = _apply_single_filter(filepath, chain_result, filter_str)
-        results.append(chain_result)
-    
-    # Join results with separator if multiple chains
-    if len(results) == 1:
-        return results[0]
-    else:
-        combined = []
-        for i, result in enumerate(results):
-            if i > 0:
-                combined.append("...more...")
-            combined.extend(result)
-        return combined
-
-
-def _apply_single_filter(filepath, lines, filter_str):
-    """Apply a single filter to the lines."""
-    if filter_str.count("=") != 1:
-        raise ValueError(f"invalid filter format: {filter_str}")
-
-    filter_type, filter_value = [f.strip() for f in filter_str.split("=")]
-
-    if filter_type == "head":
-        return _filter_head(lines, filter_value)
-    elif filter_type == "tail":
-        return _filter_tail(lines, filter_value)
-    elif filter_type == "inc":
-        return _filter_include(filepath, lines, filter_value)
-    elif filter_type == "exc":
-        return _filter_exclude(filepath, lines, filter_value)
-    else:
-        raise ValueError(f"unknown filter type: {filter_type}")
-
-
 def _filter_head(lines, n_str):
     """Keep the first N lines."""
     try:
@@ -135,13 +82,13 @@ def _filter_head(lines, n_str):
         raise ValueError(f"invalid head count: {n_str}")
 
 
-def _filter_tail(lines, n_str):
-    """Keep the last N lines."""
+def _filter_scrub(lines, pattern):
+    """Remove substrings matching pattern from each line."""
     try:
-        n = int(n_str)
-        return lines[-n:] if n > 0 else []
-    except ValueError:
-        raise ValueError(f"invalid tail count: {n_str}")
+        compiled = re.compile(pattern)
+    except re.error as exc:
+        raise ValueError(f"invalid scrub pattern '{pattern}': {exc}")
+    return [compiled.sub("", line).rstrip() for line in lines]
 
 
 def _filter_include(filepath, lines, marker):

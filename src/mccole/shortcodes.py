@@ -171,23 +171,18 @@ def _handle_inc(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     mark = kwargs.get("mark", "")
     omit = kwargs.get("omit", "")
     head = kwargs.get("head", "")
-    tail = kwargs.get("tail", "")
+    scrub = kwargs.get("scrub", "")
 
     attrs = [f'data-inc="{filename}"']
 
-    if mark and omit:
-        attrs.append(f'data-filter="inc={mark}"')
+    if mark:
+        attrs.append(f'data-mark="{mark}"')
+    if omit:
         attrs.append(f'data-omit="{omit}"')
-    elif mark:
-        attrs.append(f'data-filter="inc={mark}"')
-    elif omit:
-        attrs.append(f'data-filter="exc={omit}"')
-    elif head and tail:
-        attrs.append(f'data-filter="head={head} + tail={tail}"')
     elif head:
-        attrs.append(f'data-filter="head={head}"')
-    elif tail:
-        attrs.append(f'data-filter="tail={tail}"')
+        attrs.append(f'data-head="{head}"')
+    if scrub:
+        attrs.append(f'data-scrub="{scrub}"')
 
     attr_str = " ".join(attrs)
     return f"<div {attr_str}></div>"
