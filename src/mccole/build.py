@@ -44,6 +44,8 @@ MARKDOWN_EXTENSIONS = [
 def build(options):
     """Build the site."""
     config = _load_configuration(options)
+    if options.extra:
+        config["extra_html"] = Path(options.extra).read_text(encoding="utf-8")
     env = Environment(loader=FileSystemLoader(config["templates"]))
     section_slugs, slides, others = _find_files(config)
 
@@ -435,6 +437,7 @@ def _make_context(config, slug, metadata=None):
 
     # Expose current slug so the nav template can mark the active page
     context["current_slug"] = slug
+    context["extra_html"] = config.get("extra_html", "")
 
     return {"prev": (prev_link, prev_title), "next": (next_link, next_title), **context}
 

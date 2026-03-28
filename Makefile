@@ -8,8 +8,8 @@ commands:
 	| sed -e 's/## //g' \
 	| column -t -s ':'
 
-## build: build package
-build:
+## package: build package
+package:
 	python -m build
 
 ## check: check code issues

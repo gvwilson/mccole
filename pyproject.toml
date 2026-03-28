@@ -1,10 +1,6 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "mccole"
-version = "2.2.0"
+dynamic = ["version"]
 requires-python = ">=3.12"
 authors = [
     {name = "Greg Wilson", email = "gvwilson@third-bit.com"},
@@ -25,27 +21,33 @@ dependencies = [
     "html5validator>=0.4.2",
     "jinja2>=3.1.6",
     "markdown>=3.10",
-    "mkdocs>=1.6.1",
-    "mkdocstrings[python]>=1.0.0",
-    "mkdocs-material>=9.7.1",
     "pygments>=2.19.2",
-    "tomli>=2.3.0",
     "python-frontmatter>=1.1.0",
-    "bibtexparser>=1.4.4",
+    "tomli>=2.3.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/gvwilson/mccole"
+Documentation = "https://mccole.readthedocs.io"
 
 [dependency-groups]
 dev = [
     "build>=1.3.0",
     "markdown-include>=0.8.1",
+    "mkdocs-material>=9.7.1",
+    "mkdocs>=1.6.1",
+    "mkdocstrings[python]>=1.0.0",
     "pytest>=9.0.2",
     "ruff>=0.14.10",
     "twine>=6.2.0"
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/mccole/__init__.py"
+
 [project.scripts]
 mccole = "mccole.clui:main"
-
-[project.urls]
-Repository = "https://github.com/gvwilson/mccole"
-Documentation = "https://mccole.readthedocs.io"
