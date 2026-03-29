@@ -88,7 +88,12 @@ def _filter_scrub(lines, pattern):
         compiled = re.compile(pattern)
     except re.error as exc:
         raise ValueError(f"invalid scrub pattern '{pattern}': {exc}")
-    return [compiled.sub("", line).rstrip() for line in lines]
+    result = []
+    for line in lines:
+        scrubbed = compiled.sub("", line).rstrip()
+        if scrubbed == line or scrubbed:
+            result.append(scrubbed)
+    return result
 
 
 def _filter_include(filepath, lines, marker):
