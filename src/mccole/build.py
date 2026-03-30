@@ -326,6 +326,7 @@ def _load_configuration(options):
         "glossary": glossary,
         "home_page": home_page,
         "links": links,
+        "math": options.math,
         "order": order,
         "src": options.src,
         "templates": options.src / TEMPLATE_DIR,
@@ -438,6 +439,7 @@ def _make_context(config, slug, metadata=None):
     # Expose current slug so the nav template can mark the active page
     context["current_slug"] = slug
     context["extra_html"] = config.get("extra_html", "")
+    context["math"] = config.get("math", False)
 
     return {"prev": (prev_link, prev_title), "next": (next_link, next_title), **context}
 

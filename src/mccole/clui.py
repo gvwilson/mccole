@@ -48,6 +48,7 @@ def _make_build_parser(parser):
     )
     parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
     parser.add_argument("--extra", type=Path, default=None, help="extra HTML to include in page <head>")
+    parser.add_argument("--math", action="store_true", help="enable KaTeX math rendering")
 
 
 def _make_check_parser(parser):
