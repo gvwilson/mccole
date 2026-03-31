@@ -1,0 +1,6 @@
+[project]
+name = "mini"
+description = "minimal mccole site for testing"
+
+[tool.mccole]
+skips = ["*~", "extras/**"]

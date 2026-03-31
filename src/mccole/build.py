@@ -323,6 +323,7 @@ def _load_configuration(options):
         "config": config_path,
         "dst": options.dst,
         "extras": options.src / util.EXTRAS_DIR,
+        "forma": options.forma,
         "glossary": glossary,
         "home_page": home_page,
         "links": links,
@@ -439,6 +440,7 @@ def _make_context(config, slug, metadata=None):
     # Expose current slug so the nav template can mark the active page
     context["current_slug"] = slug
     context["extra_html"] = config.get("extra_html", "")
+    context["forma"] = config.get("forma", False)
     context["math"] = config.get("math", False)
 
     return {"prev": (prev_link, prev_title), "next": (next_link, next_title), **context}
