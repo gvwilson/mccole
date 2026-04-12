@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import frontmatter as fm
 from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
+import re
 import sys
 import tomli
 
@@ -316,9 +317,11 @@ def _load_configuration(options):
     order = _load_order(options.src, home_page)
 
     mccole_config = config.get("tool", {}).get("mccole", {})
+    book_repo = mccole_config.get("repo", _load_book_repo(options.src, home_page))
     book_title = mccole_config.get("title", _load_book_title(options.src, home_page))
 
     return {
+        "book_repo": book_repo,
         "book_title": book_title,
         "config": config_path,
         "dst": options.dst,
@@ -336,15 +339,22 @@ def _load_configuration(options):
     }
 
 
+def _load_book_repo(src_path, home_page):
+    """Extract the '[repo]' link from the home page."""
+    try:
+        md = (src_path / home_page).read_text(encoding="utf-8")
+        m = re.search(r'^\[repo\]:\s+(.+)$', md, re.MULTILINE)
+        return m.group(1).strip() if m else ""
+    except Exception:
+        return ""
+
+
 def _load_book_title(src_path, home_page):
     """Extract the H1 title from the home page as the book title."""
     try:
         md = (src_path / home_page).read_text(encoding="utf-8")
-        post = fm.loads(md)
-        html = markdown(post.content, extensions=MARKDOWN_EXTENSIONS)
-        doc = BeautifulSoup(html, "html.parser")
-        h1 = doc.find("h1")
-        return h1.get_text() if h1 else ""
+        m = re.search(r'^#\s+(.+)$', md, re.MULTILINE)
+        return m.group(1).strip() if m else ""
     except Exception:
         return ""
 
@@ -428,7 +438,8 @@ def _make_context(config, slug, metadata=None):
     # Merge frontmatter metadata into context (page-level title, syllabus, etc.)
     context.update(metadata)
 
-    # Always expose book_title (site-wide title from config)
+    # Always expose book_repo and book_title (site-wide title from config)
+    context.setdefault("book_repo", config.get("book_repo", ""))
     context.setdefault("book_title", config.get("book_title", ""))
 
     # Expose language code so the <html lang="..."> attribute can be set per book

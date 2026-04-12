@@ -64,16 +64,6 @@ def process_shortcodes(text, config, src_path, ix_entries):
 # ---------------------------------------------------------------------------
 
 
-def _handle_g(pargs, kwargs, config, src_path, ix_entries, ix_counter):
-    """[%g key "text" %] → glossary link."""
-    if not pargs:
-        util.warn(f"[%g%] shortcode missing key in {src_path}")
-        return ""
-    key = pargs[0]
-    text = pargs[1] if len(pargs) > 1 else key
-    return f'<a class="gl-ref" href="@/glossary/#{key}">{text}</a>'
-
-
 def _handle_b(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%b key1 key2 … %] → bibliography links."""
     if not pargs:
@@ -82,7 +72,7 @@ def _handle_b(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     parts = []
     for key in pargs:
         parts.append(f'<a class="bib-ref" href="@/bibliography/#{key}">{key}</a>')
-    return ", ".join(parts)
+    return "[" + ", ".join(parts) + "]"
 
 
 def _handle_f(pargs, kwargs, config, src_path, ix_entries, ix_counter):
@@ -92,6 +82,16 @@ def _handle_f(pargs, kwargs, config, src_path, ix_entries, ix_counter):
         return ""
     slug = pargs[0]
     return f'<a class="fig-ref" href="#f:{slug}"></a>'
+
+
+def _handle_g(pargs, kwargs, config, src_path, ix_entries, ix_counter):
+    """[%g key "text" %] → glossary link."""
+    if not pargs:
+        util.warn(f"[%g%] shortcode missing key in {src_path}")
+        return ""
+    key = pargs[0]
+    text = pargs[1] if len(pargs) > 1 else key
+    return f'<a class="gl-ref" href="@/glossary/#{key}">{text}</a>'
 
 
 def _handle_t(pargs, kwargs, config, src_path, ix_entries, ix_counter):

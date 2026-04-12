@@ -1,5 +1,7 @@
 # Mini McCole Site
 
+[Project repository][repo]
+
 ## Lessons
 
 <div id="lessons" markdown="1">
@@ -20,3 +22,5 @@
 1.  [Glossary](@/glossary/)
 
 </div>
+
+[repo]: https://github.com/gvwilson/mccole
