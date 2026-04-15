@@ -30,6 +30,7 @@ def check(options):
         func(pages)
 
     for kind in ["bibliography", "glossary"]:
+        _check_alphabetical(options, pages, kind)
         _check_cross_references(options, pages, kind)
 
     for func in [
@@ -48,9 +49,16 @@ def _check_all_html(pages):
     validator.validate(list(pages.keys()))
 
 
+def _check_alphabetical(options, pages, kind):
+    """Check that keys are in alphabetical order."""
+    known = _get_crossref_definitions(options, pages, kind)
+    for i in range(1, len(known)):
+        _require(kind, known[i] >= known[i-1], f"out-of-order key {known[i]}")
+
+
 def _check_cross_references(options, pages, kind):
     """Check that all cross-references match entries."""
-    known = _get_crossref_definitions(options, pages, kind)
+    known = set(_get_crossref_definitions(options, pages, kind))
     prefix = f"/{kind}/#"
     for path, doc in pages.items():
         for node in doc.select("a[href]"):
@@ -133,10 +141,10 @@ def _get_crossref_definitions(options, pages, kind):
     if not _require(GLOBAL, path in pages, f"{kind} {path} not found"):
         return
     doc = pages[path]
-    result = set()
+    result = []
     for outer in doc.find_all("dt"):
         inner = outer.find("span")
-        result.add(inner.attrs["id"])
+        result.append(inner.attrs["id"])
     return result
 
 
