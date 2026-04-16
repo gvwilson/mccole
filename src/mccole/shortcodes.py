@@ -2,7 +2,6 @@
 
 import re
 import shlex
-from pathlib import Path
 
 from . import util
 
@@ -58,6 +57,22 @@ def process_shortcodes(text, config, src_path, ix_entries):
     return _SHORTCODE_RE.sub(_replace, text)
 
 
+def _missing_shortcode_arg(tag, name, src_path, default=""):
+    """Warn consistently when a shortcode argument is missing."""
+    util.warn(f"[%{tag}%] shortcode missing {name} in {src_path}")
+    return default
+
+
+def _page_slug(src_path):
+    """Determine the page slug for index entry IDs."""
+    return "home" if src_path.name == "README.md" else src_path.parent.name
+
+
+def _crossref_link(css_class, href, text=""):
+    """Build a simple anchor element."""
+    return f'<a class="{css_class}" href="{href}">{text}</a>'
+
+
 # ---------------------------------------------------------------------------
 # Individual shortcode handlers
 # All have signature: (pargs, kwargs, config, src_path, ix_entries, ix_counter) -> str
@@ -67,72 +82,59 @@ def process_shortcodes(text, config, src_path, ix_entries):
 def _handle_b(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%b key1 key2 … %] → bibliography links."""
     if not pargs:
-        util.warn(f"[%b%] shortcode missing keys in {src_path}")
-        return ""
-    parts = []
-    for key in pargs:
-        parts.append(f'<a class="bib-ref" href="@/bibliography/#{key}">{key}</a>')
+        return _missing_shortcode_arg("b", "keys", src_path)
+    parts = [
+        _crossref_link("bib-ref", f"@/bibliography/#{key}", key) for key in pargs
+    ]
     return "[" + ", ".join(parts) + "]"
 
 
 def _handle_f(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%f slug %] → figure cross-reference (text filled in by post-processor)."""
     if not pargs:
-        util.warn(f"[%f%] shortcode missing slug in {src_path}")
-        return ""
-    slug = pargs[0]
-    return f'<a class="fig-ref" href="#f:{slug}"></a>'
+        return _missing_shortcode_arg("f", "slug", src_path)
+    return _crossref_link("fig-ref", f"#f:{pargs[0]}")
 
 
 def _handle_g(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%g key "text" %] → glossary link."""
     if not pargs:
-        util.warn(f"[%g%] shortcode missing key in {src_path}")
-        return ""
+        return _missing_shortcode_arg("g", "key", src_path)
     key = pargs[0]
     text = pargs[1] if len(pargs) > 1 else key
-    return f'<a class="gl-ref" href="@/glossary/#{key}">{text}</a>'
+    return _crossref_link("gl-ref", f"@/glossary/#{key}", text)
 
 
 def _handle_t(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%t slug %] → table cross-reference (text filled in by post-processor)."""
     if not pargs:
-        util.warn(f"[%t%] shortcode missing slug in {src_path}")
-        return ""
-    slug = pargs[0]
-    return f'<a class="tbl-ref" href="#t:{slug}"></a>'
+        return _missing_shortcode_arg("t", "slug", src_path)
+    return _crossref_link("tbl-ref", f"#t:{pargs[0]}")
 
 
 def _handle_x(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%x slug %] → cross-reference to another chapter/appendix."""
     if not pargs:
-        util.warn(f"[%x%] shortcode missing slug in {src_path}")
-        return ""
+        return _missing_shortcode_arg("x", "slug", src_path)
     slug = pargs[0]
     order = config.get("order", {})
     if slug not in order:
         util.warn(f"[%x%] unknown slug '{slug}' in {src_path}")
-        return f'<a class="xref" href="@/{slug}/">{slug}</a>'
+        return _crossref_link("xref", f"@/{slug}/", slug)
     entry = order[slug]
     label = "Chapter" if entry["kind"] == "lessons" else "Appendix"
     number = entry["number"]
-    return f'<a class="xref" href="@/{slug}/">{label} {number}</a>'
+    return _crossref_link("xref", f"@/{slug}/", f"{label} {number}")
 
 
 def _handle_i(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%i "key" "text" %] or [%i "key" %] → index entry span."""
     if not pargs:
-        util.warn(f"[%i%] shortcode missing key in {src_path}")
-        return ""
+        return _missing_shortcode_arg("i", "key", src_path)
     key = pargs[0]
     text = pargs[1] if len(pargs) > 1 else key
 
-    # Determine page slug for UID
-    if src_path.name == "README.md":
-        page_slug = "home"
-    else:
-        page_slug = src_path.parent.name
-
+    page_slug = _page_slug(src_path)
     ix_counter[0] += 1
     uid = f"ix-{page_slug}-{ix_counter[0]}"
 
@@ -144,8 +146,7 @@ def _handle_i(pargs, kwargs, config, src_path, ix_entries, ix_counter):
 def _handle_linecount(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%linecount file %] → count of non-blank lines in file."""
     if not pargs:
-        util.warn(f"[%linecount%] shortcode missing filename in {src_path}")
-        return "0"
+        return _missing_shortcode_arg("linecount", "filename", src_path, "0")
     filename = pargs[0]
     filepath = src_path.parent / filename
     try:

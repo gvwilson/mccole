@@ -23,15 +23,13 @@ def check(options):
         fp: BeautifulSoup(fp.read_text(encoding="utf-8"), "html.parser") for fp in paths
     }
 
-    for func in [
-        _check_all_html,
-        _check_glossary_redefinitions,
-    ]:
+    for func in [_check_all_html, _check_glossary_redefinitions]:
         func(pages)
 
     for kind in ["bibliography", "glossary"]:
         _check_alphabetical(options, pages, kind)
         _check_cross_references(options, pages, kind)
+        _check_unused_crossref_definitions(options, pages, kind)
 
     for func in [
         _check_figure_structure,
@@ -68,21 +66,23 @@ def _check_cross_references(options, pages, kind):
             _require(path, key in known, f"unknown {kind} key {key}")
 
 
+def _check_element_structure(filepath, doc, selector, kind, caption_selector, pattern):
+    """Check that figure-like elements have IDs and captions."""
+    for node in doc.select(selector):
+        if not _require(filepath, "id" in node.attrs, f"{kind} missing 'id'"):
+            continue
+        captions = node.select(caption_selector)
+        if not _require(filepath, len(captions) == 1, f"missing/extra {kind} caption(s)"):
+            continue
+        text = captions[0].get_text()
+        _require(filepath, pattern.match(text), f"badly-formatted {kind} caption '{text}'")
+
+
 def _check_figure_structure(options, filepath, doc):
     """Check that all figures have IDs and captions."""
-    for figure in doc.select("figure"):
-        _require(filepath, "id" in figure.attrs, "figure missing 'id'")
-        captions = figure.select("figcaption")
-        if not _require(
-            filepath, len(captions) == 1, "missing/extra figure caption(s)"
-        ):
-            return
-        text = captions[0].get_text()
-        _require(
-            filepath,
-            RE_FIGURE_CAPTION.match(text),
-            f"badly-formatted figure caption '{text}'",
-        )
+    _check_element_structure(
+        filepath, doc, "figure", "figure", "figcaption", RE_FIGURE_CAPTION
+    )
 
 
 def _check_glossary_redefinitions(pages):
@@ -111,17 +111,9 @@ def _check_single_h1(options, filepath, doc):
 
 def _check_table_structure(options, filepath, doc):
     """Check that all tables have proper structure and IDs."""
-    for div in doc.select("div[data-caption]"):
-        _require(filepath, "id" in div.attrs, "table missing 'id'")
-        captions = div.select("caption")
-        if not _require(filepath, len(captions) == 1, "missing/extra table caption(s)"):
-            return
-        text = captions[0].get_text()
-        _require(
-            filepath,
-            RE_TABLE_CAPTION.match(text),
-            f"badly-formatted table caption '{text}'",
-        )
+    _check_element_structure(
+        filepath, doc, "div[data-caption]", "table", "caption", RE_TABLE_CAPTION
+    )
 
 
 def _check_unknown_links(options, filepath, doc):
@@ -139,13 +131,32 @@ def _get_crossref_definitions(options, pages, kind):
     """Get set of known cross-reference keys."""
     path = Path(options.dst, kind, "index.html")
     if not _require(GLOBAL, path in pages, f"{kind} {path} not found"):
-        return
+        return []
     doc = pages[path]
-    result = []
-    for outer in doc.find_all("dt"):
-        inner = outer.find("span")
-        result.append(inner.attrs["id"])
-    return result
+    return [outer.find("span").attrs["id"] for outer in doc.find_all("dt")]
+
+
+def _get_crossref_usage(pages, kind):
+    """Get the set of referenced keys for one cross-reference kind."""
+    used = set()
+    prefix = f"/{kind}/#"
+    for doc in pages.values():
+        for node in doc.select("a[href]"):
+            href = node["href"]
+            if prefix not in href:
+                continue
+            if (kind == "glossary") and ("term-defined" in node.get("class", [])):
+                continue
+            used.add(href.split("#")[-1])
+    return used
+
+
+def _check_unused_crossref_definitions(options, pages, kind):
+    """Report defined cross-reference entries that are never referenced."""
+    known = set(_get_crossref_definitions(options, pages, kind))
+    used = _get_crossref_usage(pages, kind)
+    for key in sorted(known - used):
+        _require(GLOBAL, False, f"unused {kind} key {key}")
 
 
 def _require(filepath, condition, message):

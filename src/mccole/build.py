@@ -22,7 +22,6 @@ BIBLIOGRAPHY_PATH = Path("bibliography") / "index.md"
 INDEX_PATH = Path("index") / "index.md"
 TEMPLATE_DIR = "_templates"
 TEMPLATE_PAGE = "page.html"
-TEMPLATE_SLIDES = "slides.html"
 
 STANDARD_FILES = {
     "README.md": "",
@@ -48,7 +47,7 @@ def build(options):
     if options.extra:
         config["extra_html"] = Path(options.extra).read_text(encoding="utf-8")
     env = Environment(loader=FileSystemLoader(config["templates"]))
-    section_slugs, slides, others = _find_files(config)
+    section_slugs, others = _find_files(config)
 
     ix_entries = []
 
@@ -61,9 +60,7 @@ def build(options):
             continue
         _build_page(config, env, slug, config["order"][slug]["filepath"], ix_entries)
 
-    # Build slides and other files
-    for filepath in slides:
-        _build_page(config, env, None, filepath, ix_entries)
+    # Build other files
     for filepath in others:
         _build_other(config, filepath)
 
@@ -93,35 +90,8 @@ def _build_page(config, env, slug, src_path, ix_entries=None):
     # Convert processed text to HTML
     raw_html = markdown(processed, extensions=MARKDOWN_EXTENSIONS)
 
-    template_name = TEMPLATE_SLIDES if src_path.name == "slides.md" else TEMPLATE_PAGE
-    template = env.get_template(template_name)
-    context = _make_context(config, slug, metadata)
-    rendered_html = template.render(content=raw_html, **context)
-
-    doc = BeautifulSoup(rendered_html, "html.parser")
     dst_path = _make_output_path(config, src_path, suffix=".html")
-    for func in [
-        _patch_terms_defined,  # must be before _patch_glossary_links
-        _patch_bibliography_links,
-        _patch_figure_numbers,
-        _patch_glossary_links,
-        patch_inclusions,
-        _patch_pre_code_classes,
-        _patch_pre_accessibility,
-        _patch_exercise_labels,
-        _patch_table_numbers,
-        _patch_th_scope,
-        _patch_title,
-        _patch_markdown_attribute,  # must be at the end
-        _patch_root_links,  # must be at the end
-    ]:
-        func(config, src_path, dst_path, doc)
-
-    try:
-        dst_path.write_text(str(doc), encoding="utf-8")
-    except Exception as exc:
-        print(f"unable to write {dst_path} because {exc}")
-        sys.exit(1)
+    _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, TEMPLATE_PAGE)
 
 
 def _build_index_page(config, env, ix_entries):
@@ -139,37 +109,9 @@ def _build_index_page(config, env, ix_entries):
     else:
         metadata = {"title": "Index"}
 
-    template = env.get_template(TEMPLATE_PAGE)
-    context = _make_context(config, slug, metadata)
-
     raw_html = markdown(index_content, extensions=MARKDOWN_EXTENSIONS)
-    rendered_html = template.render(content=raw_html, **context)
-
-    doc = BeautifulSoup(rendered_html, "html.parser")
     dst_path = _make_output_path(config, src_path, suffix=".html")
-
-    for func in [
-        _patch_terms_defined,
-        _patch_bibliography_links,
-        _patch_figure_numbers,
-        _patch_glossary_links,
-        patch_inclusions,
-        _patch_pre_code_classes,
-        _patch_pre_accessibility,
-        _patch_exercise_labels,
-        _patch_table_numbers,
-        _patch_th_scope,
-        _patch_title,
-        _patch_markdown_attribute,
-        _patch_root_links,
-    ]:
-        func(config, src_path, dst_path, doc)
-
-    try:
-        dst_path.write_text(str(doc), encoding="utf-8")
-    except Exception as exc:
-        print(f"unable to write {dst_path} because {exc}")
-        sys.exit(1)
+    _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, TEMPLATE_PAGE)
 
 
 def _build_other(config, src_path):
@@ -178,67 +120,75 @@ def _build_other(config, src_path):
     dst_path.write_bytes(src_path.read_bytes())
 
 
-def _collect_figure_numbers(dst_path, doc):
-    """Number figures and return IDs."""
-    prefix = "f:"
+def _collect_element_numbers(
+    dst_path, doc, selector, prefix, kind, get_caption_node, labeler
+):
+    """Number figure-like elements and return IDs."""
     known = {}
-    for i, node in enumerate(doc.select("figure")):
-        num = i + 1
-
+    for num, node in enumerate(doc.select(selector), start=1):
         if "id" not in node.attrs:
-            util.warn(f"figure {num} in {dst_path} has no ID")
+            util.warn(f"{kind} {num} in {dst_path} has no ID")
             continue
 
         if not node["id"].startswith(prefix):
             util.warn(
-                f"figure {num} ID {node['id']} in {dst_path} does not start with '{prefix}'"
+                f"{kind} {num} ID {node['id']} in {dst_path} does not start with '{prefix}'"
             )
             continue
 
-        all_captions = node.select("figcaption")
-        if len(all_captions) != 1:
-            util.warn(
-                f"figure {num} ID {node['id']} in {dst_path} has missing/too many figcaption"
-            )
+        caption_node = get_caption_node(doc, node, num, dst_path)
+        if caption_node is None:
             continue
 
         known[node["id"]] = num
-        caption = all_captions[0]
-        caption.insert(0, f"Figure {num}: ")
+        labeler(caption_node, num, node)
 
     return known
+
+
+def _collect_figure_numbers(dst_path, doc):
+    """Number figures and return IDs."""
+
+    def get_caption_node(doc, node, num, dst_path):
+        captions = node.select("figcaption")
+        if len(captions) != 1:
+            util.warn(
+                f"figure {num} ID {node['id']} in {dst_path} has missing/too many figcaption"
+            )
+            return None
+        return captions[0]
+
+    def labeler(caption, num, node):
+        caption.insert(0, f"Figure {num}: ")
+
+    return _collect_element_numbers(
+        dst_path, doc, "figure", "f:", "figure", get_caption_node, labeler
+    )
 
 
 def _collect_table_numbers(dst_path, doc):
     """Number tables and return IDs."""
-    prefix = "t:"
-    known = {}
-    num = 1
-    for node in doc.select("div"):
-        if ("id" not in node.attrs) or (not node["id"].startswith(prefix)):
-            continue
 
+    def get_caption_node(doc, node, num, dst_path):
         if "data-caption" not in node.attrs:
+            util.warn(f"table {num} ID {node['id']} in {dst_path} has no data-caption")
+            return None
+        tables = node.select("table")
+        if len(tables) != 1:
             util.warn(
-                f"table div {num} ID {node['id']} in {dst_path} has no data-caption"
+                f"table {num} ID {node['id']} in {dst_path} has missing/too many tables"
             )
-            continue
+            return None
+        return tables[0]
 
-        all_tables = node.select("table")
-        if len(all_tables) != 1:
-            util.warn(
-                f"table div {num} ID {node['id']} in {dst_path} has missing/too many tables"
-            )
-            continue
-
-        table = all_tables[0]
+    def labeler(table, num, node):
         caption = doc.new_tag("caption")
         caption.string = f"Table {num}: {node['data-caption']}"
         table.insert(0, caption)
-        known[node["id"]] = num
-        num += 1
 
-    return known
+    return _collect_element_numbers(
+        dst_path, doc, "div[id^='t:']", "t:", "table", get_caption_node, labeler
+    )
 
 
 def _fill_element_numbers(dst_path, doc, prefix, known, text):
@@ -260,18 +210,15 @@ def _find_files(config):
     order = config["order"]
     slugs = set(order.keys())
 
-    slides = {f for f in config["src"].glob("*/slides.md")}
-
     excludes = {config["src"] / config["home_page"]}
     excludes |= {value["filepath"] for value in config["order"].values()}
-    excludes |= slides
 
     others = {
         f
         for f in config["src"].glob("*/**")
         if _is_interesting_file(config, excludes, f)
     }
-    return slugs, slides, others
+    return slugs, others
 
 
 def _get_slug_from_link(raw):
@@ -319,8 +266,10 @@ def _load_configuration(options):
     mccole_config = config.get("tool", {}).get("mccole", {})
     book_repo = mccole_config.get("repo", _load_book_repo(options.src, home_page))
     book_title = mccole_config.get("title", _load_book_title(options.src, home_page))
+    brand = mccole_config.get("brand", book_title)
 
     return {
+        "brand": brand,
         "book_repo": book_repo,
         "book_title": book_title,
         "config": config_path,
@@ -400,6 +349,41 @@ def _load_order_section(doc, selector, labeller):
     }
 
 
+def _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, template_name):
+    """Render, patch, and write one page."""
+    template = env.get_template(template_name)
+    context = _make_context(config, slug, metadata)
+    rendered_html = template.render(content=raw_html, **context)
+    doc = BeautifulSoup(rendered_html, "html.parser")
+    for func in _page_patchers():
+        func(config, src_path, dst_path, doc)
+
+    try:
+        dst_path.write_text(str(doc), encoding="utf-8")
+    except Exception as exc:
+        print(f"unable to write {dst_path} because {exc}")
+        sys.exit(1)
+
+
+def _page_patchers():
+    """Return the ordered list of DOM patch functions."""
+    return [
+        _patch_terms_defined,
+        _patch_bibliography_links,
+        _patch_figure_numbers,
+        _patch_glossary_links,
+        patch_inclusions,
+        _patch_pre_code_classes,
+        _patch_pre_accessibility,
+        _patch_exercise_labels,
+        _patch_table_numbers,
+        _patch_th_scope,
+        _patch_title,
+        _patch_markdown_attribute,
+        _patch_root_links,
+    ]
+
+
 def _make_context(config, slug, metadata=None):
     """Make rendering context for a particular file."""
     if metadata is None:
@@ -438,7 +422,8 @@ def _make_context(config, slug, metadata=None):
     # Merge frontmatter metadata into context (page-level title, syllabus, etc.)
     context.update(metadata)
 
-    # Always expose book_repo and book_title (site-wide title from config)
+    # Always expose book_repo, book_title, and brand (site-wide values from config)
+    context.setdefault("brand", config.get("brand", context.get("book_title", "")))
     context.setdefault("book_repo", config.get("book_repo", ""))
     context.setdefault("book_title", config.get("book_title", ""))
 
