@@ -1,5 +1,8 @@
 # Introduction
 
+<div class="row" markdown="1">
+<div class="col-6" markdown="1">
+
 A plain paragraph with *italics*, **bold**, and `some code` followed by text.
 
 -   First
@@ -23,6 +26,16 @@ term
 another term
 :   another definition
 
+</div>
+<div class="col-6" markdown="1">
+
+-   Top item
+    -   Sub-item
+    -   Sub-item
+-   Second item
+    -   Sub-item
+    -   Sub-item
+
 <div class="callout" markdown="1">
 
 A callout with *italics*, **bold**, and `some code`.
@@ -33,3 +46,6 @@ A callout with *italics*, **bold**, and `some code`.
 def python():
     print("code!")
 ```
+
+</div>
+</div>
