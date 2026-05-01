@@ -8,6 +8,8 @@ import sys
 from bs4 import BeautifulSoup
 from html5validator.validator import Validator
 
+from . import util
+
 
 GLOBAL = "<global>"
 RE_FIGURE_CAPTION = re.compile(r"^Figure\s+\d+:")
@@ -23,11 +25,14 @@ def check(options):
         fp: BeautifulSoup(fp.read_text(encoding="utf-8"), "html.parser") for fp in paths
     }
 
+    _check_tabs_in_markdown(options)
+
     for func in [_check_all_html, _check_glossary_redefinitions]:
         func(pages)
 
+    _check_bibliography_alphabetical(options, pages)
+    _check_glossary_alphabetical(options, pages)
     for kind in ["bibliography", "glossary"]:
-        _check_alphabetical(options, pages, kind)
         _check_cross_references(options, pages, kind)
         _check_unused_crossref_definitions(options, pages, kind)
 
@@ -47,11 +52,18 @@ def _check_all_html(pages):
     validator.validate(list(pages.keys()))
 
 
-def _check_alphabetical(options, pages, kind):
-    """Check that keys are in alphabetical order."""
-    known = _get_crossref_definitions(options, pages, kind)
+def _check_bibliography_alphabetical(options, pages):
+    """Check that bibliography keys are in alphabetical order."""
+    known = _get_crossref_definitions(options, pages, "bibliography")
     for i in range(1, len(known)):
-        _require(kind, known[i] >= known[i-1], f"out-of-order key {known[i]}")
+        _require("bibliography", known[i] >= known[i-1], f"out-of-order key {known[i]}")
+
+
+def _check_glossary_alphabetical(options, pages):
+    """Check that glossary terms are in alphabetical order by lower-case term text."""
+    terms = _get_glossary_term_texts(options, pages)
+    for i in range(1, len(terms)):
+        _require("glossary", terms[i].lower() >= terms[i-1].lower(), f"out-of-order term '{terms[i]}'")
 
 
 def _check_cross_references(options, pages, kind):
@@ -125,6 +137,26 @@ def _check_unknown_links(options, filepath, doc):
             any(p.name in unwanted for p in text.parents),
             f"possible unresolved Markdown link '{text}'",
         )
+
+
+def _check_tabs_in_markdown(options):
+    """Report tab characters in Markdown source files."""
+    order = util.load_order(options.src, options.root)
+    md_paths = [options.src / options.root]
+    md_paths.extend(entry["filepath"] for entry in order.values())
+    for md_path in sorted(md_paths):
+        for line_num, line in enumerate(md_path.read_text(encoding="utf-8").splitlines(), start=1):
+            if "\t" in line:
+                _require(f"{md_path}:{line_num}", False, "tab character in Markdown source")
+
+
+def _get_glossary_term_texts(options, pages):
+    """Get glossary term texts (not IDs) in document order."""
+    path = Path(options.dst, "glossary", "index.html")
+    if not _require(GLOBAL, path in pages, f"glossary {path} not found"):
+        return []
+    doc = pages[path]
+    return [dt.get_text().strip() for dt in doc.find_all("dt")]
 
 
 def _get_crossref_definitions(options, pages, kind):

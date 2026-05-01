@@ -16,29 +16,11 @@ from .index_build import build_index_page
 from . import util
 
 
-HOME_PAGE = Path("README.md")
 GLOSSARY_PATH = Path("glossary") / "index.md"
 BIBLIOGRAPHY_PATH = Path("bibliography") / "index.md"
 INDEX_PATH = Path("index") / "index.md"
 TEMPLATE_DIR = "_templates"
 TEMPLATE_PAGE = "page.html"
-
-STANDARD_FILES = {
-    "README.md": "",
-    "CODE_OF_CONDUCT.md": "conduct",
-    "CONTRIBUTING.md": "contributing",
-    "LICENSE.md": "license",
-}
-REVERSE_FILES = {value: key for key, value in STANDARD_FILES.items() if value != ""}
-
-MARKDOWN_EXTENSIONS = [
-    "attr_list",
-    "codehilite",
-    "def_list",
-    "fenced_code",
-    "md_in_html",
-    "tables",
-]
 
 
 def build(options):
@@ -88,7 +70,7 @@ def _build_page(config, env, slug, src_path, ix_entries=None):
     processed = process_shortcodes(body_with_links, config, src_path, ix_entries)
 
     # Convert processed text to HTML
-    raw_html = markdown(processed, extensions=MARKDOWN_EXTENSIONS)
+    raw_html = markdown(processed, extensions=util.MARKDOWN_EXTENSIONS)
 
     dst_path = _make_output_path(config, src_path, suffix=".html")
     _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, TEMPLATE_PAGE)
@@ -109,7 +91,7 @@ def _build_index_page(config, env, ix_entries):
     else:
         metadata = {"title": "Index"}
 
-    raw_html = markdown(index_content, extensions=MARKDOWN_EXTENSIONS)
+    raw_html = markdown(index_content, extensions=util.MARKDOWN_EXTENSIONS)
     dst_path = _make_output_path(config, src_path, suffix=".html")
     _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, TEMPLATE_PAGE)
 
@@ -221,12 +203,6 @@ def _find_files(config):
     return slugs, others
 
 
-def _get_slug_from_link(raw):
-    """Convert '@/something/' to 'something'."""
-    assert raw.startswith("@/") and raw.endswith("/")
-    return raw[2:-1]
-
-
 def _is_interesting_file(config, excludes, filepath):
     """Is this file worth copying over?"""
     if not filepath.is_file():
@@ -261,7 +237,7 @@ def _load_configuration(options):
     glossary = _load_glossary(options.src)
 
     home_page = options.root
-    order = _load_order(options.src, home_page)
+    order = util.load_order(options.src, home_page)
 
     mccole_config = config.get("tool", {}).get("mccole", {})
     book_repo = mccole_config.get("repo", _load_book_repo(options.src, home_page))
@@ -311,42 +287,9 @@ def _load_book_title(src_path, home_page):
 def _load_glossary(src_path):
     """Load glossary keys and terms."""
     md = (src_path / GLOSSARY_PATH).read_text(encoding="utf-8")
-    html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
+    html = markdown(md, extensions=util.MARKDOWN_EXTENSIONS)
     doc = BeautifulSoup(html, "html.parser")
     return {node["id"]: node.decode_contents() for node in doc.select("span[id]")}
-
-
-def _load_order(src_path, home_page):
-    """Determine section order from home page file."""
-    md = (src_path / home_page).read_text(encoding="utf-8")
-    html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
-    doc = BeautifulSoup(html, "html.parser")
-    lessons = _load_order_section(doc, "lessons", lambda i: str(i + 1))
-    appendices = _load_order_section(doc, "appendices", lambda i: chr(ord("A") + i))
-    combined = {**lessons, **appendices}
-
-    flattened = list(combined.keys())
-    for i, slug in enumerate(flattened):
-        combined[slug]["previous"] = flattened[i - 1] if i > 0 else None
-        combined[slug]["next"] = flattened[i + 1] if i < (len(flattened) - 1) else None
-        combined[slug]["filepath"] = src_path / REVERSE_FILES.get(
-            slug, Path(slug) / "index.md"
-        )
-
-    return combined
-
-
-def _load_order_section(doc, selector, labeller):
-    """Load a section of the table of contents from README.md DOM."""
-    div = f"div#{selector}"
-    return {
-        _get_slug_from_link(node["href"]): {
-            "number": labeller(i),
-            "kind": selector,
-            "title": node.decode_contents(),
-        }
-        for i, node in enumerate(doc.select(div)[0].select("a[href]"))
-    }
 
 
 def _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, template_name):
@@ -444,8 +387,8 @@ def _make_context(config, slug, metadata=None):
 
 def _make_output_path(config, src_path, suffix=None):
     """Generate output file path."""
-    if src_path.name in STANDARD_FILES:
-        dst_path = config["dst"] / STANDARD_FILES[src_path.name] / "index.md"
+    if src_path.name in util.STANDARD_FILES:
+        dst_path = config["dst"] / util.STANDARD_FILES[src_path.name] / "index.md"
     elif src_path.name == config["home_page"].name:
         dst_path = config["dst"] / "index.md"
     else:
