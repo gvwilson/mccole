@@ -284,9 +284,9 @@ details.explanation {
 details.explanation > summary {
     cursor: pointer;
     color: var(--color-primary);
-    list-style: disclosure-closed;
+    list-style: inside disclosure-closed;
     padding: var(--len-quarter) 0;
 }
 details.explanation[open] > summary {
-    list-style: disclosure-open;
+    list-style: inside disclosure-open;
 }
