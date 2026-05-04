@@ -1,3 +1,3 @@
 """A simple static site generator for tutorials"""
 
-__version__ = "3.0.0"
+__version__ = "3.0.1"
