@@ -8,6 +8,7 @@ import sys
 from .build import build
 from .check import check
 from .create import create
+from .single_page import build_single_page
 
 
 def main():
@@ -29,7 +30,10 @@ def main():
     if args.version:
         print(importlib.metadata.version("mccole"))
     elif args.command in commands:
-        commands[args.command][0](args)
+        result = commands[args.command][0](args)
+        if args.command == "build" and getattr(args, "single_page", None):
+            config, env = result
+            build_single_page(config, env, args.single_page)
     else:
         print(f"unknown command {args.command}", file=sys.stderr)
         sys.exit(1)
@@ -44,6 +48,7 @@ def _make_build_parser(parser):
         "--dst", type=Path, default=Path("docs"), help="destination directory"
     )
     parser.add_argument("--extra", type=Path, default=None, help="extra HTML to include in page <head>")
+    parser.add_argument("--single-page", type=Path, default=None, help="output path for single-page version")
     parser.add_argument("--forma", action="store_true", help="enable formative assessments")
     parser.add_argument("--math", action="store_true", help="enable KaTeX math rendering")
     parser.add_argument(

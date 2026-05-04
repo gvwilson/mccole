@@ -52,6 +52,8 @@ def build(options):
     elif "index" in section_slugs:
         _build_page(config, env, "index", config["order"]["index"]["filepath"], ix_entries)
 
+    return config, env
+
 
 def _build_page(config, env, slug, src_path, ix_entries=None):
     """Handle a Markdown file."""
@@ -308,6 +310,20 @@ def _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, temp
         sys.exit(1)
 
 
+def _fragment_patchers():
+    """Patchers safe to run before link-rewriting and numbering (used by single-page build)."""
+    return [
+        _patch_terms_defined,
+        patch_inclusions,
+        _patch_pre_code_classes,
+        _patch_pre_accessibility,
+        _patch_exercise_labels,
+        _patch_th_scope,
+        _patch_title,
+        _patch_markdown_attribute,
+    ]
+
+
 def _page_patchers():
     """Return the ordered list of DOM patch functions."""
     return [
@@ -325,6 +341,32 @@ def _page_patchers():
         _patch_markdown_attribute,
         _patch_root_links,
     ]
+
+
+def _build_page_fragment(config, env, slug, src_path, ix_entries=None):
+    """Build a page and return (metadata, dst_path, doc) without writing or link-patching."""
+    if ix_entries is None:
+        ix_entries = []
+
+    content = src_path.read_text(encoding="utf-8")
+    post = fm.loads(content)
+    metadata = {k: v for k, v in post.metadata.items() if k != "version"}
+    body = post.content
+
+    body_with_links = f"{body}\n\n{config['links']}"
+    processed = process_shortcodes(body_with_links, config, src_path, ix_entries)
+    raw_html = markdown(processed, extensions=util.MARKDOWN_EXTENSIONS)
+
+    dst_path = _make_output_path(config, src_path, suffix=".html")
+    template = env.get_template(TEMPLATE_PAGE)
+    context = _make_context(config, slug, metadata)
+    rendered_html = template.render(content=raw_html, **context)
+    doc = BeautifulSoup(rendered_html, "html.parser")
+
+    for func in _fragment_patchers():
+        func(config, src_path, dst_path, doc)
+
+    return metadata, dst_path, doc
 
 
 def _make_context(config, slug, metadata=None):

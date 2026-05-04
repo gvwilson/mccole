@@ -10,6 +10,12 @@ plain:
 	@mccole create --dst . --force
 	@mccole build --src . --dst docs
 
+## single: build HTML including single-page version
+single:
+	@rm -rf ./docs
+	@mccole create --dst . --force
+	@mccole build --src . --dst docs --single-page docs/all.html
+
 ## forma: build HTML with forma
 forma:
 	@rm -rf ./docs

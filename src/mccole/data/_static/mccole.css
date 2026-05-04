@@ -130,6 +130,11 @@ img.img-90 {
     align-items: baseline;
 }
 
+/* Remove Chota's default 2rem left padding so brand aligns with body text */
+.nav .brand {
+    padding-left: 0;
+}
+
 /* Make dropdown a flex container so its button participates in baseline alignment */
 .nav .dropdown {
     display: flex;
