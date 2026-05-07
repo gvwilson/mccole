@@ -5,6 +5,7 @@ import importlib.metadata
 from pathlib import Path
 import sys
 
+from .bib import bib
 from .build import build
 from .check import check
 from .create import create
@@ -14,6 +15,7 @@ from .single_page import build_single_page
 def main():
     """Main driver."""
     commands = {
+        "bib": (bib, _make_bib_parser, "validate bibliography"),
         "build": (build, _make_build_parser, "build site"),
         "check": (check, _make_check_parser, "check site"),
         "create": (create, _make_create_parser, "create site"),
@@ -37,6 +39,14 @@ def main():
     else:
         print(f"unknown command {args.command}", file=sys.stderr)
         sys.exit(1)
+
+
+def _make_bib_parser(parser):
+    """Parse command-line arguments for validating bibliography."""
+    parser.add_argument(
+        "--config", default=Path("pyproject.toml"), help="configuration file"
+    )
+    parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
 
 
 def _make_build_parser(parser):

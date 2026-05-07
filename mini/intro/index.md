@@ -1,5 +1,7 @@
 # Introduction
 
+[%inc example.py %]
+
 <div class="row" markdown="1">
 <div class="col-6" markdown="1">
 

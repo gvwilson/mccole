@@ -56,7 +56,23 @@ def patch_inclusions(config, src_path, dst_path, doc):
             content = "\n".join(lines)
             highlighted = _colorize_code(content, inc_file)
             soup = BeautifulSoup(highlighted, "html.parser")
+            try:
+                display_path = str(filepath.relative_to(config["src"]))
+            except ValueError:
+                display_path = inc_file
+            icon = soup.new_tag(
+                "span",
+                attrs={
+                    "class": "inc-path",
+                    "tabindex": "0",
+                    "role": "img",
+                    "aria-label": f"Source: {display_path}",
+                    "title": display_path,
+                },
+            )
+            icon.string = "i"
             node.clear()
+            node.append(icon)
             node.append(soup)
         except Exception as exc:
             util.warn(f"unable to include {inc_file} in {dst_path}: {exc}")

@@ -31,6 +31,8 @@ def check(options):
         func(pages)
 
     _check_bibliography_alphabetical(options, pages)
+    _check_bibliography_key_mismatch(options, pages)
+    _check_bibliography_bare_isbns(options, pages)
     _check_glossary_alphabetical(options, pages)
     for kind in ["bibliography", "glossary"]:
         _check_cross_references(options, pages, kind)
@@ -181,6 +183,40 @@ def _get_crossref_usage(pages, kind):
                 continue
             used.add(href.split("#")[-1])
     return used
+
+
+def _check_bibliography_key_mismatch(options, pages):
+    """Check that each bibliography span id matches its text content."""
+    path = Path(options.dst, "bibliography", "index.html")
+    if not _require(GLOBAL, path in pages, f"bibliography {path} not found"):
+        return
+    doc = pages[path]
+    for dt in doc.find_all("dt"):
+        span = dt.find("span", id=True)
+        if span is None:
+            continue
+        span_id = span["id"]
+        span_text = span.get_text().strip()
+        _require("bibliography", span_id == span_text,
+                 f"key mismatch: id='{span_id}' text='{span_text}'")
+
+
+RE_BARE_ISBN = re.compile(r"\b97[89][-\d]{10,}\b|\b\d{9}[\dX]\b")
+
+
+def _check_bibliography_bare_isbns(options, pages):
+    """Warn about ISBN strings in bibliography definitions that are not hyperlinked."""
+    path = Path(options.dst, "bibliography", "index.html")
+    if path not in pages:
+        return
+    doc = pages[path]
+    for dd in doc.find_all("dd"):
+        bare_text = "".join(
+            str(s) for s in dd.strings
+            if not any(parent.name == "a" for parent in s.parents)
+        )
+        for match in RE_BARE_ISBN.finditer(bare_text):
+            print(f"warning: bibliography: bare ISBN '{match.group()}'", file=sys.stderr)
 
 
 def _check_unused_crossref_definitions(options, pages, kind):
