@@ -11,24 +11,24 @@ from pygments.util import ClassNotFound
 from . import util
 
 
-# Comment prefixes for different file types
+# Comment prefix and suffix for different file types
 COMMENT_FORMATS = {
-    ".c": "//",
-    ".cpp": "//",
-    ".css": "//",
-    ".html": "<!--",
-    ".java": "//",
-    ".js": "//",
-    ".json": None,
-    ".lua": "--",
-    ".py": "#",
-    ".r": "#",
-    ".rs": "//",
-    ".sh": "#",
-    ".sql": "--",
-    ".ts": "//",
-    ".txt": "#",
-    ".xml": "<!--",
+    ".c":    ("//",   ""),
+    ".cpp":  ("//",   ""),
+    ".css":  ("//",   ""),
+    ".html": ("<!--", "-->"),
+    ".java": ("//",   ""),
+    ".js":   ("//",   ""),
+    ".json": (None,   ""),
+    ".lua":  ("--",   ""),
+    ".py":   ("#",    ""),
+    ".r":    ("#",    ""),
+    ".rs":   ("//",   ""),
+    ".sh":   ("#",    ""),
+    ".sql":  ("--",   ""),
+    ".ts":   ("//",   ""),
+    ".txt":  ("#",    ""),
+    ".xml":  ("<!--", "-->"),
 }
 
 
@@ -119,15 +119,16 @@ def _filter_include(filepath, lines, marker):
             f"invalid marker (must be letters, digits, underscore, hyphen): {marker}"
         )
 
-    comment_prefix = _get_comment_prefix(filepath)
+    comment_prefix, comment_suffix = _get_comment_format(filepath)
     if comment_prefix is None:
         return lines[:]
 
+    suffix_pat = rf"\s*{re.escape(comment_suffix)}" if comment_suffix else ""
     start_pattern = re.compile(
-        rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*{re.escape(marker)}\s*$"
+        rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*{re.escape(marker)}{suffix_pat}\s*$"
     )
     end_pattern = re.compile(
-        rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*/{re.escape(marker)}\s*$"
+        rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*/{re.escape(marker)}{suffix_pat}\s*$"
     )
 
     result = []
@@ -156,9 +157,10 @@ def _filter_exclude(filepath, lines, marker):
             f"invalid marker (must be letters, digits, underscore, hyphen): {marker}"
         )
 
-    comment_prefix = _get_comment_prefix(filepath)
+    comment_prefix, comment_suffix = _get_comment_format(filepath)
+    suffix_pat = rf"\s*{re.escape(comment_suffix)}" if comment_suffix else ""
     start_pattern = re.compile(
-        rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*{re.escape(marker)}\s*$"
+        rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*{re.escape(marker)}{suffix_pat}\s*$"
     )
 
     result = []
@@ -179,8 +181,8 @@ def _filter_exclude(filepath, lines, marker):
     return result
 
 
-def _get_comment_prefix(filepath):
-    """Determine the comment prefix for a file based on its extension."""
+def _get_comment_format(filepath):
+    """Return (prefix, suffix) comment delimiters for a file based on its extension."""
     suffix = Path(filepath).suffix.lower()
     if suffix not in COMMENT_FORMATS:
         raise ValueError(f"unsupported file type: {suffix}")
