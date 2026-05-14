@@ -274,26 +274,6 @@ def _handle_issue(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     return f'<span class="issue">issue {num}</span>'
 
 
-def _handle_thanks(pargs, kwargs, config, src_path, ix_entries, ix_counter):
-    """[% thanks %] → comma-separated list of contributor names from info/thanks.yml."""
-    import yaml as _yaml
-    # Look for thanks.yml relative to project root (parent of src)
-    root = config["src"].parent if config["src"].name != "." else config["src"]
-    thanks_path = config["extras"] / "thanks.yml"
-    try:
-        data = _yaml.safe_load(thanks_path.read_text(encoding="utf-8")) or []
-        names = []
-        for person in data:
-            if person.get("order", "pf") == "pf":
-                names.append(f"{person['personal']} {person['family']}")
-            else:
-                names.append(f"{person['family']} {person['personal']}")
-        return ", ".join(names)
-    except Exception as exc:
-        util.warn(f"[%thanks%] unable to read {thanks_path}: {exc}")
-        return "the contributors"
-
-
 # ---------------------------------------------------------------------------
 # Handler dispatch table
 # ---------------------------------------------------------------------------
@@ -311,5 +291,4 @@ _HANDLERS = {
     "table": _handle_table,
     "fixme": _handle_fixme,
     "issue": _handle_issue,
-    "thanks": _handle_thanks,
 }
