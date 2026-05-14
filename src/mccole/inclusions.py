@@ -162,14 +162,26 @@ def _filter_exclude(filepath, lines, marker):
     start_pattern = re.compile(
         rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*{re.escape(marker)}{suffix_pat}\s*$"
     )
+    end_pattern = re.compile(
+        rf"^\s*{re.escape(comment_prefix)}\s*mccole:\s*/{re.escape(marker)}{suffix_pat}\s*$"
+    )
 
     result = []
     inside = False
+    excluded_count = 0
 
     for line in lines:
         if start_pattern.match(line):
-            inside = not inside
-        elif not inside:
+            inside = True
+            excluded_count = 0
+        elif end_pattern.match(line):
+            inside = False
+            if comment_prefix is not None and excluded_count > 0:
+                suffix = f" {comment_suffix}" if comment_suffix else ""
+                result.append(f"{comment_prefix} ...{excluded_count} lines not shown...{suffix}")
+        elif inside:
+            excluded_count += 1
+        else:
             result.append(line)
 
     # Strip leading and trailing blank lines
