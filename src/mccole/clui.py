@@ -10,6 +10,7 @@ from .build import build
 from .check import check
 from .create import create
 from .describe import describe
+from .detab import detab, DEFAULT_TABSIZE
 from .single_page import build_single_page
 
 
@@ -21,6 +22,7 @@ def main():
         "check": (check, _make_check_parser, "check site"),
         "create": (create, _make_create_parser, "create site"),
         "describe": (describe, _make_describe_parser, "describe lesson contents"),
+        "detab": (detab, _make_detab_parser, "replace tabs with spaces in Markdown files"),
     }
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", type=int, default=0, help="logging level")
@@ -92,8 +94,20 @@ def _make_create_parser(parser):
     )
 
 
+def _make_detab_parser(parser):
+    """Parse command-line arguments for replacing tabs with spaces."""
+    parser.add_argument(
+        "--root", type=Path, default=Path("README.md"), help="root page file"
+    )
+    parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
+    parser.add_argument(
+        "--tabsize", type=int, default=DEFAULT_TABSIZE, help="spaces per tab stop"
+    )
+
+
 def _make_describe_parser(parser):
     """Parse command-line arguments for describing lesson contents."""
+    parser.add_argument("--glossary", action="store_true", help="show table of glossary term references")
     parser.add_argument("--inc", action="store_true", help="show table of file inclusions")
     parser.add_argument(
         "--root", type=Path, default=Path("README.md"), help="root page file"
