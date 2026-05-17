@@ -82,6 +82,7 @@ def _make_check_parser(parser):
     parser.add_argument(
         "--root", type=Path, default=Path("README.md"), help="root page file"
     )
+    parser.add_argument("--relaxed", action="store_true", help="suppress div-in-summary HTML warnings")
     parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
 
 

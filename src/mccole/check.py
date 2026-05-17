@@ -27,8 +27,8 @@ def check(options):
 
     _check_tabs_in_markdown(options)
 
-    for func in [_check_all_html, _check_glossary_redefinitions]:
-        func(pages)
+    _check_all_html(options, pages)
+    _check_glossary_redefinitions(pages)
 
     _check_bibliography_alphabetical(options, pages)
     _check_bibliography_key_mismatch(options, pages)
@@ -48,9 +48,13 @@ def check(options):
             func(options, path, doc)
 
 
-def _check_all_html(pages):
+DIV_IN_SUMMARY = 'Element "div" not allowed as child of element "summary"'
+
+
+def _check_all_html(options, pages):
     """Validate generated HTML."""
-    validator = Validator()
+    ignore = [DIV_IN_SUMMARY] if options.relaxed else []
+    validator = Validator(ignore=ignore)
     validator.validate(list(pages.keys()))
 
 
