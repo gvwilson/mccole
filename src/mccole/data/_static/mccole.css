@@ -331,6 +331,14 @@ details {
 details[open] {
     border: solid var(--len-thin) var(--color-lightGrey);
 }
+details[open] > summary {
+    border-bottom: solid var(--len-thin) var(--color-lightGrey);
+    margin-bottom: var(--len-half);
+    padding-bottom: var(--len-half);
+}
+details[open] > :last-child {
+    margin-bottom: 0;
+}
 
 /* Collapsible explanation blocks */
 details.explanation {
