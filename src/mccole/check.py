@@ -20,7 +20,7 @@ def check(options):
     """Check the site."""
     dst_dir = Path(options.dst)
 
-    paths = [dst_dir / "index.html"] + list(dst_dir.glob("*/index.html"))
+    paths = list(dst_dir.glob("**/index.html"))
     pages = {
         fp: BeautifulSoup(fp.read_text(encoding="utf-8"), "html.parser") for fp in paths
     }

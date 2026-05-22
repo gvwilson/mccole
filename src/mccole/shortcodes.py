@@ -2,6 +2,7 @@
 
 import re
 import shlex
+import yaml
 
 from . import util
 
@@ -274,6 +275,32 @@ def _handle_issue(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     return f'<span class="issue">issue {num}</span>'
 
 
+def _handle_thanks(pargs, kwargs, config, src_path, ix_entries, ix_counter):
+    """[% thanks %] → comma-separated list of contributor names from _extras/thanks.yml."""
+    thanks_path = config["extras"] / "thanks.yml"
+    try:
+        data = yaml.safe_load(thanks_path.read_text(encoding="utf-8")) or []
+        names = []
+        for person in data:
+            order = person.get("order", "pf")
+            if  order == "fp":
+                names.append(f"{person['family']} {person['personal']}")
+            elif order == "pmf":
+                names.append(f"{person['personal']} {person['middle']} {person['family']}")
+            else:
+                names.append(f"{person['personal']} {person['family']}")
+        if len(names) == 0:
+            return ""
+        if len(names) == 1:
+            return names[0]
+        if len(names) == 2:
+            return f"{names[0]} and {names[1]}"
+        return ", ".join(names[:-1]) + f", and {names[-1]}"
+    except Exception as exc:
+        util.warn(f"[%thanks%] unable to read {thanks_path}: {exc}")
+        return "the contributors"
+
+
 # ---------------------------------------------------------------------------
 # Handler dispatch table
 # ---------------------------------------------------------------------------
@@ -291,4 +318,5 @@ _HANDLERS = {
     "table": _handle_table,
     "fixme": _handle_fixme,
     "issue": _handle_issue,
+    "thanks": _handle_thanks,
 }

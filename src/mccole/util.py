@@ -56,6 +56,35 @@ def load_order(src_path, home_page):
     return combined
 
 
+def load_slides(src_path):
+    """Load slides entries from home page. Returns [] if no div#slides present."""
+    md = (src_path / HOME_PAGE).read_text(encoding="utf-8")
+    html = markdown(md, extensions=MARKDOWN_EXTENSIONS)
+    doc = BeautifulSoup(html, "html.parser")
+    divs = doc.select("div#slides")
+    if not divs:
+        return []
+    return [
+        {"href": node["href"], "title": node.decode_contents()}
+        for node in divs[0].select("a[href]")
+    ]
+
+
+def slides_src_file(src_path, href):
+    """Convert @/... slides href to source file path.
+
+    Type 1: @/slug/slides.html  -> src_path/slug/slides.md
+    Type 2: @/slides/slug/      -> src_path/slides/slug/index.md
+    """
+    assert href.startswith("@/")
+    path_str = href[2:]
+    if path_str.endswith(".html"):
+        p = Path(path_str)
+        return src_path / p.parent / (p.stem + ".md")
+    else:
+        return src_path / path_str.rstrip("/") / "index.md"
+
+
 def warn(message):
     print(message, file=sys.stderr)
 

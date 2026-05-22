@@ -21,6 +21,7 @@ BIBLIOGRAPHY_PATH = Path("bibliography") / "index.md"
 INDEX_PATH = Path("index") / "index.md"
 TEMPLATE_DIR = "_templates"
 TEMPLATE_PAGE = "page.html"
+TEMPLATE_SLIDES = "slides.html"
 
 
 def build(options):
@@ -42,6 +43,14 @@ def build(options):
             continue
         _build_page(config, env, slug, config["order"][slug]["filepath"], ix_entries)
 
+    # Build slides pages
+    for entry in config.get("slides", []):
+        src_file = entry["src_file"]
+        if src_file.exists():
+            _build_page(config, env, None, src_file, template_name=TEMPLATE_SLIDES)
+        else:
+            util.warn(f"slides source not found: {src_file}")
+
     # Build other files
     for filepath in others:
         _build_other(config, filepath)
@@ -55,7 +64,7 @@ def build(options):
     return config, env
 
 
-def _build_page(config, env, slug, src_path, ix_entries=None):
+def _build_page(config, env, slug, src_path, ix_entries=None, template_name=TEMPLATE_PAGE):
     """Handle a Markdown file."""
     if ix_entries is None:
         ix_entries = []
@@ -75,7 +84,7 @@ def _build_page(config, env, slug, src_path, ix_entries=None):
     raw_html = markdown(processed, extensions=util.MARKDOWN_EXTENSIONS)
 
     dst_path = _make_output_path(config, src_path, suffix=".html")
-    _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, TEMPLATE_PAGE)
+    _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, template_name)
 
 
 def _build_index_page(config, env, ix_entries):
@@ -196,6 +205,7 @@ def _find_files(config):
 
     excludes = {config["src"] / config["home_page"]}
     excludes |= {value["filepath"] for value in config["order"].values()}
+    excludes |= {entry["src_file"] for entry in config.get("slides", [])}
 
     others = {
         f
@@ -240,6 +250,9 @@ def _load_configuration(options):
 
     home_page = options.root
     order = util.load_order(options.src, home_page)
+    slides = util.load_slides(options.src)
+    for entry in slides:
+        entry["src_file"] = util.slides_src_file(options.src, entry["href"])
 
     mccole_config = config.get("tool", {}).get("mccole", {})
     book_repo = mccole_config.get("repo", _load_book_repo(options.src, home_page))
@@ -259,6 +272,7 @@ def _load_configuration(options):
         "links": links,
         "math": options.math,
         "order": order,
+        "slides": slides,
         "src": options.src,
         "templates": options.src / TEMPLATE_DIR,
         "verbose": options.verbose,
@@ -385,6 +399,10 @@ def _make_context(config, slug, metadata=None):
             (s, entry["title"])
             for s, entry in order.items()
             if entry["kind"] == "appendices"
+        ],
+        "slides": [
+            (entry["href"], entry["title"])
+            for entry in config.get("slides", [])
         ],
     }
 
@@ -580,4 +598,6 @@ def _patch_title(config, src_path, dst_path, doc):
     if h1:
         doc.title.string = h1.get_text()
     else:
-        util.warn(f"{dst_path} lacks H1 heading")
+        slides_files = {entry["src_file"] for entry in config.get("slides", [])}
+        if src_path not in slides_files:
+            util.warn(f"{dst_path} lacks H1 heading")
