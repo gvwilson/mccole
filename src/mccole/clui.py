@@ -108,6 +108,7 @@ def _make_detab_parser(parser):
 
 def _make_describe_parser(parser):
     """Parse command-line arguments for describing lesson contents."""
+    parser.add_argument("--bibliography", action="store_true", help="show table of bibliography key references")
     parser.add_argument("--glossary", action="store_true", help="show table of glossary term references")
     parser.add_argument("--inc", action="store_true", help="show table of file inclusions")
     parser.add_argument(

@@ -18,18 +18,69 @@ _SHORTCODE_RE = re.compile(r"\[%\s*(/?[a-zA-Z_][a-zA-Z0-9_]*)(.*?)%\]", re.DOTAL
 
 def describe(options):
     """Describe contents of lesson files."""
+    if options.bibliography:
+        _describe_bibliography(options)
     if options.glossary:
         _describe_glossary(options)
     if options.inc:
         _describe_inclusions(options)
 
 
+def _all_entries(options):
+    """Return source file entries for lessons, appendices, and slides."""
+    order = util.load_order(options.src, options.root)
+    entries = list(order.values())
+    for slide in util.load_slides(options.src):
+        filepath = util.slides_src_file(options.src, slide["href"])
+        entries.append({"filepath": filepath})
+    return entries
+
+
+def _describe_bibliography(options):
+    """Print a table of bibliography keys and the files that reference them."""
+    refs = {}  # {key: [file, ...]} in source order, deduplicated per file
+    for entry in _all_entries(options):
+        src_path = entry["filepath"]
+        if not src_path.exists():
+            continue
+        try:
+            label = str(src_path.relative_to(options.src))
+        except ValueError:
+            label = str(src_path)
+        content = src_path.read_text(encoding="utf-8")
+        seen_in_file = set()
+        for match in _SHORTCODE_RE.finditer(content):
+            if match.group(1) != "b":
+                continue
+            args_str = match.group(2).strip()
+            try:
+                tokens = shlex.split(args_str)
+            except ValueError:
+                tokens = args_str.split()
+            for token in tokens:
+                key = token.strip("'\"")
+                if key and key not in seen_in_file:
+                    seen_in_file.add(key)
+                    refs.setdefault(key, []).append(label)
+
+    if not refs:
+        return
+
+    w0 = max(len("Key"), max(len(k) for k in refs))
+    w1 = max(len("Files"), max(len(", ".join(v)) for v in refs.values()))
+    fmt = f"{{:<{w0}}}  {{:<{w1}}}"
+    sep = "-" * w0 + "  " + "-" * w1
+    print(fmt.format("Key", "Files"))
+    print(sep)
+    for key in sorted(refs):
+        print(fmt.format(key, ", ".join(refs[key])))
+
+
 def _describe_glossary(options):
     """Print a table of glossary keys and the files that reference them."""
-    order = util.load_order(options.src, options.root)
     # Preserve README order for files; collect keys per file in that order
     refs = {}  # {key: [file, ...]} files in README order, deduplicated
-    for entry in order.values():
+    for entry in _all_entries(options):
         src_path = entry["filepath"]
         if not src_path.exists():
             continue
@@ -69,10 +120,9 @@ def _describe_glossary(options):
 
 def _describe_inclusions(options):
     """Print a table of file inclusions found in lesson files."""
-    order = util.load_order(options.src, options.root)
     rows = []
 
-    for entry in order.values():
+    for entry in _all_entries(options):
         src_path = entry["filepath"]
         if not src_path.exists():
             continue
