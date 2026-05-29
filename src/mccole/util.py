@@ -71,18 +71,10 @@ def load_slides(src_path):
 
 
 def slides_src_file(src_path, href):
-    """Convert @/... slides href to source file path.
-
-    Type 1: @/slug/slides.html  -> src_path/slug/slides.md
-    Type 2: @/slides/slug/      -> src_path/slides/slug/index.md
-    """
+    """Convert @/slug/slides.html slides href to source file path."""
     assert href.startswith("@/")
-    path_str = href[2:]
-    if path_str.endswith(".html"):
-        p = Path(path_str)
-        return src_path / p.parent / (p.stem + ".md")
-    else:
-        return src_path / path_str.rstrip("/") / "index.md"
+    p = Path(href[2:])
+    return src_path / p.parent / (p.stem + ".md")
 
 
 def warn(message):

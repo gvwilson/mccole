@@ -200,43 +200,44 @@ def _fill_element_numbers(dst_path, doc, prefix, known, text):
 
 def _find_files(config):
     """Find section files and other files."""
-    order = config["order"]
-    slugs = set(order.keys())
+    slugs = set(config["order"].keys())
 
     excludes = {config["src"] / config["home_page"]}
     excludes |= {value["filepath"] for value in config["order"].values()}
     excludes |= {entry["src_file"] for entry in config.get("slides", [])}
 
-    others = {
-        f
-        for f in config["src"].glob("*/**")
-        if _is_interesting_file(config, excludes, f)
-    }
+    prune = {config["dst"], config["extras"], config["templates"]}
+    skip_names = config["skip_names"]
+    skip_patterns = config["skip_patterns"]
+
+    others = set()
+    for dirpath, dirs, files in config["src"].walk():
+        # Prune directories before descending into them.
+        dirs[:] = [
+            d for d in dirs
+            if Path(dirpath, d) not in prune
+            and not str(d).startswith(".")
+            and d not in skip_names
+        ]
+        for fname in files:
+            if fname.startswith(".") or fname in skip_names:
+                continue
+            filepath = Path(dirpath, fname)
+            if _is_interesting_file(config, excludes, skip_patterns, filepath):
+                others.add(filepath)
+
     return slugs, others
 
 
-def _is_interesting_file(config, excludes, filepath):
+def _is_interesting_file(config, excludes, skip_patterns, filepath):
     """Is this file worth copying over?"""
-    if not filepath.is_file():
-        return False
-
     if filepath in excludes:
-        return False
-
-    relative = filepath.relative_to(config["src"])
-    if str(relative).startswith("."):
         return False
     if filepath.samefile(config["config"]):
         return False
-    if any(filepath.is_relative_to(x) for x in [config["dst"], config["extras"], config["templates"]]):
-        return False
-
-    for s in config["skips"]:
-        if filepath.match(s):
+    for pattern in skip_patterns:
+        if filepath.match(pattern):
             return False
-        if s.endswith("/**") and relative.is_relative_to(s.replace("/**", "")):
-            return False
-
     return True
 
 
@@ -259,6 +260,12 @@ def _load_configuration(options):
     book_title = mccole_config.get("title", _load_book_title(options.src, home_page))
     brand = mccole_config.get("brand", book_title)
 
+    raw_skips = mccole_config.pop("skips", [])
+    # Bare names (no path separators or wildcards) match any entry by name.
+    # Everything else is matched against individual file paths.
+    skip_names = {s for s in raw_skips if "/" not in s and "*" not in s and "?" not in s}
+    skip_patterns = [s for s in raw_skips if s not in skip_names]
+
     return {
         "brand": brand,
         "book_repo": book_repo,
@@ -272,6 +279,8 @@ def _load_configuration(options):
         "links": links,
         "math": options.math,
         "order": order,
+        "skip_names": skip_names,
+        "skip_patterns": skip_patterns,
         "slides": slides,
         "src": options.src,
         "templates": options.src / TEMPLATE_DIR,

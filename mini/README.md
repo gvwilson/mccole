@@ -11,6 +11,15 @@
 
 </div>
 
+## Slides
+
+<div id="slides" markdown="1">
+
+1.  [Introduction](@/intro/slides.html)
+1.  [Conclusion](@/finale/slides.html)
+
+</div>
+
 ##  Appendices
 
 <div id="appendices" markdown="1">
