@@ -21,6 +21,7 @@ class TestGetCommentFormat:
         """Returns comment delimiters for known file types."""
         assert _get_comment_format("foo.py") == ("#", "")
         assert _get_comment_format("foo.c") == ("//", "")
+        assert _get_comment_format("foo.gleam") == ("//", "")
         assert _get_comment_format("foo.html") == ("<!--", "-->")
         assert _get_comment_format("foo.js") == ("//", "")
         assert _get_comment_format("foo.sql") == ("--", "")
