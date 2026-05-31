@@ -84,9 +84,7 @@ def _handle_b(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%b key1 key2 … %] → bibliography links."""
     if not pargs:
         return _missing_shortcode_arg("b", "keys", src_path)
-    parts = [
-        _crossref_link("bib-ref", f"@/bibliography/#{key}", key) for key in pargs
-    ]
+    parts = [_crossref_link("bib-ref", f"@/bibliography/#{key}", key) for key in pargs]
     return "[" + ", ".join(parts) + "]"
 
 
@@ -163,7 +161,9 @@ def _handle_inc(pargs, kwargs, config, src_path, ix_entries, ix_counter):
     """[%inc file %] → <div data-inc="FILE"></div> with optional filters."""
     # Pattern expansion mode: pat=P fill="a b c"
     if "pat" in kwargs:
-        return _handle_inc_pattern(pargs, kwargs, config, src_path, ix_entries, ix_counter)
+        return _handle_inc_pattern(
+            pargs, kwargs, config, src_path, ix_entries, ix_counter
+        )
 
     if not pargs:
         util.warn(f"[%inc%] shortcode missing filename in {src_path}")
@@ -283,10 +283,12 @@ def _handle_thanks(pargs, kwargs, config, src_path, ix_entries, ix_counter):
         names = []
         for person in data:
             order = person.get("order", "pf")
-            if  order == "fp":
+            if order == "fp":
                 names.append(f"{person['family']} {person['personal']}")
             elif order == "pmf":
-                names.append(f"{person['personal']} {person['middle']} {person['family']}")
+                names.append(
+                    f"{person['personal']} {person['middle']} {person['family']}"
+                )
             else:
                 names.append(f"{person['personal']} {person['family']}")
         if len(names) == 0:

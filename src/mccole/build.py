@@ -59,12 +59,16 @@ def build(options):
     if "index" in section_slugs and ix_entries:
         _build_index_page(config, env, ix_entries)
     elif "index" in section_slugs:
-        _build_page(config, env, "index", config["order"]["index"]["filepath"], ix_entries)
+        _build_page(
+            config, env, "index", config["order"]["index"]["filepath"], ix_entries
+        )
 
     return config, env
 
 
-def _build_page(config, env, slug, src_path, ix_entries=None, template_name=TEMPLATE_PAGE):
+def _build_page(
+    config, env, slug, src_path, ix_entries=None, template_name=TEMPLATE_PAGE
+):
     """Handle a Markdown file."""
     if ix_entries is None:
         ix_entries = []
@@ -84,7 +88,9 @@ def _build_page(config, env, slug, src_path, ix_entries=None, template_name=TEMP
     raw_html = markdown(processed, extensions=util.MARKDOWN_EXTENSIONS)
 
     dst_path = _make_output_path(config, src_path, suffix=".html")
-    _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, template_name)
+    _render_page(
+        config, env, slug, src_path, dst_path, raw_html, metadata, template_name
+    )
 
 
 def _build_index_page(config, env, ix_entries):
@@ -104,7 +110,9 @@ def _build_index_page(config, env, ix_entries):
 
     raw_html = markdown(index_content, extensions=util.MARKDOWN_EXTENSIONS)
     dst_path = _make_output_path(config, src_path, suffix=".html")
-    _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, TEMPLATE_PAGE)
+    _render_page(
+        config, env, slug, src_path, dst_path, raw_html, metadata, TEMPLATE_PAGE
+    )
 
 
 def _build_other(config, src_path):
@@ -214,7 +222,8 @@ def _find_files(config):
     for dirpath, dirs, files in config["src"].walk():
         # Prune directories before descending into them.
         dirs[:] = [
-            d for d in dirs
+            d
+            for d in dirs
             if Path(dirpath, d) not in prune
             and not str(d).startswith(".")
             and d not in skip_names
@@ -263,7 +272,9 @@ def _load_configuration(options):
     raw_skips = mccole_config.pop("skips", [])
     # Bare names (no path separators or wildcards) match any entry by name.
     # Everything else is matched against individual file paths.
-    skip_names = {s for s in raw_skips if "/" not in s and "*" not in s and "?" not in s}
+    skip_names = {
+        s for s in raw_skips if "/" not in s and "*" not in s and "?" not in s
+    }
     skip_patterns = [s for s in raw_skips if s not in skip_names]
 
     return {
@@ -293,7 +304,7 @@ def _load_book_repo(src_path, home_page):
     """Extract the '[repo]' link from the home page."""
     try:
         md = (src_path / home_page).read_text(encoding="utf-8")
-        m = re.search(r'^\[repo\]:\s+(.+)$', md, re.MULTILINE)
+        m = re.search(r"^\[repo\]:\s+(.+)$", md, re.MULTILINE)
         return m.group(1).strip() if m else ""
     except Exception:
         return ""
@@ -303,7 +314,7 @@ def _load_book_title(src_path, home_page):
     """Extract the H1 title from the home page as the book title."""
     try:
         md = (src_path / home_page).read_text(encoding="utf-8")
-        m = re.search(r'^#\s+(.+)$', md, re.MULTILINE)
+        m = re.search(r"^#\s+(.+)$", md, re.MULTILINE)
         return m.group(1).strip() if m else ""
     except Exception:
         return ""
@@ -317,7 +328,9 @@ def _load_glossary(src_path):
     return {node["id"]: node.decode_contents() for node in doc.select("span[id]")}
 
 
-def _render_page(config, env, slug, src_path, dst_path, raw_html, metadata, template_name):
+def _render_page(
+    config, env, slug, src_path, dst_path, raw_html, metadata, template_name
+):
     """Render, patch, and write one page."""
     template = env.get_template(template_name)
     context = _make_context(config, slug, metadata)
@@ -410,8 +423,7 @@ def _make_context(config, slug, metadata=None):
             if entry["kind"] == "appendices"
         ],
         "slides": [
-            (entry["href"], entry["title"])
-            for entry in config.get("slides", [])
+            (entry["href"], entry["title"]) for entry in config.get("slides", [])
         ],
     }
 
@@ -443,7 +455,9 @@ def _make_context(config, slug, metadata=None):
     context.setdefault("lang", config.get("lang", "en"))
 
     # description falls back to book_title if not set in page frontmatter
-    context.setdefault("description", config.get("description", context.get("book_title", "")))
+    context.setdefault(
+        "description", config.get("description", context.get("book_title", ""))
+    )
 
     # Expose current slug so the nav template can mark the active page
     context["current_slug"] = slug
@@ -513,7 +527,7 @@ def _patch_pre_accessibility(config, src_path, dst_path, doc):
         classes = node.get("class", [])
         for cls in classes:
             if cls.startswith("language-"):
-                node["data-lang"] = cls[len("language-"):]
+                node["data-lang"] = cls[len("language-") :]
                 break
 
 

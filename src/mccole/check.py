@@ -39,6 +39,7 @@ def check(options):
         _check_unused_crossref_definitions(options, pages, kind)
 
     for func in [
+        _check_empty_inclusions,
         _check_figure_structure,
         _check_single_h1,
         _check_table_structure,
@@ -62,14 +63,20 @@ def _check_bibliography_alphabetical(options, pages):
     """Check that bibliography keys are in alphabetical order."""
     known = _get_crossref_definitions(options, pages, "bibliography")
     for i in range(1, len(known)):
-        _require("bibliography", known[i] >= known[i-1], f"out-of-order key {known[i]}")
+        _require(
+            "bibliography", known[i] >= known[i - 1], f"out-of-order key {known[i]}"
+        )
 
 
 def _check_glossary_alphabetical(options, pages):
     """Check that glossary terms are in alphabetical order by lower-case term text."""
     terms = _get_glossary_term_texts(options, pages)
     for i in range(1, len(terms)):
-        _require("glossary", terms[i].lower() >= terms[i-1].lower(), f"out-of-order term '{terms[i]}'")
+        _require(
+            "glossary",
+            terms[i].lower() >= terms[i - 1].lower(),
+            f"out-of-order term '{terms[i]}'",
+        )
 
 
 def _check_cross_references(options, pages, kind):
@@ -90,10 +97,24 @@ def _check_element_structure(filepath, doc, selector, kind, caption_selector, pa
         if not _require(filepath, "id" in node.attrs, f"{kind} missing 'id'"):
             continue
         captions = node.select(caption_selector)
-        if not _require(filepath, len(captions) == 1, f"missing/extra {kind} caption(s)"):
+        if not _require(
+            filepath, len(captions) == 1, f"missing/extra {kind} caption(s)"
+        ):
             continue
         text = captions[0].get_text()
-        _require(filepath, pattern.match(text), f"badly-formatted {kind} caption '{text}'")
+        _require(
+            filepath, pattern.match(text), f"badly-formatted {kind} caption '{text}'"
+        )
+
+
+def _check_empty_inclusions(options, filepath, doc):
+    """Report %inc inclusions whose generated content is only whitespace."""
+    for node in doc.select("div[data-inc]"):
+        icon = node.find("span", class_="inc-path")
+        inc_path = icon["title"] if icon else node.get("data-inc", "unknown")
+        pre = node.find("pre")
+        if pre is not None and not pre.get_text().strip():
+            _require(filepath, False, f"empty inclusion of {inc_path}")
 
 
 def _check_figure_structure(options, filepath, doc):
@@ -151,9 +172,13 @@ def _check_tabs_in_markdown(options):
     md_paths = [options.src / options.root]
     md_paths.extend(entry["filepath"] for entry in order.values())
     for md_path in sorted(md_paths):
-        for line_num, line in enumerate(md_path.read_text(encoding="utf-8").splitlines(), start=1):
+        for line_num, line in enumerate(
+            md_path.read_text(encoding="utf-8").splitlines(), start=1
+        ):
             if "\t" in line:
-                _require(f"{md_path}:{line_num}", False, "tab character in Markdown source")
+                _require(
+                    f"{md_path}:{line_num}", False, "tab character in Markdown source"
+                )
 
 
 def _get_glossary_term_texts(options, pages):
@@ -201,8 +226,11 @@ def _check_bibliography_key_mismatch(options, pages):
             continue
         span_id = span["id"]
         span_text = span.get_text().strip()
-        _require("bibliography", span_id == span_text,
-                 f"key mismatch: id='{span_id}' text='{span_text}'")
+        _require(
+            "bibliography",
+            span_id == span_text,
+            f"key mismatch: id='{span_id}' text='{span_text}'",
+        )
 
 
 RE_BARE_ISBN = re.compile(r"\b97[89][-\d]{10,}\b|\b\d{9}[\dX]\b")
@@ -216,11 +244,14 @@ def _check_bibliography_bare_isbns(options, pages):
     doc = pages[path]
     for dd in doc.find_all("dd"):
         bare_text = "".join(
-            str(s) for s in dd.strings
+            str(s)
+            for s in dd.strings
             if not any(parent.name == "a" for parent in s.parents)
         )
         for match in RE_BARE_ISBN.finditer(bare_text):
-            print(f"warning: bibliography: bare ISBN '{match.group()}'", file=sys.stderr)
+            print(
+                f"warning: bibliography: bare ISBN '{match.group()}'", file=sys.stderr
+            )
 
 
 def _check_unused_crossref_definitions(options, pages, kind):

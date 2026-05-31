@@ -13,23 +13,23 @@ from . import util
 
 # Comment prefix and suffix for different file types
 COMMENT_FORMATS = {
-    ".c":    ("//",   ""),
-    ".cpp":  ("//",   ""),
-    ".css":  ("//",   ""),
+    ".c": ("//", ""),
+    ".cpp": ("//", ""),
+    ".css": ("//", ""),
     ".html": ("<!--", "-->"),
-    ".java": ("//",   ""),
-    ".js":   ("//",   ""),
-    ".json": (None,   ""),
-    ".lean": ("--",   ""),
-    ".lua":  ("--",   ""),
-    ".py":   ("#",    ""),
-    ".r":    ("#",    ""),
-    ".rs":   ("//",   ""),
-    ".sh":   ("#",    ""),
-    ".sql":  ("--",   ""),
-    ".ts":   ("//",   ""),
-    ".txt":  ("#",    ""),
-    ".xml":  ("<!--", "-->"),
+    ".java": ("//", ""),
+    ".js": ("//", ""),
+    ".json": (None, ""),
+    ".lean": ("--", ""),
+    ".lua": ("--", ""),
+    ".py": ("#", ""),
+    ".r": ("#", ""),
+    ".rs": ("//", ""),
+    ".sh": ("#", ""),
+    ".sql": ("--", ""),
+    ".ts": ("//", ""),
+    ".txt": ("#", ""),
+    ".xml": ("<!--", "-->"),
 }
 
 
@@ -54,7 +54,14 @@ def patch_inclusions(config, src_path, dst_path, doc):
                 lines = _filter_head(lines, head)
             if scrub:
                 lines = _filter_scrub(lines, scrub)
+            marker_missing = mark and not lines
+            if marker_missing:
+                util.warn(
+                    f"{dst_path}: marker '{mark}' not found or empty in {inc_file}"
+                )
             content = "\n".join(lines)
+            if not marker_missing and not content.strip():
+                util.warn(f"{dst_path}: empty content from {inc_file}")
             highlighted = _colorize_code(content, inc_file)
             soup = BeautifulSoup(highlighted, "html.parser")
             try:
@@ -85,8 +92,11 @@ def _colorize_code(content, filepath):
         lexer = get_lexer_for_filename(str(filepath))
     except ClassNotFound:
         lexer = get_lexer_by_name("text")
-    
-    formatter = HtmlFormatter(cssclass="codehilite", wrapcode=True,)
+
+    formatter = HtmlFormatter(
+        cssclass="codehilite",
+        wrapcode=True,
+    )
     return highlight(content, lexer, formatter)
 
 
@@ -179,7 +189,9 @@ def _filter_exclude(filepath, lines, marker):
             inside = False
             if comment_prefix is not None and excluded_count > 0:
                 suffix = f" {comment_suffix}" if comment_suffix else ""
-                result.append(f"{comment_prefix} ...{excluded_count} lines not shown...{suffix}")
+                result.append(
+                    f"{comment_prefix} ...{excluded_count} lines not shown...{suffix}"
+                )
         elif inside:
             excluded_count += 1
         else:

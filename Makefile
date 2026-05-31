@@ -22,7 +22,7 @@ clean:
 	@find . -path './.venv' -prune -o -type d -name '__pycache__' -exec rm -rf {} +
 	@find . -path './.venv' -prune -o -type f -name '*~' -exec rm {} +
 	@find . -path './.venv' -prune -o -type d -name '.pytest_cache' -exec rm -rf {} +
-	@find . -path './.venv' -prune -o -type d -name '.coverage' -exec rm {} +
+	@find . -path './.venv' -prune -o -type f -name '.coverage' -exec rm -f {} +
 
 ## docs: build documentation
 docs:
@@ -41,6 +41,11 @@ format:
 ## publish: publish using ~/.pypirc credentials
 publish:
 	twine upload --verbose dist/*
+
+## coverage: run tests with coverage
+coverage:
+	@python -m coverage run -m pytest tests
+	@python -m coverage report --show-missing
 
 ## serve: serve documentation
 serve:

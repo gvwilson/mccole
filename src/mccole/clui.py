@@ -22,7 +22,11 @@ def main():
         "check": (check, _make_check_parser, "check site"),
         "create": (create, _make_create_parser, "create site"),
         "describe": (describe, _make_describe_parser, "describe lesson contents"),
-        "detab": (detab, _make_detab_parser, "replace tabs with spaces in Markdown files"),
+        "detab": (
+            detab,
+            _make_detab_parser,
+            "replace tabs with spaces in Markdown files",
+        ),
     }
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", type=int, default=0, help="logging level")
@@ -61,10 +65,21 @@ def _make_build_parser(parser):
     parser.add_argument(
         "--dst", type=Path, default=Path("docs"), help="destination directory"
     )
-    parser.add_argument("--extra", type=Path, default=None, help="extra HTML to include in page <head>")
-    parser.add_argument("--single-page", type=Path, default=None, help="output path for single-page version")
-    parser.add_argument("--forma", action="store_true", help="enable formative assessments")
-    parser.add_argument("--math", action="store_true", help="enable KaTeX math rendering")
+    parser.add_argument(
+        "--extra", type=Path, default=None, help="extra HTML to include in page <head>"
+    )
+    parser.add_argument(
+        "--single-page",
+        type=Path,
+        default=None,
+        help="output path for single-page version",
+    )
+    parser.add_argument(
+        "--forma", action="store_true", help="enable formative assessments"
+    )
+    parser.add_argument(
+        "--math", action="store_true", help="enable KaTeX math rendering"
+    )
     parser.add_argument(
         "--root", type=Path, default=Path("README.md"), help="root page file"
     )
@@ -82,7 +97,9 @@ def _make_check_parser(parser):
     parser.add_argument(
         "--root", type=Path, default=Path("README.md"), help="root page file"
     )
-    parser.add_argument("--relaxed", action="store_true", help="suppress div-in-summary HTML warnings")
+    parser.add_argument(
+        "--relaxed", action="store_true", help="suppress div-in-summary HTML warnings"
+    )
     parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
 
 
@@ -108,9 +125,17 @@ def _make_detab_parser(parser):
 
 def _make_describe_parser(parser):
     """Parse command-line arguments for describing lesson contents."""
-    parser.add_argument("--bibliography", action="store_true", help="show table of bibliography key references")
-    parser.add_argument("--glossary", action="store_true", help="show table of glossary term references")
-    parser.add_argument("--inc", action="store_true", help="show table of file inclusions")
+    parser.add_argument(
+        "--bibliography",
+        action="store_true",
+        help="show table of bibliography key references",
+    )
+    parser.add_argument(
+        "--glossary", action="store_true", help="show table of glossary term references"
+    )
+    parser.add_argument(
+        "--inc", action="store_true", help="show table of file inclusions"
+    )
     parser.add_argument(
         "--root", type=Path, default=Path("README.md"), help="root page file"
     )

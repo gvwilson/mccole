@@ -15,7 +15,9 @@ def build_single_page(config, env, output_path):
 
     # Home page as preamble div
     home_src = config["src"] / config["home_page"]
-    home_metadata, _, home_doc = _build_page_fragment(config, env, None, home_src, ix_entries)
+    home_metadata, _, home_doc = _build_page_fragment(
+        config, env, None, home_src, ix_entries
+    )
     home_main = home_doc.find("main")
     home_html = ""
     if home_main:
@@ -62,13 +64,15 @@ def build_single_page(config, env, output_path):
         # Prefix chapter-local image paths with slug/
         _rewrite_image_paths(main, slug)
 
-        sections.append({
-            "slug": slug,
-            "chapter_number": chapter_number,
-            "title": entry.get("title", slug),
-            "kind": entry["kind"],
-            "html": main.decode_contents(),
-        })
+        sections.append(
+            {
+                "slug": slug,
+                "chapter_number": chapter_number,
+                "title": entry.get("title", slug),
+                "kind": entry["kind"],
+                "html": main.decode_contents(),
+            }
+        )
 
     template = env.get_template(SINGLE_PAGE_TEMPLATE)
     rendered = template.render(
@@ -98,7 +102,9 @@ def _apply_compound_figure_numbers(main, dst_path, chapter_number):
             continue
         captions = node.select("figcaption")
         if len(captions) != 1:
-            util.warn(f"figure {node['id']} in {dst_path} has missing/too many figcaption")
+            util.warn(
+                f"figure {node['id']} in {dst_path} has missing/too many figcaption"
+            )
             continue
         label = f"{chapter_number}.{num}"
         known[node["id"]] = label
