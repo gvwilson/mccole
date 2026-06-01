@@ -137,6 +137,9 @@ def _make_describe_parser(parser):
         "--inc", action="store_true", help="show table of file inclusions"
     )
     parser.add_argument(
+        "--words", action="store_true", help="show table of word counts per lesson/appendix"
+    )
+    parser.add_argument(
         "--root", type=Path, default=Path("README.md"), help="root page file"
     )
     parser.add_argument("--src", type=Path, default=Path("."), help="source directory")

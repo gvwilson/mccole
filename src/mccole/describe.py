@@ -24,6 +24,8 @@ def describe(options):
         _describe_glossary(options)
     if options.inc:
         _describe_inclusions(options)
+    if options.words:
+        _describe_words(options)
 
 
 def _all_entries(options):
@@ -190,6 +192,30 @@ def _find_inclusions(src_path, content):
                 continue
             lines, mods = _apply_filters(filepath, kwargs)
             yield filename, mods, len(lines)
+
+
+def _describe_words(options):
+    """Print a table of word counts for each lesson and appendix index.md."""
+    order = util.load_order(options.src, options.root)
+    rows = []
+    for slug, entry in order.items():
+        src_path = entry["filepath"]
+        if not src_path.exists():
+            continue
+        content = src_path.read_text(encoding="utf-8")
+        rows.append((slug, len(content.split())))
+
+    if not rows:
+        return
+
+    w0 = max(len("Slug"), max(len(r[0]) for r in rows))
+    w1 = max(len("Words"), max(len(str(r[1])) for r in rows))
+    fmt = f"{{:<{w0}}}  {{:>{w1}}}"
+    sep = "-" * w0 + "  " + "-" * w1
+    print(fmt.format("Slug", "Words"))
+    print(sep)
+    for slug, count in rows:
+        print(fmt.format(slug, count))
 
 
 def _apply_filters(filepath, kwargs):
