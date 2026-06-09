@@ -15,6 +15,7 @@ from mccole.check import (
     _check_figure_structure,
     _check_glossary_alphabetical,
     _check_glossary_redefinitions,
+    _check_lesson_crossrefs,
     _check_single_h1,
     _check_table_structure,
     _check_tabs_in_markdown,
@@ -240,6 +241,32 @@ class TestCheckBibliographyBareIsbns:
         opts = _Opts(dst=tmp_path)
         _, err = _capture(_check_bibliography_bare_isbns, opts, {})
         assert err == ""
+
+
+class TestCheckLessonCrossrefs:
+    def test_valid_crossref_ok(self, src_dir):
+        (src_dir / "intro" / "index.md").write_text(
+            "# Intro\n\nSee [refs](@/refs/).\n", encoding="utf-8"
+        )
+
+        class Opts:
+            src = src_dir
+            root = Path("README.md")
+
+        _, err = _capture(_check_lesson_crossrefs, Opts())
+        assert "unknown lesson" not in err
+
+    def test_unknown_crossref_reported(self, src_dir):
+        (src_dir / "intro" / "index.md").write_text(
+            "# Intro\n\nSee [missing](@/missing/).\n", encoding="utf-8"
+        )
+
+        class Opts:
+            src = src_dir
+            root = Path("README.md")
+
+        _, err = _capture(_check_lesson_crossrefs, Opts())
+        assert "unknown lesson cross-reference '@/missing/'" in err
 
 
 class TestCheckTabsInMarkdown:

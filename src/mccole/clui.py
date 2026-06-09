@@ -100,6 +100,13 @@ def _make_check_parser(parser):
     parser.add_argument(
         "--relaxed", action="store_true", help="suppress div-in-summary HTML warnings"
     )
+    parser.add_argument(
+        "--files",
+        nargs="*",
+        default=None,
+        metavar="PATH",
+        help="report unexpected files in output directory (paths relative to output dir)",
+    )
     parser.add_argument("--src", type=Path, default=Path("."), help="source directory")
 
 

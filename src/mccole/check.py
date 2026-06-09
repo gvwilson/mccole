@@ -13,6 +13,7 @@ from . import util
 
 GLOBAL = "<global>"
 RE_FIGURE_CAPTION = re.compile(r"^Figure\s+\d+:")
+RE_LESSON_CROSSREF = re.compile(r"@/([a-zA-Z0-9][a-zA-Z0-9_-]+)/")
 RE_TABLE_CAPTION = re.compile(r"^Table\s+\d+:")
 
 
@@ -20,12 +21,16 @@ def check(options):
     """Check the site."""
     dst_dir = Path(options.dst)
 
+    if options.files is not None:
+        _check_output_files(options, dst_dir)
+
     paths = list(dst_dir.glob("**/index.html"))
     pages = {
         fp: BeautifulSoup(fp.read_text(encoding="utf-8"), "html.parser") for fp in paths
     }
 
     _check_tabs_in_markdown(options)
+    _check_lesson_crossrefs(options)
 
     _check_all_html(options, pages)
     _check_glossary_redefinitions(pages)
@@ -115,6 +120,23 @@ def _check_empty_inclusions(options, filepath, doc):
         pre = node.find("pre")
         if pre is not None and not pre.get_text().strip():
             _require(filepath, False, f"empty inclusion of {inc_path}")
+
+
+def _check_lesson_crossrefs(options):
+    """Check that @/slug/ cross-references in Markdown files resolve to known lessons."""
+    order = util.load_order(options.src, options.root)
+    known = set(order.keys())
+    md_paths = [options.src / options.root]
+    md_paths.extend(entry["filepath"] for entry in order.values())
+    for md_path in sorted(md_paths):
+        text = md_path.read_text(encoding="utf-8")
+        for line_num, line in enumerate(text.splitlines(), start=1):
+            for slug in RE_LESSON_CROSSREF.findall(line):
+                _require(
+                    f"{md_path}:{line_num}",
+                    slug in known,
+                    f"unknown lesson cross-reference '@/{slug}/'",
+                )
 
 
 def _check_figure_structure(options, filepath, doc):
@@ -260,6 +282,28 @@ def _check_unused_crossref_definitions(options, pages, kind):
     used = _get_crossref_usage(pages, kind)
     for key in sorted(known - used):
         _require(GLOBAL, False, f"unused {kind} key {key}")
+
+
+ALWAYS_IGNORE = {".nojekyll"}
+
+
+def _check_output_files(options, dst_dir):
+    """Report unexpected files in the output directory."""
+    suppress = set(options.files) if options.files else set()
+    for fp in dst_dir.rglob("*"):
+        if not fp.is_file():
+            continue
+        rel = fp.relative_to(dst_dir)
+        parts = rel.parts
+        if parts[0] == "_static":
+            continue
+        if fp.name == "index.html":
+            continue
+        if fp.name in ALWAYS_IGNORE:
+            continue
+        if any(rel.match(pat) for pat in suppress):
+            continue
+        _require(GLOBAL, False, f"unexpected file in output: {rel}")
 
 
 def _require(filepath, condition, message):
