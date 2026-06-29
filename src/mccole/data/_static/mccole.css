@@ -476,3 +476,12 @@ details.explanation[open] > summary {
     /* Force headings to black regardless of theme variable resolution */
     h1, h2, h3, h4 { color: #000; }
 }
+
+/* Small devices */
+
+@media (max-width: 960px) {
+    body {
+        padding-left: var(--len-one);
+        padding-right: var(--len-one);
+    }
+}
